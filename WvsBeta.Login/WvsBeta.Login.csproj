@@ -1,0 +1,42 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'"><DefineConstants></DefineConstants></PropertyGroup>
+  <PropertyGroup>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath><TargetFramework>netcoreapp3.1</TargetFramework>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <OutputType>Exe</OutputType>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <OutputPath>..\BinSvr\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Resources\login.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ServerGarbageCollection>true</ServerGarbageCollection>
+    <ConcurrentGarbageCollection>true</ConcurrentGarbageCollection>
+    <NoWin32Manifest>true</NoWin32Manifest>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\log4net.ElasticSearch\src\log4net.ElasticSearch\log4net.ElasticSearch.csproj" />
+    <ProjectReference Include="..\logging-log4net\src\log4net\log4net.csproj" />
+    <ProjectReference Include="..\WvsBeta.Common\WvsBeta.Common.csproj" />
+    <ProjectReference Include="..\WvsBeta.Database\WvsBeta.Database.csproj" />
+    <ProjectReference Include="..\WvsBeta.Logger\WvsBeta.Logger.csproj" />
+    <ProjectReference Include="..\WvsBeta.MasterThread\WvsBeta.MasterThread.csproj" />
+    <ProjectReference Include="..\WzTools\WvsBeta.WzTools.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="icon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="MySql.Data" Version="6.10.9" />
+    <PackageReference Include="Otp.NET" Version="1.2.2" />
+    <PackageReference Include="System.ComponentModel.Annotations" Version="4.7.0" />
+    <PackageReference Include="System.Management" Version="4.7.0" />
+    <PackageReference Include="System.Memory">
+      <Version>4.5.4</Version>
+    </PackageReference>
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
+      <Version>4.7.1</Version>
+    </PackageReference>
+  </ItemGroup>
+</Project>

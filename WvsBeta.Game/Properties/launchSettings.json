@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "WvsBeta.Game": {
+      "commandName": "Project",
+      "commandLineArgs": "Game0"
+    }
+  }
+}

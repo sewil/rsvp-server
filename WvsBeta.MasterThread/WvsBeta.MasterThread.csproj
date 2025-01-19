@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'"><DefineConstants></DefineConstants></PropertyGroup>
+  <PropertyGroup>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath><TargetFramework>netcoreapp3.1</TargetFramework>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <OutputType>Library</OutputType>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <OutputPath>..\BinSvr\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\log4net.ElasticSearch\src\log4net.ElasticSearch\log4net.ElasticSearch.csproj" />
+    <ProjectReference Include="..\WvsBeta.Logger\WvsBeta.Logger.csproj" />
+  </ItemGroup>
+</Project>

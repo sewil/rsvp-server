@@ -1,0 +1,81 @@
+
+events = {
+	1 = {
+		name = New Years event
+		DROP_Rate = 1.5
+		EXP_Rate = 1.0
+		MESO_Rate = 1.0
+		start = 2020-12-31T00:00:00Z
+		end = 2021-01-02T23:59:59Z
+		header = Happy New Year MG2! Stay safe, and enjoy our 1.5x DROP event until January 3rd at 23:59 UTC. Today is the last day to talk to Maple Administrator for the Quiz, available from Lv 8. Talk to her while it is still available!
+	}
+
+	2 = {
+		name = New Years event last day
+		DROP_Rate = 1.5
+		EXP_Rate = 1.0
+		MESO_Rate = 1.0
+		start = 2020-01-03T00:00:00Z
+		end = 2021-01-03T23:59:59Z
+		header = Happy New Year MG2! Stay safe, and enjoy our 1.5x DROP event that lasts until 23:59 UTC!
+	}
+
+	3 = {
+		name = Chikas Birthday
+		DROP_Rate = 1.5
+		EXP_Rate = 1.0
+		MESO_Rate = 1.0
+		start = 2021-01-14T00:00:00Z
+		end = 2021-01-14T23:59:59Z
+		header = Happy Birthday GM Chika! Have a nice day, and enjoy the 1.5x DROP event until 23:59 UTC!
+	}
+
+	4 = {
+		name = Lunar New Year event
+		DROP_Rate = 1.5
+		EXP_Rate = 1.0
+		MESO_Rate = 1.0
+		start = 2021-02-13T00:00:00Z
+		end = 2021-02-15T23:59:59Z
+		header = There's a 1.5x drop event to celebrate the Lunar New Year, until Monday, 23:59 UTC!
+	}
+
+        5 = {
+                name = Vados Birthday
+                DROP_Rate = 1.5
+                EXP_Rate = 1.0
+                MESO_Rate = 1.0
+                start = 2021-03-02T00:00:00Z
+                end = 2021-03-02T23:59:59Z
+                header = Happy Birthday GM Vados! Have a nice day, and enjoy the 1.5x DROP event until 23:59 UTC!
+        }
+
+	6 = {
+		name = Shutdown Party
+		DROP_Rate = 3.0
+		EXP_Rate = 3.0
+		MESO_Rate = 3.0
+		start = 2023-01-26T00:00:00Z
+		end = 2023-01-27T00:00:00Z
+		header = There are 3 days left of the server... Please enjoy the last 3 days with the events, such as 3x exp/drop/meso on the 26th, 6x exp/drop/meso on the 27th, and 10x exp/drop/meso on the last day, the 28th! On the 28th, we'll run GM events, so don't miss out!
+	}
+	7 = {
+		name = Shutdown Party
+		DROP_Rate = 6.0
+		EXP_Rate = 6.0
+		MESO_Rate = 6.0
+		start = 2023-01-27T00:00:00Z
+		end = 2023-01-28T00:00:00Z
+		header = Tomorrow is the last day of the server. You can now enjoy 6x exp/drop/meso until tomorrow. Tomorrow you can train with 10x exp/drop/meso! We'll be running GM events throughout tomorrow, lets make the best of it...!
+	}
+	8 = {
+		name = Shutdown Party
+		DROP_Rate = 10.0
+		EXP_Rate = 100.0
+		MESO_Rate = 10.0
+		start = 2023-01-28T00:00:00Z
+		end = 2023-01-29T00:00:00Z
+		header = The 10x drop/meso and 100x exp event is active NOW! Who will end up on rank 1??? Have fun while it lasts~
+	}
+
+}

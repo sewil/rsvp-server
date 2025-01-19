@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!--THIS IS A LOG4NET ELASTICSEARCH EXAMPLE CONFIG FILE. Move to BinSvr, change name to log4net.xml (or whatever is specified in assembly.cs) and set config as needed. -->
+<configuration>
+    <configSections>
+        <section name="log4net" type="log4net.Config.Log4NetConfigurationSectionHandler, log4net" />
+    </configSections>
+    <startup>
+        <supportedRuntime version="v4.0" sku=".NETFramework,Version=v4.0"/>
+    </startup>
+    <log4net>
+        <appender name="ElasticSearchAppender" type="log4net.ElasticSearch.ElasticSearchAppender, log4net.ElasticSearch">
+            <connectionString value="Scheme=http;Server=127.0.0.1;Index=log;Port=9200;rolling=true"/>
+            <bufferSize value="0" />
+			<lossy value="false" />
+        </appender>
+        <root>
+            <level value="ALL"/>
+            <appender-ref ref="ElasticSearchAppender" />
+        </root>
+    </log4net>
+</configuration>

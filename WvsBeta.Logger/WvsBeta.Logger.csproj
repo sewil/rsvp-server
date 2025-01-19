@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'"><DefineConstants></DefineConstants></PropertyGroup>
+  <PropertyGroup>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath><TargetFramework>netcoreapp3.1</TargetFramework>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <OutputType>Library</OutputType>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <OutputPath>..\BinSvr\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\logging-log4net\src\log4net\log4net.csproj" />
+  </ItemGroup>
+</Project>

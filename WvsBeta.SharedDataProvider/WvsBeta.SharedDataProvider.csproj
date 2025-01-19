@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'"><DefineConstants></DefineConstants></PropertyGroup>
+  <PropertyGroup>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <OutputType>Library</OutputType>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <UseWindowsForms>false</UseWindowsForms>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\WvsBeta.Common\WvsBeta.Common.csproj" />
+    <ProjectReference Include="..\WvsBeta.Database\WvsBeta.Database.csproj" />
+    <ProjectReference Include="..\WzTools\WvsBeta.WzTools.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="MySql.Data" Version="6.10.9" />
+    <PackageReference Include="System.ComponentModel.Annotations" Version="4.7.0" />
+    <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
+    <PackageReference Include="System.Memory">
+      <Version>4.5.4</Version>
+    </PackageReference>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,86 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'"><DefineConstants></DefineConstants></PropertyGroup>
+  <PropertyGroup>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath><TargetFramework>netcoreapp3.1</TargetFramework>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <OutputType>Library</OutputType>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <OutputPath>..\BinSvr\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="evolutions\center\14.sql" />
+    <None Remove="evolutions\center\15.sql" />
+    <None Remove="evolutions\center\16.sql" />
+    <None Remove="evolutions\center\18.sql" />
+    <None Remove="evolutions\center\19.sql" />
+    <None Remove="evolutions\center\20.sql" />
+    <None Remove="evolutions\center\21.sql" />
+    <None Remove="evolutions\center\22.sql" />
+    <None Remove="evolutions\center\23.sql" />
+    <None Remove="evolutions\center\24.sql" />
+    <None Remove="evolutions\login\11.sql" />
+    <None Remove="evolutions\login\13.sql" />
+    <None Remove="evolutions\login\14.sql" />
+    <None Remove="evolutions\login\15.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\logging-log4net\src\log4net\log4net.csproj" />
+    <ProjectReference Include="..\WvsBeta.Common\WvsBeta.Common.csproj" />
+    <ProjectReference Include="..\WvsBeta.Logger\WvsBeta.Logger.csproj" />
+    <ProjectReference Include="..\WvsBeta.MasterThread\WvsBeta.MasterThread.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="evolutions\base.sql" />
+    <Content Include="evolutions\center\1.sql" />
+    <Content Include="evolutions\center\2.sql" />
+    <Content Include="evolutions\center\3.sql" />
+    <Content Include="evolutions\center\4.sql" />
+    <Content Include="evolutions\center\5.sql" />
+    <Content Include="evolutions\center\9.sql" />
+    <Content Include="evolutions\center\10.sql" />
+    <Content Include="evolutions\center\11.sql" />
+    <Content Include="evolutions\center\12.sql" />
+    <Content Include="evolutions\center\13.sql" />
+    <Content Include="evolutions\center\14.sql" />
+    <Content Include="evolutions\center\15.sql" />
+    <Content Include="evolutions\center\16.sql" />
+    <Content Include="evolutions\center\18.sql" />
+    <Content Include="evolutions\center\19.sql" />
+    <Content Include="evolutions\center\20.sql" />
+    <Content Include="evolutions\center\21.sql" />
+    <Content Include="evolutions\center\22.sql" />
+    <Content Include="evolutions\center\23.sql" />
+    <Content Include="evolutions\center\24.sql" />
+    <Content Include="evolutions\login\1.sql" />
+    <Content Include="evolutions\login\10.sql" />
+    <Content Include="evolutions\login\2.sql" />
+    <Content Include="evolutions\login\3.sql" />
+    <Content Include="evolutions\login\4.sql" />
+    <Content Include="evolutions\login\5.sql" />
+    <Content Include="evolutions\login\6.sql" />
+    <Content Include="evolutions\login\7.sql" />
+    <Content Include="evolutions\center\8.sql" />
+    <Content Include="evolutions\login\11.sql" />
+    <Content Include="evolutions\login\13.sql" />
+    <Content Include="evolutions\login\14.sql" />
+    <Content Include="evolutions\login\15.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="MySql.Data" Version="6.10.9" />
+    <PackageReference Include="System.ComponentModel.Annotations" Version="4.7.0" />
+    <PackageReference Include="System.Management" Version="4.7.0" />
+    <PackageReference Include="System.Memory">
+      <Version>4.5.4</Version>
+    </PackageReference>
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
+      <Version>4.7.1</Version>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="evolutions\center\12.sql" />
+  </ItemGroup>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Condition="$(OS) == 'Windows_NT'" Command="rmdir /Q /S &quot;$(TargetDir)evolutions\&quot;&#xD;&#xA;      xcopy /E /I &quot;$(ProjectDir)evolutions&quot;  &quot;$(TargetDir)evolutions&quot;" />
+    <Exec Condition="$(OS) != 'Windows_NT'" Command="rm -rf &quot;$(TargetDir)evolutions\&quot;&#xD;&#xA;      cp -r &quot;$(ProjectDir)evolutions&quot;  &quot;$(TargetDir)evolutions&quot;" />
+  </Target>
+</Project>

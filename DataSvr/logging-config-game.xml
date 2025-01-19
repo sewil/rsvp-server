@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<configuration>
+	<log4net>
+        <appender name="ElasticSearchAppender" type="log4net.ElasticSearch.ElasticSearchAppender, log4net.ElasticSearch">
+            <connectionString value="Scheme=http;Server=127.0.0.1;Index=log;Port=9201;rolling=true"/>
+            <bufferSize value="60" /> <!-- 60 -->
+			<lossy value="false" />
+        </appender>
+        <root>
+            <level value="ALL"/>
+            <appender-ref ref="ElasticSearchAppender" />
+        </root>
+	</log4net>
+</configuration>

@@ -1,0 +1,19 @@
+﻿------- UP -------
+
+DROP TABLE IF EXISTS guilds;
+
+CREATE TABLE `guilds` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(255) NULL DEFAULT NULL,
+  `guildmaster_id` INT UNSIGNED NULL DEFAULT NULL,
+  `capacity` INT UNSIGNED NOT NULL DEFAULT 10,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+ALTER TABLE `characters`
+    ADD COLUMN `guild_id` INT UNSIGNED NULL DEFAULT NULL AFTER `pet_cash_id`;
+
+------- DOWN -------
+
+DROP TABLE IF EXISTS guilds;
+ALTER TABLE `characters` DROP COLUMN `guild_id`;

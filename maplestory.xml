@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<service>
+  <short>MapleStory</short>
+  <description>MapleStory servers</description>
+  <port protocol="tcp" port="8484"/> <!-- Login0 -->
+  <port protocol="tcp" port="8485"/> <!-- Login1 -->
+  <port protocol="tcp" port="8585"/> <!-- Game0 -->
+  <port protocol="tcp" port="8586"/> <!-- Game1 -->
+  <port protocol="tcp" port="8787"/> <!-- Shop0 -->
+</service>

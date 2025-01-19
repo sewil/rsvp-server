@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "WvsBeta.Center": {
+      "commandName": "Project",
+      "commandLineArgs": "Center"
+    }
+  }
+}

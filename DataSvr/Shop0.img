@@ -1,0 +1,26 @@
+#Property
+
+redis = {
+	password = redis-password
+}
+
+
+HaProxyIPs = {
+}
+
+port = 8787
+
+gameWorldId = 0
+
+slotIncreasePrice = 2000
+trunkIncreasePrice = 2000
+
+PublicIP = 127.0.0.1
+PrivateIP = 127.0.0.1
+
+center = {
+	ip = 127.0.0.1
+	port = 8383
+	worldName = Scania
+}
+
