@@ -13,12 +13,12 @@ git clone https://github.com/diamondo25/rsvp-data.git
 ```
 
 ## Database
-. Install MariaDB on your local machine and write down the root password
-. Install a SQL editor like SQLyog Community Edition
-. Open the SQL editor and connect to your MariaDB.
-. Create a schema/database called "rsvp"
-. Load the two SQL files from the rsvp-server/SQLs folder, first the schema, then evolutions.
-. Create an account for the servers to connect with:
+1. Install MariaDB on your local machine and write down the root password
+2. Install a SQL editor like SQLyog Community Edition
+3. Open the SQL editor and connect to your MariaDB.
+4. Create a schema/database called "rsvp"
+5. Load the two SQL files from the rsvp-server/SQLs folder, first the schema, then evolutions.
+6. Create an account for the servers to connect with:
 ```sql
 CREATE USER 'rsvp'@'localhost' IDENTIFIED BY 'mypassword'; 
 FLUSH PRIVILEGES; 
@@ -32,18 +32,18 @@ INSERT INTO `users` (`username`, `password`, `email`) VALUES ('Diamondo25', 'yom
 ```
 
 ## Redis
-. Download [Redis for Windows](https://github.com/tporadowski/redis/releases)
-. (optional) configure the redis password in the Redis config.
-. Launch the Redis server 
+1. Download [Redis for Windows](https://github.com/tporadowski/redis/releases)
+2. (optional) configure the redis password in the Redis config.
+3. Launch the Redis server 
 
 ## Building servers
-. Open rsvp-server WvsBeta_REVAMP.sln
-. (!!!) Change the authentication password for your server: open WvsBeta.Common/Constants.cs and edit the 'AUTH_KEY' value.
-. Build the solution (all projects) through Build -> Build Solution
+1. Open rsvp-server WvsBeta_REVAMP.sln
+2. (!!!) Change the authentication password for your server: open WvsBeta.Common/Constants.cs and edit the 'AUTH_KEY' value.
+3. Build the solution (all projects) through Build -> Build Solution
 
 ## Configuring servers
-. Open rsvp-server/DataSvr/Database.img in a text editor
-. Update the login information to the database
+1. Open rsvp-server/DataSvr/Database.img in a text editor
+2. Update the login information to the database
 
 ### Updating Redis password
 For each server, update the redis password in its config file.
