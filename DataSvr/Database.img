@@ -1,4 +1,4 @@
 dbUsername = rsvp
-dbPassword = 
+dbPassword = mypassword
 dbDatabase = rsvp
 dbHost = 127.0.0.1
