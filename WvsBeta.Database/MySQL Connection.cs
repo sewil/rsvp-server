@@ -2,12 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Common;
 using System.Diagnostics;
 using System.IO;
-using System.Net.Http.Headers;
 using System.Text;
-using System.Threading;
 using WvsBeta.Common;
 
 namespace WvsBeta.Database
@@ -540,8 +537,6 @@ FROM users WHERE ban_expire > NOW()",
                 _command.EnableCaching = false;
                 if (parametersLength > 0)
                 {
-                    _command.Prepare();
-
                     for (var i = 0; i < parametersLength; i += 2)
                     {
                         _command.Parameters.AddWithValue(
@@ -549,14 +544,17 @@ FROM users WHERE ban_expire > NOW()",
                             parameters[i + 1]
                         );
                     }
-                }
 
+                    // Changed in new Connector; prepare after AddWithValue. Documentation still shows before...
+                    // https://stackoverflow.com/questions/71897708/parameter-was-not-found-during-prepare-using-prepared-statement-in-c-sharp
+                    _command.Prepare();
+                }
 
                 AddQuery(pQuery, parameters);
 
                 return ExecuteAndReturnPossibleReader(pQuery);
             }
-            catch (InvalidOperationException)
+            catch (InvalidOperationException ex)
             {
                 _logFile.WriteLine("Lost connection (InvalidOperation). Reconnecting.");
                 RecoverConnection();
