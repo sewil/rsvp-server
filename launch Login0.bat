@@ -1,2 +1,3 @@
 cd BinSvr
-start WvsBeta.Login.exe Login0
+WvsBeta.Login.exe Login0
+pause

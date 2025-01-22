@@ -1,2 +1,3 @@
 cd BinSvr
-start WvsBeta.Game.exe Game0
+WvsBeta.Game.exe Game0
+pause

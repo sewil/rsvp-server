@@ -1,2 +1,3 @@
 cd BinSvr
-start WvsBeta.Center.exe Center
+WvsBeta.Center.exe Center
+pause
