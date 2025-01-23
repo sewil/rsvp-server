@@ -17,7 +17,7 @@ namespace WvsBeta.Common
             public string Name { get; set; }
             public string Value { get; set; }
 
-            private static IFormatProvider NumberFormat = new CultureInfo("en-US");
+            public static readonly IFormatProvider NumberFormat = new CultureInfo("en-US");
 
             private bool IsHex => Value.Length > 2 && Value[1] == 'x';
 
@@ -42,6 +42,7 @@ namespace WvsBeta.Common
             public Node this[string name]
             {
                 get { return SubNodes?.Find(x => x.Name == name); }
+                set { SubNodes?.Add(value); }
             }
 
             public IEnumerator<Node> GetEnumerator()
@@ -53,6 +54,34 @@ namespace WvsBeta.Common
             {
                 return ((IEnumerable) SubNodes).GetEnumerator();
             }
+            
+            public void Set(string name, params Node[] subNodes)
+            {
+                var node = this[name];
+                if (node == null)
+                {
+                    node = new Node
+                    {
+                        Name = name
+                    };
+                    SubNodes.Add(node);
+                }
+                node.SubNodes = new List<Node>(subNodes);
+            }
+
+            public void Set(string name, string value)
+            {
+                var node = this[name];
+                if (node == null)
+                {
+                    node = new Node
+                    {
+                        Name = name
+                    };
+                    SubNodes.Add(node);
+                }
+                node.Value = value;
+            }
         }
 
         public string Filename { get; }
@@ -60,14 +89,22 @@ namespace WvsBeta.Common
 
         public ConfigReader(string path)
         {
-            using (var sr = new StreamReader(File.OpenRead(path)))
-            {
-                int row = 0;
-                RootNode = ReadInnerNode("RootNode", sr, ref row, 0);
-            }
+            Filename = path;
+            using var sr = new StreamReader(File.OpenRead(path));
+            int row = 0;
+            RootNode = ReadInnerNode("RootNode", sr, ref row, 0);
         }
 
         public Node this[string name] => name == "" ? RootNode : RootNode[name];
+
+        public void Set(string name, params Node[] subNodes)
+        {
+            RootNode.Set(name, subNodes);
+        }
+        public void Set(string name, string value)
+        {
+            RootNode.Set(name, value);
+        }
         
         // Parser
 
@@ -135,5 +172,34 @@ namespace WvsBeta.Common
             return node;
         }
 
+        public void Write(string path = null)
+        {
+            using var sw = new StreamWriter(File.Open(path ?? Filename, FileMode.Create));
+
+            
+            foreach (var sub in RootNode)
+            {
+                writeNode(sub, "");
+            }
+            void writeNode(Node node, string indent)
+            {
+
+                if (node.SubNodes == null)
+                {
+                    // Regular entry
+                    sw.WriteLine($"{indent}{node.Name} = {node.Value}");
+                    return;
+                }
+
+                sw.WriteLine($"{indent}{node.Name} = {{");
+
+                foreach (var sub in node)
+                {
+                    writeNode(sub, indent + "\t");
+                }
+
+                sw.WriteLine($"{indent}}}");
+            }
+        }
     }
 }

@@ -14,7 +14,7 @@ namespace WvsBeta.Database
     /// MySQL calls Abort while inside NextResult while in ExecuteReader (causing initial reconnect logic)
     /// then while reconnecting, MySQL calls Abort while inside Connect on exception.
     /// </summary>
-    public class MySQL_Connection
+    public class MySQL_Connection : IDisposable
     {
         public MySqlDataReader Reader { get; private set; }
         public bool Stop { get; set; }
@@ -26,6 +26,7 @@ namespace WvsBeta.Database
         private string _connectionString;
         private Common.Logfile _logFile;
         private Stack<Tuple<string, object[], string>> _queryList = new Stack<Tuple<string, object[], string>>(MAX_QUERY_LIST_BACKTRACE);
+        private MasterThread.RepeatingAction _pingerAction;
 
         private void AddQuery(string pQuery, object[] pParameters)
         {
@@ -85,7 +86,7 @@ namespace WvsBeta.Database
 
         private void SetupPinger()
         {
-            MasterThread.RepeatingAction.Start(
+            _pingerAction = MasterThread.RepeatingAction.Start(
                 "Database Pinger",
                 (date) =>
                 {
@@ -117,6 +118,12 @@ namespace WvsBeta.Database
         }
 
         private bool alreadyConnecting = false;
+        private bool disposedValue;
+
+        void stateChangeHandler(object sender, System.Data.StateChangeEventArgs e)
+        {
+            _logFile.WriteLine($"State change from {e.OriginalState} to {e.CurrentState}");
+        }
 
         public void RecoverConnection()
         {
@@ -127,11 +134,6 @@ namespace WvsBeta.Database
                 _logFile.WriteLine("Connecting to database... Stacktrace:");
                 _logFile.WriteLine(new StackTrace().ToString());
 
-                
-                void stateChangeHandler(object sender, System.Data.StateChangeEventArgs e)
-                {
-                    _logFile.WriteLine($"State change from {e.OriginalState} to {e.CurrentState}");
-                }
                 
                 _connection ??= new MySqlConnection(_connectionString);
                 while (true)
@@ -713,6 +715,34 @@ FROM users WHERE ban_expire > NOW()",
             }
 
             return false;
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    Stop = true;
+                    _pingerAction.Stop();
+                }
+
+                disposedValue = true;
+            }
+        }
+
+        // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
+        // ~MySQL_Connection()
+        // {
+        //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        //     Dispose(disposing: false);
+        // }
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }

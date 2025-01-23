@@ -1,0 +1,46 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net9.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+	  <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+	  <OutputPath>..\BinSvr\</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="redist\mariadb\data\**" />
+    <EmbeddedResource Remove="redist\mariadb\data\**" />
+    <None Remove="redist\mariadb\data\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WvsBeta.Database\WvsBeta.Database.csproj" />
+    <ProjectReference Include="..\WzTools\WvsBeta.WzTools.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="redist\mariadb\bin\mariadb-install-db.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="redist\mariadb\bin\mariadbd.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="redist\mariadb\bin\mysqld.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="redist\mariadb\bin\server.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="redist\redis\redis-server.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="redist\redis\redis.windows.conf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>
