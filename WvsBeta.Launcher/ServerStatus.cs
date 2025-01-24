@@ -24,23 +24,39 @@ namespace WvsBeta.Launcher
         [DefaultValue("")] public string WorkingDirectory { get; set; } = "";
 
         [DefaultValue(false)]
-        public bool Reinstallable
-        {
-            get => btnReinstall.Enabled;
-            set => btnReinstall.Enabled = value;
-        }
+        public bool Reinstallable { get; set; }
 
         [DefaultValue(null)]
         public IConfig? Configuration
         {
             get => propertyGrid1.SelectedObject as IConfig;
-            set => propertyGrid1.SelectedObject = value;
+            set
+            {
+                if (propertyGrid1.SelectedObject != null)
+                {
+                    ((IConfig) propertyGrid1.SelectedObject).PropertyChanged -= ConfigurationChanged;
+                }
+
+                propertyGrid1.SelectedObject = value;
+                
+                if (value != null)
+                {
+                    value.PropertyChanged += ConfigurationChanged;
+                }
+            }
         }
 
+        private void ConfigurationChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            propertyGrid1.Refresh();
+        }
+
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public Process? Process { get; set; }
 
         [DefaultValue(null)]
         public event EventHandler Reinstall;
+
         [DefaultValue(null)]
         public event EventHandler Start;
 
@@ -102,7 +118,7 @@ namespace WvsBeta.Launcher
         {
             btnStart.Text = Started ? "Restart" : "Start";
             propertyGrid1.Enabled = !Started;
-            btnReinstall.Enabled = !Started;
+            btnReinstall.Enabled = Reinstallable && !Started;
             btnReloadConfig.Enabled = !Started;
         }
 

@@ -54,33 +54,44 @@ namespace WvsBeta.Common
             {
                 return ((IEnumerable) SubNodes).GetEnumerator();
             }
-            
-            public void Set(string name, params Node[] subNodes)
+
+            public Node()
+            {
+                // defaults
+            }
+
+            public Node(string name)
+            {
+                Name = name;
+                SubNodes = null;
+                Value = null;
+            }
+
+            public Node(string name, string value) : this(name)
+            {
+                Value = value;
+            }
+
+            private Node GetOrAdd(string name)
             {
                 var node = this[name];
                 if (node == null)
                 {
-                    node = new Node
-                    {
-                        Name = name
-                    };
+                    node = new Node(name);
                     SubNodes.Add(node);
                 }
-                node.SubNodes = new List<Node>(subNodes);
+
+                return node;
+            }
+            
+            public void Set(string name, params Node[] subNodes)
+            {
+                GetOrAdd(name).SubNodes = new List<Node>(subNodes);
             }
 
             public void Set(string name, string value)
             {
-                var node = this[name];
-                if (node == null)
-                {
-                    node = new Node
-                    {
-                        Name = name
-                    };
-                    SubNodes.Add(node);
-                }
-                node.Value = value;
+                GetOrAdd(name).Value = value;
             }
         }
 

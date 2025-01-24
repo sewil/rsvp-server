@@ -1,28 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using WvsBeta.Common;
+using WvsBeta.Database;
 
 namespace WvsBeta.Launcher.Config
 {
     public class WvsConfig : IConfig
     {
-
         protected ConfigReader cf;
         public string ServerName { get; }
-
         public string PublicIP { get; set; } = "127.0.0.1";
         public string PrivateIP { get; set; } = "127.0.0.1";
         public ushort Port { get; set; }
 
+        protected Redis redis;
+
         protected ushort DefaultPort;
-        public WvsConfig(string serverName, ushort defaultPort)
+        public WvsConfig(string serverName, ushort defaultPort, Redis redis)
         {
             ServerName = serverName;
             cf = Read($"{serverName}.img");
             DefaultPort = defaultPort;
+            this.redis = redis;
         }
 
         public virtual void Reload()
@@ -38,6 +42,15 @@ namespace WvsBeta.Launcher.Config
             cf.Set("PrivateIP", PrivateIP);
             cf.Set("port", Port.ToString());
 
+            if (cf["redis"] == null)
+            {
+                cf.Set("redis", new ConfigReader.Node("hostname"));
+            }
+
+            cf["redis"].Set("hostname", redis.Host);
+            cf["redis"].Set("port", redis.Port.ToString());
+            cf["redis"].Set("password", redis.Password);
+
             cf.Write();
         }
 
@@ -45,15 +58,17 @@ namespace WvsBeta.Launcher.Config
         {
             return new ConfigReader(Path.Combine(Program.InstallationPath, "..", "DataSvr", filename));
         }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
     }
 
     public class Database : IConfig
     {
-        public string IP { get; set; }
+        public string IP { get; set; } = "";
         public ushort Port { get; set; }
-        public string DatabaseName { get; set; }
-        public string Username { get; set; }
-        public string Password { get; set; }
+        public string DatabaseName { get; set; } = "";
+        public string Username { get; set; } = "";
+        public string Password { get; set; } = "";
 
 
         private ConfigReader cf;
@@ -77,5 +92,12 @@ namespace WvsBeta.Launcher.Config
             cf.Set("dbPassword", Password);
             cf.Write();
         }
+
+        public MySQL_Connection Connect()
+        {
+            return new MySQL_Connection(MasterThread.Instance, cf);
+        }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
     }
 }

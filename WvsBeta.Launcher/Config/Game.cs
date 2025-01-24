@@ -15,7 +15,7 @@ namespace WvsBeta.Launcher.Config
         
         public byte GameWorldId => center.GameWorldID;
 
-        public CenterSlave(string serverName, ushort defaultPort, Center center) : base(serverName, defaultPort)
+        public CenterSlave(string serverName, ushort defaultPort, Center center) : base(serverName, defaultPort, center.GetRedis())
         {
             this.center = center;
         }
@@ -79,11 +79,17 @@ namespace WvsBeta.Launcher.Config
 
     internal class Center : WvsConfig
     {
-        public Center(string serverName) : base(serverName, 8383)
+        public Center(string serverName, Redis redis) : base(serverName, 8383, redis)
         {
         }
+        
+        // Helper function to fetch redis off Center
+        public Redis GetRedis()
+        {
+            return redis;
+        }
 
-        public string Name { get; set; }
+        public string Name { get; set; } = "";
         public byte GameWorldID { get; set; }
         public float UserNumberMultiplier { get; set; }
         public byte ChannelCount { get; set;  }
@@ -106,7 +112,7 @@ namespace WvsBeta.Launcher.Config
     {
         private Center[] centers;
 
-        public Login(string serverName, params Center[] centers) : base(serverName, 8484)
+        public Login(string serverName, Redis redis, params Center[] centers) : base(serverName, 8484, redis)
         {
             this.centers = centers;
         }

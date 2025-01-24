@@ -4,8 +4,14 @@
     <Compile Update="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="LANMode.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="ServerStatus.cs">
       <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="UserManager.cs">
+      <SubType>Form</SubType>
     </Compile>
   </ItemGroup>
 </Project>
