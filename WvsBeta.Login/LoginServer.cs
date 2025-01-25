@@ -238,6 +238,8 @@ namespace WvsBeta.Login
             Tespia = reader["tespia"]?.GetBool() ?? false;
             AdminsRequirePublicKeyAuth = reader["adminsRequirePublicKeyAuth"]?.GetBool() ?? false;
 
+            DiscordReporter.LoadURLs(reader["discord"]);
+
             foreach (var worldConfig in reader["center"])
             {
                 var center = new Center

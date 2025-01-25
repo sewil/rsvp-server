@@ -516,6 +516,8 @@ namespace WvsBeta.Game
             Tespia = reader["tespia"]?.GetBool() ?? false;
             MemoryAutobanEnabled = reader["memoryAutobanEnabled"]?.GetBool() ?? true;
             LazyLoadScripts = reader["lazyLoadScripts"]?.GetBool() ?? false;
+            
+            DiscordReporter.LoadURLs(reader["discord"]);
 
             var tmpHeader = reader["scrollingHeader"]?.GetString() ?? "";
             if (tmpHeader == "EMPTY")

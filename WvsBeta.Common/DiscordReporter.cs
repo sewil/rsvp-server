@@ -17,12 +17,11 @@ namespace WvsBeta.Common
         private readonly ConcurrentQueue<string> _messagesToPost = new ConcurrentQueue<string>();
         private Thread _thread = null;
 
-#warning Building WITHOUT Discord support
-        public const string BanLogURL = "";
-        public const string ServerTraceURL = "";
-        public const string MuteBanURL = "";
-        public const string ReportsURL = "";
-        public const string PlayerLogURL = "";
+        public static string BanLogURL = "";
+        public static string ServerTraceURL = "";
+        public static string MuteBanURL = "";
+        public static string ReportsURL = "";
+        public static string PlayerLogURL = "";
 
         private string ActualUsername
         {
@@ -43,6 +42,21 @@ namespace WvsBeta.Common
             WebhookURL = webhookUrl;
             Name = name;
             Start();
+        }
+
+        public static void LoadURLs(ConfigReader.Node node)
+        {
+            if (node == null)
+            {
+                _log.Warn("No discord URLs configured in config, default to no discord integration.");
+                return;
+            }
+
+            BanLogURL = node["banLogURL"]?.GetString() ?? "";
+            ServerTraceURL = node["serverTraceURL"]?.GetString() ?? "";
+            MuteBanURL = node["muteBanURL"]?.GetString() ?? "";
+            ReportsURL = node["reportsURL"]?.GetString() ?? "";
+            PlayerLogURL = node["playerLogURL"]?.GetString() ?? "";
         }
 
         public void Enqueue(string message)

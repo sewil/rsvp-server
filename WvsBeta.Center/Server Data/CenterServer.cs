@@ -252,6 +252,8 @@ namespace WvsBeta.Center
             }
 
             Tespia = reader["tespia"]?.GetBool() ?? false;
+            
+            DiscordReporter.LoadURLs(reader["discord"]);
 
             LocalServer ls;
             LocalServerType lst;

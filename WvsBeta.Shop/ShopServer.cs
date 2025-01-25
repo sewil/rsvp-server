@@ -149,6 +149,8 @@ namespace WvsBeta.Shop
                 AllowedHaProxyIPs = haProxyIPs.Select(x => x.Value).ToArray();
             }
 
+            DiscordReporter.LoadURLs(reader["discord"]);
+
             RedisBackend.Init(reader);
         }
 
