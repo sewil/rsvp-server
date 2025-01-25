@@ -1172,7 +1172,7 @@ login_count = login_count + 1
                         AssertWarning(true, $"[{username}][{userId}] banned until " + data.GetDateTime("ban_expire"));
                         result = LoginResCode.Banned;
                     }
-                    else if (Player.GMLevel > 0 && AuthChallenge != null && AuthChallenge.CheckChallengeResponse(response))
+                    else if (Server.Instance.AdminsRequirePublicKeyAuth && Player.GMLevel > 0 && AuthChallenge != null && AuthChallenge.CheckChallengeResponse(response))
                     {
                         result = LoginResCode.SuccessLogin;
                     }
@@ -1189,7 +1189,7 @@ login_count = login_count + 1
                             result = LoginResCode.InvalidPassword;
                         }
                     }
-                    else if (Player.GMLevel == 0 && BCrypt.CheckPassword(password, dbpass))
+                    else if ((!Server.Instance.AdminsRequirePublicKeyAuth || Player.GMLevel == 0) && BCrypt.CheckPassword(password, dbpass))
                     {
                         result = LoginResCode.SuccessLogin;
                     }

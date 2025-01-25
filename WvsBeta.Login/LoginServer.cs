@@ -29,6 +29,7 @@ namespace WvsBeta.Login
         public Dictionary<short, short> PatchNextVersion { get; } = new Dictionary<short, short>();
         public int DataChecksum { get; private set; }
         public short CurrentPatchVersion { get; private set; }
+        public bool AdminsRequirePublicKeyAuth { get; private set; }
         
         private LoginAcceptor LoginAcceptor { get; set; }
         public LoginHaProxyAcceptor LoginHaProxyAcceptor { get; private set; }
@@ -235,6 +236,7 @@ namespace WvsBeta.Login
 
             RequiresEULA = reader["requiresEULA"]?.GetBool() ?? false;
             Tespia = reader["tespia"]?.GetBool() ?? false;
+            AdminsRequirePublicKeyAuth = reader["adminsRequirePublicKeyAuth"]?.GetBool() ?? false;
 
             foreach (var worldConfig in reader["center"])
             {
