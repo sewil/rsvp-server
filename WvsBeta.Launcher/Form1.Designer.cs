@@ -38,6 +38,7 @@
             ssGame0 = new ServerStatus();
             menuStrip1 = new MenuStrip();
             userManagerToolStripMenuItem = new ToolStripMenuItem();
+            eventManagerToolStripMenuItem = new ToolStripMenuItem();
             configureLANModeToolStripMenuItem = new ToolStripMenuItem();
             statusStrip1 = new StatusStrip();
             toolStripStatusLabel1 = new ToolStripStatusLabel();
@@ -51,6 +52,7 @@
             // ssMariaDB
             // 
             ssMariaDB.Dock = DockStyle.Fill;
+            ssMariaDB.ExecutableName = null;
             ssMariaDB.Location = new Point(3, 326);
             ssMariaDB.Name = "ssMariaDB";
             ssMariaDB.Reinstallable = true;
@@ -62,6 +64,7 @@
             // ssRedis
             // 
             ssRedis.Dock = DockStyle.Fill;
+            ssRedis.ExecutableName = null;
             ssRedis.Location = new Point(377, 326);
             ssRedis.Name = "ssRedis";
             ssRedis.Reinstallable = true;
@@ -73,6 +76,7 @@
             // ssCenter
             // 
             ssCenter.Dock = DockStyle.Fill;
+            ssCenter.ExecutableName = null;
             ssCenter.Location = new Point(377, 3);
             ssCenter.Name = "ssCenter";
             ssCenter.Size = new Size(368, 317);
@@ -82,6 +86,7 @@
             // ssLogin0
             // 
             ssLogin0.Dock = DockStyle.Fill;
+            ssLogin0.ExecutableName = null;
             ssLogin0.Location = new Point(3, 3);
             ssLogin0.Name = "ssLogin0";
             ssLogin0.Size = new Size(368, 317);
@@ -115,6 +120,7 @@
             // ssShop0
             // 
             ssShop0.Dock = DockStyle.Fill;
+            ssShop0.ExecutableName = null;
             ssShop0.Location = new Point(751, 326);
             ssShop0.Name = "ssShop0";
             ssShop0.Size = new Size(369, 318);
@@ -124,6 +130,7 @@
             // ssGame0
             // 
             ssGame0.Dock = DockStyle.Fill;
+            ssGame0.ExecutableName = null;
             ssGame0.Location = new Point(751, 3);
             ssGame0.Name = "ssGame0";
             ssGame0.Size = new Size(369, 317);
@@ -132,7 +139,7 @@
             // 
             // menuStrip1
             // 
-            menuStrip1.Items.AddRange(new ToolStripItem[] { userManagerToolStripMenuItem, configureLANModeToolStripMenuItem });
+            menuStrip1.Items.AddRange(new ToolStripItem[] { userManagerToolStripMenuItem, eventManagerToolStripMenuItem, configureLANModeToolStripMenuItem });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
             menuStrip1.Size = new Size(1123, 24);
@@ -143,8 +150,15 @@
             // 
             userManagerToolStripMenuItem.Name = "userManagerToolStripMenuItem";
             userManagerToolStripMenuItem.Size = new Size(92, 20);
-            userManagerToolStripMenuItem.Text = "User manager";
+            userManagerToolStripMenuItem.Text = "User Manager";
             userManagerToolStripMenuItem.Click += userManagerToolStripMenuItem_Click;
+            // 
+            // eventManagerToolStripMenuItem
+            // 
+            eventManagerToolStripMenuItem.Name = "eventManagerToolStripMenuItem";
+            eventManagerToolStripMenuItem.Size = new Size(82, 20);
+            eventManagerToolStripMenuItem.Text = "Event Editor";
+            eventManagerToolStripMenuItem.Click += eventManagerToolStripMenuItem_Click;
             // 
             // configureLANModeToolStripMenuItem
             // 
@@ -217,5 +231,6 @@
         private ToolStripStatusLabel toolStripStatusLabel1;
         private ToolStripStatusLabel tsslLANStatus;
         private System.Windows.Forms.Timer tmrServerAnnouncer;
+        private ToolStripMenuItem eventManagerToolStripMenuItem;
     }
 }

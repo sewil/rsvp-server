@@ -35,7 +35,7 @@ namespace WvsBeta.Launcher
 
             ssRedis.Configuration = redis;
             ssRedis.ExecutableName = "redis-server.exe";
-            ssRedis.Arguments = new []{"redis.windows.conf"};
+            ssRedis.Arguments = new[] { "redis.windows.conf" };
             ssRedis.Start += (sender, args) =>
             {
                 ssRedis.StartProcess();
@@ -96,7 +96,7 @@ namespace WvsBeta.Launcher
             defaultConfig.Reload();
             serverStatus.Configuration = defaultConfig;
             serverStatus.ExecutableName = $"WvsBeta.{name}.exe";
-            serverStatus.Arguments = new[] {defaultConfig.ServerName};
+            serverStatus.Arguments = new[] { defaultConfig.ServerName };
 
             serverStatus.Start += (sender, eventArgs) =>
             {
@@ -151,10 +151,10 @@ namespace WvsBeta.Launcher
 
             var machineName = Environment.MachineName;
 
-            using var packet = new Packet((byte) 0x00);
+            using var packet = new Packet((byte)0x00);
             packet.WriteLong(DateTime.Now.ToFileTimeUtc());
             packet.WriteString(machineName);
-            packet.WriteByte((byte) loginServers.Count);
+            packet.WriteByte((byte)loginServers.Count);
             foreach (var loginServer in loginServers)
             {
                 var config = loginServer.Configuration as Login;
@@ -168,8 +168,14 @@ namespace WvsBeta.Launcher
                 new IPEndPoint(multicastAddr, 28484)
             );
 
-            
+
             tsslLANStatus.Text = $"Transmitted beacon @ {DateTime.Now}";
+        }
+
+        private void eventManagerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var ev = new EventEditor();
+            ev.ShowDialog();
         }
     }
 }

@@ -13,13 +13,20 @@ namespace WvsBeta.Common
         public string Filename { get; }
         public Node RootNode => this;
 
-        public ConfigReader(string path)
+        public ConfigReader(string path, bool read = true)
         {
             Filename = path;
-            using var sr = new StreamReader(File.OpenRead(path));
-            int row = 0;
-            var tmp = ReadInnerNode("RootNode", sr, ref row, 0);
-            SubNodes = tmp.SubNodes;
+            if (read)
+            {
+                using var sr = new StreamReader(File.OpenRead(path));
+                int row = 0;
+                var tmp = ReadInnerNode("RootNode", sr, ref row, 0);
+                SubNodes = tmp.SubNodes;
+            }
+            else
+            {
+                SubNodes = new List<Node>();
+            }
         }
         
         // Parser
@@ -92,6 +99,7 @@ namespace WvsBeta.Common
         {
             using var sw = new StreamWriter(File.Open(path ?? Filename, FileMode.Create));
 
+            sw.WriteLine("#Property");
             
             foreach (var sub in RootNode)
             {
@@ -186,6 +194,7 @@ namespace WvsBeta.Common
             if (node == null)
             {
                 node = new Node(name);
+                SubNodes ??= new List<Node>();
                 SubNodes.Add(node);
             }
 

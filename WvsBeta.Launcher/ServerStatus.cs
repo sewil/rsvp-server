@@ -23,7 +23,7 @@ namespace WvsBeta.Launcher
 
         [DefaultValue("")] public string WorkingDirectory { get; set; } = "";
 
-        [DefaultValue("")] public string ExecutableName { get; set; }
+        [DefaultValue("")] public string ExecutableName { get; set; } = "";
 
         [DefaultValue(new string[] { })] public string[] Arguments { get; set; } = new string[] { };
 
@@ -168,6 +168,7 @@ namespace WvsBeta.Launcher
 
         private void tmrUIUpdater_Tick(object sender, EventArgs e)
         {
+            if (DesignMode) return;
             if (!Started)
             {
                 var process = FindProcess();

@@ -42,5 +42,18 @@ namespace WvsBeta.Common
         {
             return val.GetInt32(key)?.AsYYYYMMDDHHDateTime() ?? defaultDateTime;
         }
+
+        public static int ToYYYYMMDDHHDateTime(this DateTime val)
+        {
+            int ret = 0;
+            ret += val.Year;
+            ret *= 100;
+            ret += val.Month;
+            ret *= 100;
+            ret += val.Day;
+            ret *= 100;
+            ret += val.Hour;
+            return ret;
+        }
     }
 }
