@@ -44,7 +44,7 @@ namespace WvsBeta.Common
             Start();
         }
 
-        public static void LoadURLs(ConfigReader.Node node)
+        public static void LoadURLs(Node node)
         {
             if (node == null)
             {

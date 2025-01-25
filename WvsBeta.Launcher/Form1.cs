@@ -25,17 +25,20 @@ namespace WvsBeta.Launcher
             redis = new Config.Redis();
 
             ssMariaDB.Configuration = new MariaDB(db);
+            ssMariaDB.ExecutableName = "mariadbd.exe";
             ssMariaDB.Start += (sender, args) =>
             {
-                ssMariaDB.StartProcess("mariadbd.exe");
+                ssMariaDB.StartProcess();
             };
 
             ssMariaDB.Reinstall += ReinstallMariaDB;
 
             ssRedis.Configuration = redis;
+            ssRedis.ExecutableName = "redis-server.exe";
+            ssRedis.Arguments = new []{"redis.windows.conf"};
             ssRedis.Start += (sender, args) =>
             {
-                ssRedis.StartProcess("redis-server.exe", "redis.windows.conf");
+                ssRedis.StartProcess();
             };
 
             var center = new Center("Center", redis);
@@ -92,9 +95,12 @@ namespace WvsBeta.Launcher
 
             defaultConfig.Reload();
             serverStatus.Configuration = defaultConfig;
+            serverStatus.ExecutableName = $"WvsBeta.{name}.exe";
+            serverStatus.Arguments = new[] {defaultConfig.ServerName};
+
             serverStatus.Start += (sender, eventArgs) =>
             {
-                serverStatus.StartProcess($"WvsBeta.{name}.exe", defaultConfig.ServerName);
+                serverStatus.StartProcess();
             };
         }
 

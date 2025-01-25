@@ -8,113 +8,18 @@ using System.Text.RegularExpressions;
 
 namespace WvsBeta.Common
 {
-    public class ConfigReader
+    public class ConfigReader : Node
     {
-
-        public class Node : IEnumerable<Node>
-        {
-            public List<Node> SubNodes { get; set; }
-            public string Name { get; set; }
-            public string Value { get; set; }
-
-            public static readonly IFormatProvider NumberFormat = new CultureInfo("en-US");
-
-            private bool IsHex => Value.Length > 2 && Value[1] == 'x';
-
-            public int GetInt() => IsHex ? int.Parse(Value[2..], NumberStyles.HexNumber, NumberFormat) : int.Parse(Value, NumberFormat);
-            public uint GetUInt() => IsHex ? uint.Parse(Value[2..], NumberStyles.HexNumber, NumberFormat) : uint.Parse(Value, NumberFormat);
-            public short GetShort() => IsHex ? short.Parse(Value[2..], NumberStyles.HexNumber, NumberFormat) : short.Parse(Value, NumberFormat);
-            public ushort GetUShort() => IsHex ? ushort.Parse(Value[2..], NumberStyles.HexNumber, NumberFormat) : ushort.Parse(Value, NumberFormat);
-            public byte GetByte() => IsHex ? byte.Parse(Value[2..], NumberStyles.HexNumber, NumberFormat) : byte.Parse(Value, NumberFormat);
-
-            public bool GetBool()
-            {
-                if (byte.TryParse(Value, out var _byte)) return _byte != 0;
-                if (bool.TryParse(Value, out var _bool)) return _bool;
-                return Value == "true" || Value == "yes";
-            }
-
-            public string GetString() => Value;
-            public double GetDouble() => double.Parse(Value, NumberFormat);
-            public float GetFloat() => float.Parse(Value, NumberFormat);
-            public T GetEnum<T>() => (T) Enum.Parse(typeof(T), Value);
-
-            public Node this[string name]
-            {
-                get { return SubNodes?.Find(x => x.Name == name); }
-                set { SubNodes?.Add(value); }
-            }
-
-            public IEnumerator<Node> GetEnumerator()
-            {
-                return SubNodes.GetEnumerator();
-            }
-
-            IEnumerator IEnumerable.GetEnumerator()
-            {
-                return ((IEnumerable) SubNodes).GetEnumerator();
-            }
-
-            public Node()
-            {
-                // defaults
-            }
-
-            public Node(string name)
-            {
-                Name = name;
-                SubNodes = null;
-                Value = null;
-            }
-
-            public Node(string name, string value) : this(name)
-            {
-                Value = value;
-            }
-
-            private Node GetOrAdd(string name)
-            {
-                var node = this[name];
-                if (node == null)
-                {
-                    node = new Node(name);
-                    SubNodes.Add(node);
-                }
-
-                return node;
-            }
-            
-            public void Set(string name, params Node[] subNodes)
-            {
-                GetOrAdd(name).SubNodes = new List<Node>(subNodes);
-            }
-
-            public void Set(string name, string value)
-            {
-                GetOrAdd(name).Value = value;
-            }
-        }
-
         public string Filename { get; }
-        public Node RootNode { get; }
+        public Node RootNode => this;
 
         public ConfigReader(string path)
         {
             Filename = path;
             using var sr = new StreamReader(File.OpenRead(path));
             int row = 0;
-            RootNode = ReadInnerNode("RootNode", sr, ref row, 0);
-        }
-
-        public Node this[string name] => name == "" ? RootNode : RootNode[name];
-
-        public void Set(string name, params Node[] subNodes)
-        {
-            RootNode.Set(name, subNodes);
-        }
-        public void Set(string name, string value)
-        {
-            RootNode.Set(name, value);
+            var tmp = ReadInnerNode("RootNode", sr, ref row, 0);
+            SubNodes = tmp.SubNodes;
         }
         
         // Parser
@@ -211,6 +116,100 @@ namespace WvsBeta.Common
 
                 sw.WriteLine($"{indent}}}");
             }
+        }
+    }
+
+    public class Node : IEnumerable<Node>
+    {
+        public List<Node> SubNodes { get; set; }
+        public string Name { get; set; }
+        public string Value { get; set; }
+
+        public static readonly IFormatProvider NumberFormat = new CultureInfo("en-US");
+
+        private bool IsHex => Value.Length > 2 && Value[1] == 'x';
+
+        public int GetInt() => IsHex ? int.Parse(Value[2..], NumberStyles.HexNumber, NumberFormat) : int.Parse(Value, NumberFormat);
+        public uint GetUInt() => IsHex ? uint.Parse(Value[2..], NumberStyles.HexNumber, NumberFormat) : uint.Parse(Value, NumberFormat);
+        public short GetShort() => IsHex ? short.Parse(Value[2..], NumberStyles.HexNumber, NumberFormat) : short.Parse(Value, NumberFormat);
+        public ushort GetUShort() => IsHex ? ushort.Parse(Value[2..], NumberStyles.HexNumber, NumberFormat) : ushort.Parse(Value, NumberFormat);
+        public byte GetByte() => IsHex ? byte.Parse(Value[2..], NumberStyles.HexNumber, NumberFormat) : byte.Parse(Value, NumberFormat);
+
+        public bool GetBool()
+        {
+            if (byte.TryParse(Value, out var _byte)) return _byte != 0;
+            if (bool.TryParse(Value, out var _bool)) return _bool;
+            return Value == "true" || Value == "yes";
+        }
+
+        public string GetString() => Value;
+        public double GetDouble() => double.Parse(Value, NumberFormat);
+        public float GetFloat() => float.Parse(Value, NumberFormat);
+        public T GetEnum<T>() => (T) Enum.Parse(typeof(T), Value);
+
+        public Node this[string name]
+        {
+            get { return SubNodes?.Find(x => x.Name == name); }
+            set { SubNodes?.Add(value); }
+        }
+
+        public IEnumerator<Node> GetEnumerator()
+        {
+            return SubNodes.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IEnumerable) SubNodes).GetEnumerator();
+        }
+
+        public Node()
+        {
+            // defaults
+        }
+
+        public Node(string name)
+        {
+            Name = name;
+            SubNodes = null;
+            Value = null;
+        }
+
+        public Node(string name, string value) : this(name)
+        {
+            Value = value;
+        }
+
+        public Node GetOrAdd(string name)
+        {
+            var node = this[name];
+            if (node == null)
+            {
+                node = new Node(name);
+                SubNodes.Add(node);
+            }
+
+            return node;
+        }
+            
+        public Node Set(string name, params Node[] subNodes)
+        {
+            var tmp = GetOrAdd(name);
+            tmp.SubNodes = new List<Node>(subNodes);
+            return tmp;
+        }
+
+        public Node Set(string name, string value)
+        {
+            var tmp = GetOrAdd(name);
+            tmp.Value = value;
+            return tmp;
+        }
+
+        public Node Set(string name)
+        {
+            // Just create it
+            return GetOrAdd(name);
         }
     }
 }

@@ -23,8 +23,11 @@ namespace WvsBeta.Launcher
 
         [DefaultValue("")] public string WorkingDirectory { get; set; } = "";
 
-        [DefaultValue(false)]
-        public bool Reinstallable { get; set; }
+        [DefaultValue("")] public string ExecutableName { get; set; }
+
+        [DefaultValue(new string[] { })] public string[] Arguments { get; set; } = new string[] { };
+
+        [DefaultValue(false)] public bool Reinstallable { get; set; }
 
         [DefaultValue(null)]
         public IConfig? Configuration
@@ -34,11 +37,11 @@ namespace WvsBeta.Launcher
             {
                 if (propertyGrid1.SelectedObject != null)
                 {
-                    ((IConfig) propertyGrid1.SelectedObject).PropertyChanged -= ConfigurationChanged;
+                    ((IConfig)propertyGrid1.SelectedObject).PropertyChanged -= ConfigurationChanged;
                 }
 
                 propertyGrid1.SelectedObject = value;
-                
+
                 if (value != null)
                 {
                     value.PropertyChanged += ConfigurationChanged;
@@ -54,11 +57,9 @@ namespace WvsBeta.Launcher
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public Process? Process { get; set; }
 
-        [DefaultValue(null)]
-        public event EventHandler Reinstall;
+        [DefaultValue(null)] public event EventHandler Reinstall;
 
-        [DefaultValue(null)]
-        public event EventHandler Start;
+        [DefaultValue(null)] public event EventHandler Start;
 
         public bool Started => !(Process?.HasExited ?? true);
         public string FullWorkingDirectory => Path.Combine(Program.InstallationPath, WorkingDirectory);
@@ -67,6 +68,31 @@ namespace WvsBeta.Launcher
         {
             InitializeComponent();
             UpdateButtonStates();
+        }
+
+        public Process? FindProcess()
+        {
+            var simpleProcessName = ExecutableName.Replace(".exe", "");
+            // NOTE: Cannot use StartInfo here
+            var processes = System.Diagnostics.Process.GetProcesses().Where(x => x.ProcessName == simpleProcessName).ToList();
+
+            if (processes.Count == 0)
+            {
+                return null;
+            }
+
+            if (processes.Count > 1)
+            {
+                Console.WriteLine("Found more than 1 process that looks like what we need??");
+                return null;
+            }
+
+            return processes.First();
+        }
+
+        public void StartProcess()
+        {
+            StartProcess(ExecutableName, Arguments);
         }
 
         public bool StartProcess(string filename, params string[] args)
@@ -142,6 +168,15 @@ namespace WvsBeta.Launcher
 
         private void tmrUIUpdater_Tick(object sender, EventArgs e)
         {
+            if (!Started)
+            {
+                var process = FindProcess();
+                if (process != null)
+                {
+                    Process = process;
+                }
+            }
+
             UpdateButtonStates();
         }
     }

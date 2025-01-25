@@ -14,13 +14,14 @@ namespace WvsBeta.Launcher.Config
     {
         protected ConfigReader cf;
         public string ServerName { get; }
-        public string PublicIP { get; set; } = "127.0.0.1";
-        public string PrivateIP { get; set; } = "127.0.0.1";
-        public ushort Port { get; set; }
+        [ConfigField("PublicIP")] public string PublicIP { get; set; } = "127.0.0.1";
+        [ConfigField("PrivateIP")] public string PrivateIP { get; set; } = "127.0.0.1";
+        [ConfigField("port")] public ushort Port { get; set; }
 
         protected Redis redis;
 
         protected ushort DefaultPort;
+
         public WvsConfig(string serverName, ushort defaultPort, Redis redis)
         {
             ServerName = serverName;
@@ -31,26 +32,13 @@ namespace WvsBeta.Launcher.Config
 
         public virtual void Reload()
         {
-            PublicIP = cf["PublicIP"]?.GetString() ?? "127.0.0.1";
-            PrivateIP = cf["PrivateIP"]?.GetString() ?? "127.0.0.1";
-            Port = cf["port"]?.GetUShort() ?? DefaultPort;
+            cf.LoadObject(this);
         }
 
         public virtual void Write()
         {
-            cf.Set("PublicIP", PublicIP);
-            cf.Set("PrivateIP", PrivateIP);
-            cf.Set("port", Port.ToString());
-
-            if (cf["redis"] == null)
-            {
-                cf.Set("redis", new ConfigReader.Node("hostname"));
-            }
-
-            cf["redis"].Set("hostname", redis.Host);
-            cf["redis"].Set("port", redis.Port.ToString());
-            cf["redis"].Set("password", redis.Password);
-
+            cf.WriteObject(this);
+            cf.WriteObject(redis);
             cf.Write();
         }
 

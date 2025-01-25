@@ -10,10 +10,16 @@ namespace WvsBeta.Launcher.Config
 {
     public class Redis : IConfig
     {
+        [ConfigField("redis.hostname", defaultValue: "127.0.0.1")]
         public string Host { get; set; } = "127.0.0.1";
-        public int Port { get; set; } = 6379;
-        public string BindAddress { get; set; } = "127.0.0.1";
 
+        [ConfigField("redis.port", defaultValue: "6379")]
+        public int Port { get; set; } = 6379;
+
+        public string BindAddress { get; set; } = "127.0.0.1";
+        
+
+        [ConfigField("redis.password", defaultValue: "")]
         public string Password { get; set; } = "";
 
         public void Reload()

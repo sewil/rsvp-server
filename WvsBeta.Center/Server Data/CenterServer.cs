@@ -246,9 +246,7 @@ namespace WvsBeta.Center
 
             if (World.UserLimit < World.UserWarning)
             {
-                var tmp = World.UserLimit;
-                World.UserLimit = World.UserWarning;
-                World.UserWarning = tmp;
+                (World.UserLimit, World.UserWarning) = (World.UserWarning, World.UserLimit);
             }
 
             Tespia = reader["tespia"]?.GetBool() ?? false;
