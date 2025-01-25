@@ -14,9 +14,13 @@ namespace MapleStarter
     {
         private ServerBroadcast broadcast { get; set; }
 
-        public string IP { get; private set; }
-        public ushort Port { get; private set; }
+        public ServerBroadcast.LoginServer? SelectedLoginServer =>
+            broadcast.LoginServers.FirstOrDefault(x => x.Started);
 
+        public string? IP => SelectedLoginServer?.PublicIP;
+        public ushort? Port => SelectedLoginServer?.Port;
+
+        [DefaultValue(null)]
         public event EventHandler OnStart;
 
         public ServerEntry(ServerBroadcast broadcast)
@@ -29,18 +33,12 @@ namespace MapleStarter
         {
             this.broadcast = broadcast;
 
-            var firstStartedLoginServer = this.broadcast.LoginServers.FirstOrDefault(x => x.Started);
+            var loginServer = SelectedLoginServer;
 
-            lblIP.Text = firstStartedLoginServer?.PublicIP ?? "No LoginServers started...";
+            lblIP.Text = IP ?? "No LoginServers started...";
             lblMachineName.Text = this.broadcast.MachineName;
 
-            btnStart.Enabled = firstStartedLoginServer != null;
-
-            if (firstStartedLoginServer != null)
-            {
-                IP = firstStartedLoginServer.PublicIP;
-                Port = firstStartedLoginServer.Port;
-            }
+            btnStart.Enabled = loginServer != null;
         }
 
         public bool IsSame(ServerBroadcast broadcast)

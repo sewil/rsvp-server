@@ -11,7 +11,7 @@ namespace MapleStarter
     {
         public class LoginServer
         {
-            public string PublicIP { get; private set; }
+            public string PublicIP { get; private set; } = "";
             public ushort Port { get; private set; }
             public bool Started { get; private set; }
 
@@ -23,7 +23,7 @@ namespace MapleStarter
             }
         }
 
-        public string MachineName { get; private set; }
+        public string MachineName { get; private set; } = "";
         public DateTime BroadcastAt { get; private set; }
 
         public List<LoginServer> LoginServers { get; } = new();

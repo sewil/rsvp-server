@@ -51,14 +51,19 @@ namespace MapleStarter
 
         private void StartGame(object? sender, EventArgs e)
         {
-            var entry = (ServerEntry) sender;
-            if (MapleLocation == null)
+            if (MapleLocation == null || sender is not ServerEntry entry)
             {
                 MessageBox.Show("Maple was not found. Please select one using the bottom bar...");
                 return;
             }
 
-            Process.Start(new ProcessStartInfo(MapleLocation, new[] {entry.IP, entry.Port.ToString()})
+            if (entry.SelectedLoginServer == null)
+            {
+                MessageBox.Show("This server has no LoginServer available.");
+                return;
+            }
+
+            Process.Start(new ProcessStartInfo(MapleLocation, new[] { entry.IP, entry.Port.ToString() })
             {
                 WorkingDirectory = Path.GetDirectoryName(MapleLocation)
             });
