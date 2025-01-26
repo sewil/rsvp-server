@@ -9,6 +9,7 @@
 	  <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 	  <OutputPath>..\BinSvr\</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+	<PublishSingleFile>true</PublishSingleFile>
   </PropertyGroup>
 
   <ItemGroup>

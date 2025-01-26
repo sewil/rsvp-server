@@ -22,7 +22,7 @@
     <RepositoryUrl>https://github.com/apache/logging-log4net</RepositoryUrl>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Platforms>AnyCPU</Platforms>
-    <TargetFrameworks>net9.0</TargetFrameworks>
+    <TargetFramework>net9.0</TargetFramework>
     <Configurations>Debug;Release</Configurations>
     <LangVersion>latest</LangVersion>
     <RootNamespace>log4net</RootNamespace>
@@ -54,6 +54,7 @@
     <OutputPath>..\..\build\$(Configuration)</OutputPath>
     <PackageOutputPath>..\..\build\artifacts</PackageOutputPath>
     <DocumentationFile></DocumentationFile>
+      <IsPublishable>false</IsPublishable>
   </PropertyGroup>
   <PropertyGroup>
     <DefineConstants>$(DefineConstants);NETCOREAPP3_1;NETSTANDARD</DefineConstants>

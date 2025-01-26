@@ -6,6 +6,7 @@
     <OutputType>Library</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <UseWindowsForms>false</UseWindowsForms>
+      <IsPublishable>false</IsPublishable>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\WvsBeta.Common\WvsBeta.Common.csproj" />

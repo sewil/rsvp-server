@@ -6,6 +6,7 @@
     <OutputType>Exe</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <OutputPath>..\BinSvr\</OutputPath>
+	<PublishSingleFile>true</PublishSingleFile>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>WvsBeta.Shop.Program</StartupObject>

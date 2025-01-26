@@ -72,6 +72,8 @@ namespace WvsBeta.Launcher
 
         public Process? FindProcess()
         {
+            if (ExecutableName == null) return null;
+
             var simpleProcessName = ExecutableName.Replace(".exe", "");
             // NOTE: Cannot use StartInfo here
             var processes = System.Diagnostics.Process.GetProcesses().Where(x => x.ProcessName == simpleProcessName).ToList();
@@ -169,6 +171,8 @@ namespace WvsBeta.Launcher
         private void tmrUIUpdater_Tick(object sender, EventArgs e)
         {
             if (DesignMode) return;
+            if (!Visible) return;
+            
             if (!Started)
             {
                 var process = FindProcess();

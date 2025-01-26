@@ -44,7 +44,17 @@ namespace WvsBeta.Launcher.Config
 
         public static ConfigReader Read(string filename)
         {
-            return new ConfigReader(Path.Combine(Program.InstallationPath, "..", "DataSvr", filename));
+            var filePath = Path.Combine(Program.InstallationPath, "..", "DataSvr", filename);
+            try
+            {
+                return new ConfigReader(filePath);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Unable to find '{filePath}'. Application will exit.");
+                Environment.Exit(1);
+                return null;
+            }
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

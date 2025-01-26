@@ -6,6 +6,7 @@
     <OutputType>Library</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <OutputPath>..\BinSvr\</OutputPath>
+      <IsPublishable>false</IsPublishable>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\log4net.ElasticSearch\src\log4net.ElasticSearch\log4net.ElasticSearch.csproj" />
