@@ -21,7 +21,13 @@ namespace WvsBeta.Common.Crypto.Cryptography.Engines
 			initialised = true;
 		}
 
-		public virtual string AlgorithmName
+        public int ProcessBlock(ReadOnlySpan<byte> input, Span<byte> output)
+        {
+			input.CopyTo(output);
+			return output.Length;
+        }
+
+        public virtual string AlgorithmName
 		{
 			get { return "Null"; }
 		}
@@ -45,8 +51,8 @@ namespace WvsBeta.Common.Crypto.Cryptography.Engines
 			if (!initialised)
 				throw new InvalidOperationException("Null engine not initialised");
 
-			Check.DataLength(input, inOff, BlockSize, "input buffer too short");
-			Check.OutputLength(output, outOff, BlockSize, "output buffer too short");
+			//Check.DataLength(input, inOff, BlockSize, "input buffer too short");
+			//Check.OutputLength(output, outOff, BlockSize, "output buffer too short");
 
 			for (int i = 0; i < BlockSize; ++i)
 			{
