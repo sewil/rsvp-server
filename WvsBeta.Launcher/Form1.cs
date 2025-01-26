@@ -56,6 +56,12 @@ namespace WvsBeta.Launcher
                 Directory.Delete(dataPath, true);
             }
 
+            if (MessageBox.Show("This will erase everything in the database. Are you sure you want to continue?",
+                    "Wait a minute", MessageBoxButtons.OKCancel) == DialogResult.Cancel)
+            {
+                return;
+            }
+
             var config = ssMariaDB.Configuration as MariaDB;
             ssMariaDB.StartProcess("mariadb-install-db.exe",
                 "-p", config.RootPassword,
@@ -66,7 +72,7 @@ namespace WvsBeta.Launcher
             ssMariaDB.WaitForExit();
 
             // Start the server
-            ssMariaDB.StartProcess("mariadbd.exe");
+            ssMariaDB.StartProcess();
 
             // Start injecting data...
 
@@ -83,6 +89,8 @@ namespace WvsBeta.Launcher
 
             db.RunQuery(File.ReadAllText(Path.Combine(Program.InstallationPath, "..", "SQLs", "rsvp-structure.sql")));
             db.RunQuery(File.ReadAllText(Path.Combine(Program.InstallationPath, "..", "SQLs", "rsvp-evolutions.sql")));
+
+            MessageBox.Show("MariaDB re-installed and data cleaned.");
         }
 
         private void ConfigureServerConfiguration(ServerStatus serverStatus, WvsConfig defaultConfig, string name)
