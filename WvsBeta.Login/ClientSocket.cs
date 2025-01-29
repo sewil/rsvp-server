@@ -1176,7 +1176,7 @@ login_count = login_count + 1
                     {
                         result = LoginResCode.SuccessLogin;
                     }
-                    else if (Player.GMLevel == 0 && dbpass.Length > 1 && dbpass[0] != '$')
+                    else if (dbpass.Length > 1 && dbpass[0] != '$')
                     {
                         if (dbpass == password) // Unencrypted
                         {
@@ -1189,7 +1189,7 @@ login_count = login_count + 1
                             result = LoginResCode.InvalidPassword;
                         }
                     }
-                    else if ((!Server.Instance.AdminsRequirePublicKeyAuth || Player.GMLevel == 0) && BCrypt.CheckPassword(password, dbpass))
+                    else if (BCrypt.CheckPassword(password, dbpass))
                     {
                         result = LoginResCode.SuccessLogin;
                     }

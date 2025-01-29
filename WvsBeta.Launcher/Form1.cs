@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Sockets;
+using WvsBeta.Common;
 using WvsBeta.Common.Sessions;
 using WvsBeta.Database;
 using WvsBeta.Launcher.Config;
@@ -26,6 +27,7 @@ namespace WvsBeta.Launcher
 
             ssMariaDB.Configuration = new MariaDB(db);
             ssMariaDB.ExecutableName = "mariadbd.exe";
+            ssMariaDB.Arguments = new[] {"--console"};
             ssMariaDB.Start += (sender, args) =>
             {
                 ssMariaDB.StartProcess();
@@ -35,7 +37,7 @@ namespace WvsBeta.Launcher
 
             ssRedis.Configuration = redis;
             ssRedis.ExecutableName = "redis-server.exe";
-            ssRedis.Arguments = new[] { "redis.windows.conf" };
+            ssRedis.Arguments = new[] {"redis.windows.conf"};
             ssRedis.Start += (sender, args) =>
             {
                 ssRedis.StartProcess();
@@ -50,10 +52,12 @@ namespace WvsBeta.Launcher
 
         private void ReinstallMariaDB(object? sender, EventArgs e)
         {
-            var dataPath = Path.Combine(ssMariaDB.FullWorkingDirectory, "..", "data");
-            if (Directory.Exists(dataPath))
+            var dataPath = new DirectoryInfo(Path.Combine(ssMariaDB.FullWorkingDirectory, "..", "data"));
+            if (dataPath.Exists)
             {
-                Directory.Delete(dataPath, true);
+                // Do not delete the main folder so we keep the permissions
+                dataPath.GetFiles().ForEach(x => x.Delete());
+                dataPath.GetDirectories().ForEach(x => x.Delete(true));
             }
 
             if (MessageBox.Show("This will erase everything in the database. Are you sure you want to continue?",
@@ -71,8 +75,23 @@ namespace WvsBeta.Launcher
 
             ssMariaDB.WaitForExit();
 
+            // Add network config
+            // passing '-c' for config seems to be broken
+            File.AppendAllLines(Path.Join(dataPath.FullName, "my.ini"), new []
+            {
+                "[server]",
+                "bind-address = 127.0.0.1"
+            });
+
             // Start the server
             ssMariaDB.StartProcess();
+
+            Thread.Sleep(4000);
+            if (!ssMariaDB.Started)
+            {
+                MessageBox.Show("Unable to start MariaDB! Process exited early.");
+                return;
+            }
 
             // Start injecting data...
 
@@ -87,8 +106,10 @@ namespace WvsBeta.Launcher
                          GRANT ALTER, ALTER ROUTINE, CREATE, CREATE ROUTINE, CREATE TEMPORARY TABLES, CREATE VIEW, DELETE, DROP, EVENT, EXECUTE, INDEX, INSERT, LOCK TABLES, REFERENCES, SELECT, SHOW VIEW, TRIGGER, UPDATE ON `{config.Database}`.* TO '{config.Username}'@'localhost' WITH GRANT OPTION;
                          """);
 
-            db.RunQuery(File.ReadAllText(Path.Combine(Program.InstallationPath, "..", "SQLs", "rsvp-structure.sql")));
-            db.RunQuery(File.ReadAllText(Path.Combine(Program.InstallationPath, "..", "SQLs", "rsvp-evolutions.sql")));
+
+            var preparedFiles = Path.Combine(Program.InstallationPath, "evolutions", "prepared");
+            db.RunQuery(File.ReadAllText(Path.Combine(preparedFiles, "rsvp-structure.sql")));
+            db.RunQuery(File.ReadAllText(Path.Combine(preparedFiles, "rsvp-evolutions.sql")));
 
             MessageBox.Show("MariaDB re-installed and data cleaned.");
         }
@@ -104,7 +125,7 @@ namespace WvsBeta.Launcher
             defaultConfig.Reload();
             serverStatus.Configuration = defaultConfig;
             serverStatus.ExecutableName = $"WvsBeta.{name}.exe";
-            serverStatus.Arguments = new[] { defaultConfig.ServerName };
+            serverStatus.Arguments = new[] {defaultConfig.ServerName};
 
             serverStatus.Start += (sender, eventArgs) =>
             {
@@ -144,25 +165,12 @@ namespace WvsBeta.Launcher
 
         private void tmrServerAnnouncer_Tick(object sender, EventArgs e)
         {
-            if (LANModeInterface == null)
-            {
-                tsslLANStatus.Text = "disabled";
-                return;
-            }
-
-            var multicastAddr = LANModeInterface.MulticastAddress;
-            if (multicastAddr == null)
-            {
-                tsslLANStatus.Text = "no multicast address found?";
-                return;
-            }
-
             var machineName = Environment.MachineName;
 
-            using var packet = new Packet((byte)0x00);
+            using var packet = new Packet((byte) 0x00);
             packet.WriteLong(DateTime.Now.ToFileTimeUtc());
             packet.WriteString(machineName);
-            packet.WriteByte((byte)loginServers.Count);
+            packet.WriteByte((byte) loginServers.Count);
             foreach (var loginServer in loginServers)
             {
                 var config = loginServer.Configuration as Login;
@@ -173,7 +181,7 @@ namespace WvsBeta.Launcher
 
             broadcastClient.Send(
                 packet.ToArray(),
-                new IPEndPoint(multicastAddr, 28484)
+                new IPEndPoint(new IPAddress(new byte[] {224, 0, 0, 1}), 28484)
             );
 
 

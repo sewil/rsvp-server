@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using log4net;
 
 // ReSharper disable InconsistentNaming
 // ReSharper disable IdentifierTypo
@@ -8,11 +10,34 @@ namespace WvsBeta.Common
 {
     public static class Constants
     {
-        public const ushort MAPLE_VERSION = 22;
+        private static ILog _log = LogManager.GetLogger(typeof(Constants));
+
+        public const ushort MAPLE_VERSION = 23;
         public const ushort MAPLE_CRYPTO_VERSION = 12; // for IV stuff
         public const string MAPLE_PATCH_LOCATION = "";
         public const byte MAPLE_LOCALE = 8;
-        public static readonly string AUTH_KEY = "you better change this";
+        public static string AUTH_KEY = null;
+
+        public static void LoadAuthKey()
+        {
+            var path = Path.Join(Environment.CurrentDirectory, "auth.key");
+            if (!File.Exists(path))
+            {
+                _log.Warn($"Did not find auth key file @ {path}, generating a key now.");
+                AUTH_KEY = Guid.CreateVersion7().ToString();
+                File.WriteAllText(path, AUTH_KEY);
+            }
+            else
+            {
+                _log.Info($"Loading auth key from {path}");
+                AUTH_KEY = File.ReadAllText(path);
+            }
+        }
+
+        static Constants()
+        {
+            LoadAuthKey();
+        }
         
         public static int[] EXP =
         {

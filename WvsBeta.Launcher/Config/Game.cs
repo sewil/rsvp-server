@@ -81,20 +81,33 @@ namespace WvsBeta.Launcher.Config
         [ConfigField("userLimit", "600")] public int UserLimit { get; set; }
 
         [ConfigField("tespia", "false")] public bool Tespia { get; set; }
+
+        // For LoginServer config
+        
+        [ConfigField("userNoMultiplier", "7.0")]
+        public float LoginUserNumberMultiplier { get; set; }
+
+        
+        [ConfigField("channelNo", "1")] public byte ChannelCount { get; set; }
+        [ConfigField("eventDesc", "")] public string EventDescription { get; set; }
+        [ConfigField("worldState", "0")] public byte WorldState { get; set; }
+        [ConfigField("adult", "false")] public bool AdultChannel { get; set; }
+        [ConfigField("BlockCharCreation", "false")]
+        public bool BlockCharCreation { get; set; }
     }
 
     internal class LoginCenterInfo : IConfig
     {
         [ConfigField("userNoMultiplier", "7.0")]
-        public float UserNumberMultiplier { get; set; }
+        public float UserNumberMultiplier => center.LoginUserNumberMultiplier;
 
-        [ConfigField("channelNo", "7.0")] public byte ChannelCount { get; set; }
-        [ConfigField("eventDesc", "")] public string EventDescription { get; set; }
-        [ConfigField("worldState", "0")] public byte WorldState { get; set; }
-        [ConfigField("adult", "false")] public bool AdultChannel { get; set; }
+        [ConfigField("channelNo", "1")] public byte ChannelCount => center.ChannelCount;
+        [ConfigField("eventDesc", "")] public string EventDescription => center.EventDescription;
+        [ConfigField("worldState", "0")] public byte WorldState => center.WorldState;
+        [ConfigField("adult", "false")] public bool AdultChannel => center.AdultChannel;
 
         [ConfigField("BlockCharCreation", "false")]
-        public bool BlockCharCreation { get; set; }
+        public bool BlockCharCreation => center.BlockCharCreation;
 
         [ConfigField("ip", "127.0.0.1")] public string IP => center.PrivateIP;
         [ConfigField("port", "8383")] public ushort Port => center.Port;

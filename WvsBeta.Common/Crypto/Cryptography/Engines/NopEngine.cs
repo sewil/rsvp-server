@@ -23,8 +23,10 @@ namespace WvsBeta.Common.Crypto.Cryptography.Engines
 
         public int ProcessBlock(ReadOnlySpan<byte> input, Span<byte> output)
         {
-			input.CopyTo(output);
-			return output.Length;
+            if (!initialised)
+                throw new InvalidOperationException("Null engine not initialised");
+			input[0..BlockSize].CopyTo(output);
+			return BlockSize;
         }
 
         public virtual string AlgorithmName

@@ -53,10 +53,10 @@
             // 
             ssMariaDB.Dock = DockStyle.Fill;
             ssMariaDB.ExecutableName = null;
-            ssMariaDB.Location = new Point(3, 326);
+            ssMariaDB.Location = new Point(3, 358);
             ssMariaDB.Name = "ssMariaDB";
             ssMariaDB.Reinstallable = true;
-            ssMariaDB.Size = new Size(368, 318);
+            ssMariaDB.Size = new Size(368, 349);
             ssMariaDB.TabIndex = 2;
             ssMariaDB.Title = "Database (MariaDB)";
             ssMariaDB.WorkingDirectory = "redist\\mariadb\\bin";
@@ -65,10 +65,10 @@
             // 
             ssRedis.Dock = DockStyle.Fill;
             ssRedis.ExecutableName = null;
-            ssRedis.Location = new Point(377, 326);
+            ssRedis.Location = new Point(377, 358);
             ssRedis.Name = "ssRedis";
             ssRedis.Reinstallable = true;
-            ssRedis.Size = new Size(368, 318);
+            ssRedis.Size = new Size(368, 349);
             ssRedis.TabIndex = 3;
             ssRedis.Title = "Concurrency / Cache (Redis)";
             ssRedis.WorkingDirectory = "redist\\redis";
@@ -79,7 +79,7 @@
             ssCenter.ExecutableName = null;
             ssCenter.Location = new Point(377, 3);
             ssCenter.Name = "ssCenter";
-            ssCenter.Size = new Size(368, 317);
+            ssCenter.Size = new Size(368, 349);
             ssCenter.TabIndex = 4;
             ssCenter.Title = "Scania (Center)";
             // 
@@ -89,7 +89,7 @@
             ssLogin0.ExecutableName = null;
             ssLogin0.Location = new Point(3, 3);
             ssLogin0.Name = "ssLogin0";
-            ssLogin0.Size = new Size(368, 317);
+            ssLogin0.Size = new Size(368, 349);
             ssLogin0.TabIndex = 5;
             ssLogin0.Title = "Login 1 (Login0)";
             ssLogin0.Load += serverStatus1_Load;
@@ -114,16 +114,16 @@
             tableLayoutPanel1.RowCount = 2;
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tableLayoutPanel1.Size = new Size(1123, 647);
+            tableLayoutPanel1.Size = new Size(1123, 710);
             tableLayoutPanel1.TabIndex = 6;
             // 
             // ssShop0
             // 
             ssShop0.Dock = DockStyle.Fill;
             ssShop0.ExecutableName = null;
-            ssShop0.Location = new Point(751, 326);
+            ssShop0.Location = new Point(751, 358);
             ssShop0.Name = "ssShop0";
-            ssShop0.Size = new Size(369, 318);
+            ssShop0.Size = new Size(369, 349);
             ssShop0.TabIndex = 7;
             ssShop0.Title = "CashShop (Shop0)";
             // 
@@ -133,7 +133,7 @@
             ssGame0.ExecutableName = null;
             ssGame0.Location = new Point(751, 3);
             ssGame0.Name = "ssGame0";
-            ssGame0.Size = new Size(369, 317);
+            ssGame0.Size = new Size(369, 349);
             ssGame0.TabIndex = 6;
             ssGame0.Title = "Channel 1 (Game0)";
             // 
@@ -170,7 +170,7 @@
             // statusStrip1
             // 
             statusStrip1.Items.AddRange(new ToolStripItem[] { toolStripStatusLabel1, tsslLANStatus });
-            statusStrip1.Location = new Point(0, 649);
+            statusStrip1.Location = new Point(0, 734);
             statusStrip1.Name = "statusStrip1";
             statusStrip1.Size = new Size(1123, 22);
             statusStrip1.TabIndex = 8;
@@ -199,10 +199,10 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1123, 671);
-            Controls.Add(statusStrip1);
+            ClientSize = new Size(1123, 756);
             Controls.Add(tableLayoutPanel1);
             Controls.Add(menuStrip1);
+            Controls.Add(statusStrip1);
             MainMenuStrip = menuStrip1;
             Name = "Form1";
             Text = "WvsBeta Launcher";

@@ -137,9 +137,15 @@ namespace WvsBeta.Game
 
         public object TryGetOrCompileScript(string scriptName, Action<string> errorHandlerFnc)
         {
-            if (_availableNPCScripts.TryGetValue(scriptName, out object ret)) return ret;
-
+            _log.Debug($"Trying to find script {scriptName} in {_availableNPCScripts.Count} elements...");
+            if (_availableNPCScripts.TryGetValue(scriptName, out var ret))
+            {
+                _log.Debug("Found script, using it.");
+                return ret;
+            }
+            
             var scriptUri = GetScriptFilename(scriptName);
+            _log.Debug($"Script not found, trying to compile {scriptUri}");
 
             if (scriptUri == null)
             {
@@ -168,17 +174,24 @@ namespace WvsBeta.Game
             var sd = new DirectoryInfo(ScriptsDir);
             var scripts = sd.GetFiles("*.s", SearchOption.TopDirectoryOnly).Concat(sd.GetFiles("*.cs", SearchOption.TopDirectoryOnly));
 
-            scripts.AsParallel().ForAll(x =>
+            try
             {
-                ForceCompileScriptfile(x.FullName, null);
-            });
+                scripts.AsParallel().ForAll(x =>
+                {
+                    ForceCompileScriptfile(x.FullName, null);
+                });
+            }
+            catch (Exception ex)
+            {
+                _log.Error("Compilation failed", ex);
+            }
 
-
-            _log.Info("Compiled!");
+            _log.Info($"Compiled {_availableNPCScripts.Count} scripts!");
         }
 
         public object ForceCompileScriptfile(string filePath, Action<string> errorHandlerFnc)
         {
+            filePath = Path.GetFullPath(filePath);
             _log.Info($"Compiling {filePath}");
 
             var compileLog = filePath + ".log";
@@ -196,6 +209,8 @@ namespace WvsBeta.Game
                     File.AppendAllText(compileLog, errorText + "\r\n");
                     _log.Warn(errorText);
                 }
+                
+                _log.Error($"Compilation of {filePath} failed!");
                 return null;
             }
 
@@ -208,7 +223,8 @@ namespace WvsBeta.Game
             {
                 v2.ScriptName = filename;
             }
-
+            
+            _log.Debug($"Compiled {filePath}, stored as {filename}");
             _availableNPCScripts[filename] = script;
             return script;
         }
