@@ -7,6 +7,8 @@
     <UseWindowsForms>false</UseWindowsForms>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	<PublishSingleFile>true</PublishSingleFile>
+<!-- https://github.com/dotnet/runtime/issues/108589#issuecomment-2396857957 -->
+<CETCompat>false</CETCompat>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject />

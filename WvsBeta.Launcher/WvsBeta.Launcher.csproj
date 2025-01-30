@@ -12,6 +12,9 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 	<PublishSingleFile>true</PublishSingleFile>
 	<PlatformTarget>x64</PlatformTarget>
+      
+	  <!-- https://github.com/dotnet/runtime/issues/108589#issuecomment-2396857957 -->
+	  <CETCompat>false</CETCompat>
   </PropertyGroup>
 
   <ItemGroup>
