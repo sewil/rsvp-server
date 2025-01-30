@@ -43,7 +43,8 @@ namespace MapleStarter
 
         public bool IsSame(ServerBroadcast broadcast)
         {
-            return this.broadcast.SentBy.Address.Equals(broadcast.SentBy.Address);
+            return this.broadcast.MachineName == broadcast.MachineName;
+            //return this.broadcast.SentBy.Address.Equals(broadcast.SentBy.Address);
         }
 
         private void btnStart_Click(object sender, EventArgs e)

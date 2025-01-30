@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,7 +17,26 @@ namespace MapleStarter
         internal ServerBroadcastReceiver()
         {
             _udpClient = new UdpClient(new IPEndPoint(IPAddress.Any, 28484));
-            _udpClient.JoinMulticastGroup(new IPAddress(new byte[] {224, 0, 0, 1}));
+            
+            var broadcastIPs = NetworkInterface.GetAllNetworkInterfaces()
+                .Where(x => x.SupportsMulticast)
+                .SelectMany(x => x.GetIPProperties().MulticastAddresses)
+                .Select(x => x.Address)
+                .Distinct()
+                .Where(x => x.AddressFamily == AddressFamily.InterNetwork)
+                .ToList();
+
+            foreach (var broadcastIP in broadcastIPs)
+            {
+                try
+                {
+                    _udpClient.JoinMulticastGroup(broadcastIP);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Unable to listen on an IP {broadcastIP}, ignoring. Error: {ex}");
+                }
+            }
         }
 
         public event EventHandler<ServerBroadcast> OnBroadcastReceived;

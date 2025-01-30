@@ -1,4 +1,5 @@
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using WvsBeta.Common;
 using WvsBeta.Common.Sessions;
@@ -77,7 +78,7 @@ namespace WvsBeta.Launcher
 
             // Add network config
             // passing '-c' for config seems to be broken
-            File.AppendAllLines(Path.Join(dataPath.FullName, "my.ini"), new []
+            File.AppendAllLines(Path.Join(dataPath.FullName, "my.ini"), new[]
             {
                 "[server]",
                 "bind-address = 127.0.0.1"
@@ -165,6 +166,14 @@ namespace WvsBeta.Launcher
 
         private void tmrServerAnnouncer_Tick(object sender, EventArgs e)
         {
+            var broadcastIPs = NetworkInterface.GetAllNetworkInterfaces()
+                .Where(x => x.SupportsMulticast)
+                .SelectMany(x => x.GetIPProperties().MulticastAddresses)
+                .Select(x => x.Address)
+                .Distinct()
+                .Where(x => x.AddressFamily == AddressFamily.InterNetwork)
+                .ToList();
+
             var machineName = Environment.MachineName;
 
             using var packet = new Packet((byte) 0x00);
@@ -179,19 +188,37 @@ namespace WvsBeta.Launcher
                 packet.WriteBool(loginServer.Started);
             }
 
-            broadcastClient.Send(
-                packet.ToArray(),
-                new IPEndPoint(new IPAddress(new byte[] {224, 0, 0, 1}), 28484)
-            );
+            var rawPacket = packet.ToArray();
 
+            var anyFailed = false;
 
-            tsslLANStatus.Text = $"Transmitted beacon @ {DateTime.Now}";
+            foreach (var ip in broadcastIPs)
+            {
+                try
+                {
+                    broadcastClient.Send(
+                        rawPacket,
+                        new IPEndPoint(ip, 28484)
+                    );
+                }
+                catch (Exception ex)
+                {
+                    anyFailed = true;
+                }
+            }
+            
+            tsslLANStatus.Text = $"Transmitted beacon @ {DateTime.Now} on {string.Join(", ", broadcastIPs.Select(x => x.ToString()))}";
+
+            if (anyFailed)
+            {
+                tsslLANStatus.Text += "(failed to tx on some addrs)";
+            }
         }
 
         private void eventManagerToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            var ev = new EventEditor();
-            ev.ShowDialog();
+            {
+                var ev = new EventEditor();
+                ev.ShowDialog();
+            }
         }
     }
-}
