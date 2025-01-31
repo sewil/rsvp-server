@@ -21,6 +21,7 @@ namespace WvsBeta.Database
 
         public const int MAX_QUERY_LIST_BACKTRACE = 5;
 
+        public bool NoRecovery { get; set; } = false;
         private MySqlConnection _connection;
         private MySqlCommand _command;
         private string _connectionString;
@@ -59,18 +60,19 @@ namespace WvsBeta.Database
             return ret.ToString();
         }
 
-        public MySQL_Connection(MasterThread pMasterThread, ConfigReader configReader) :
+        public MySQL_Connection(MasterThread pMasterThread, ConfigReader configReader, bool noRecovery = false) :
             this(pMasterThread,
                 configReader["dbUsername"].GetString(),
                 configReader["dbPassword"].GetString(),
                 configReader["dbDatabase"].GetString(),
                 configReader["dbHost"].GetString(),
-                configReader["dbPort"]?.GetUShort() ?? 3306
+                configReader["dbPort"]?.GetUShort() ?? 3306,
+                noRecovery
             )
         {
         }
 
-        public MySQL_Connection(MasterThread pMasterThread, string pUsername, string pPassword, string pDatabase, string pHost, ushort pPort = 3306)
+        public MySQL_Connection(MasterThread pMasterThread, string pUsername, string pPassword, string pDatabase, string pHost, ushort pPort = 3306, bool noRecovery = false)
         {
             if (pMasterThread == null)
             {
@@ -78,9 +80,10 @@ namespace WvsBeta.Database
             }
 
             _logFile = new Common.Logfile("Database", true, Path.Combine("Logs", pMasterThread.ServerName, "Database"));
-            Stop = false; 
+            Stop = false;
+            NoRecovery = noRecovery;
             _connectionString = "Server=" + pHost + "; Port=" + pPort + "; Database=" + pDatabase + "; Uid=" + pUsername + "; Pwd=" + pPassword;
-            RecoverConnection();
+            RecoverConnection(true);
             SetupPinger();
         }
 
@@ -125,16 +128,22 @@ namespace WvsBeta.Database
             _logFile.WriteLine($"State change from {e.OriginalState} to {e.CurrentState}");
         }
 
-        public void RecoverConnection()
+        public void RecoverConnection(bool initialConnection = false)
         {
             // if (alreadyConnecting) return;
             alreadyConnecting = true;
             try
             {
-                _logFile.WriteLine("Connecting to database... Stacktrace:");
-                _logFile.WriteLine(new StackTrace().ToString());
+                if (initialConnection)
+                {
+                    _logFile.WriteLine("Connecting to database...");
+                }
+                else
+                {
+                    _logFile.WriteLine("Connecting to database... Stacktrace:");
+                    _logFile.WriteLine(new StackTrace().ToString());
+                }
 
-                
                 _connection ??= new MySqlConnection(_connectionString);
                 while (true)
                 {
@@ -172,6 +181,8 @@ namespace WvsBeta.Database
                         }
                         catch (Exception ex)
                         {
+                            if (NoRecovery) throw;
+
                             _logFile.WriteLine($"Exception while running first query??? {ex}. Trying to reconnect...");
                             continue;
                         }
@@ -189,8 +200,12 @@ namespace WvsBeta.Database
                     {
                         var line = $"Got exception at MySQL_Connection.Connect():\r\n {ex}";
                         _logFile.WriteLine(line);
+                        
+                        if (NoRecovery) throw;
+
                         _logFile.WriteLine("retrying...");
                     }
+
                 }
 
             }
@@ -200,7 +215,7 @@ namespace WvsBeta.Database
                 _logFile.WriteLine(line);
 
                 ////Console.WriteLine(ex.ToString());
-                throw new Exception(line);
+                throw new Exception(line, ex);
             }
             finally
             {
@@ -725,6 +740,7 @@ FROM users WHERE ban_expire > NOW()",
                 {
                     Stop = true;
                     _pingerAction.Stop();
+                    _connection.Close();
                 }
 
                 disposedValue = true;
