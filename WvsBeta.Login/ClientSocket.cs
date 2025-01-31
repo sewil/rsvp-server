@@ -362,15 +362,7 @@ namespace WvsBeta.Login
             {
                 hackDisconnect("Too many files in directory: " + checksums.Count);
             }
-            else if (!checksums.ContainsKey("Data.wz"))
-            {
-                hackDisconnect("Data.wz was missing");
-            }
-            else if (checksums.ContainsKey("Data"))
-            {
-                hackDisconnect("Data folder exists");
-            }
-            else if (checksums["Data.wz"] != Server.Instance.DataChecksum)
+            else if (checksums.ContainsKey("Data.wz") && checksums["Data.wz"] != Server.Instance.DataChecksum)
             {
                 if (Server.Instance.DataChecksum == 0)
                 {
