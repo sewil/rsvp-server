@@ -1,4 +1,6 @@
+#Property
 dbUsername = rsvp
 dbPassword = mypassword
 dbDatabase = rsvp
 dbHost = 127.0.0.1
+dbPort = 3306

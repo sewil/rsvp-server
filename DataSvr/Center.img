@@ -1,52 +1,27 @@
 #Property
-
 redis = {
-	password = redis-password
+	password = 
+	hostname = 127.0.0.1
+	port = 6379
 }
-
 port = 8383
 adminPort = 7070
-
-
 gameWorldId = 0
 userLimitITC = 10
-
 login = {
-	Login0 = { 
+	Login0 = {
 		PublicIP = 127.0.0.1
 		PrivateIP = 127.0.0.1
 		port = 8484
 	}
-	Login1 = { 
-		PublicIP = 127.0.0.1
-		PrivateIP = 127.0.0.1
-		port = 8485
-	}
 }
-
 game = {
 	Game0 = {
 		PublicIP = 127.0.0.1
 		PrivateIP = 127.0.0.1
 		port = 8585
 	}
-#	Game1 = {
-#		PublicIP = 127.0.0.1
-#		PrivateIP = 127.0.0.1
-#		port = 8586
-#	}
-#	Game2 = {
-#		PublicIP = 127.0.0.1
-#		PrivateIP = 127.0.0.1
-#		port = 8587
-#	}
-#	Game3 = {
-#		PublicIP = 127.0.0.1
-#		PrivateIP = 127.0.0.1
-#		port = 8588
-#	}
 }
-
 shop = {
 	Shop0 = {
 		PublicIP = 127.0.0.1
@@ -54,3 +29,14 @@ shop = {
 		port = 8787
 	}
 }
+PublicIP = 127.0.0.1
+PrivateIP = 127.0.0.1
+userWarning = 400
+userLimit = 600
+tespia = false
+userNoMultiplier = 7
+channelNo = 1
+eventDesc = 
+worldState = 0
+adult = false
+BlockCharCreation = false
