@@ -60,7 +60,13 @@ namespace WvsBeta.Launcher
         [DefaultValue(null)] public event EventHandler Reinstall;
 
         [DefaultValue(null)] public event EventHandler Start;
-
+        
+        [DefaultValue(null)] public event EventHandler OnStarted;
+        
+        [DefaultValue(null)] public event EventHandler OnStopped;
+        
+        [DefaultValue(false)]
+        public bool StartingDisabled { get; set; } = false;
         public bool Started => !(Process?.HasExited ?? true);
         public string FullWorkingDirectory => Path.Combine(Program.InstallationPath, WorkingDirectory);
 
@@ -113,7 +119,7 @@ namespace WvsBeta.Launcher
                 WaitForExit();
             }
 
-            Process = new Process()
+            var process = new Process()
             {
                 StartInfo = new ProcessStartInfo(Path.Combine(FullWorkingDirectory, filename), args)
                 {
@@ -121,9 +127,18 @@ namespace WvsBeta.Launcher
                 }
             };
 
-            HookProcess();
-
-            return Process.Start();
+            HookProcess(process);
+            try
+            { 
+                process.Start();
+                Process = process;
+                return true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Unable to start process: {ex}");
+                return false;
+            }
         }
 
         public void WaitForExit()
@@ -134,20 +149,29 @@ namespace WvsBeta.Launcher
             Process = null;
         }
 
-        private void HookProcess()
+        private void HookProcess(Process process)
         {
-            Process.Exited += (sender, eventArgs) =>
+            process.Exited += (sender, eventArgs) =>
             {
                 Invoke((MethodInvoker)UpdateButtonStates);
             };
         }
 
+        private bool _wasStarted = false;
         public void UpdateButtonStates()
         {
-            btnStart.Text = Started ? "Restart" : "Start";
-            propertyGrid1.Enabled = !Started;
-            btnReinstall.Enabled = Reinstallable && !Started;
-            btnReloadConfig.Enabled = !Started;
+            var started = Started;
+
+            btnStart.Enabled = !StartingDisabled;
+
+            btnStart.Text = started ? "Restart" : "Start";
+            propertyGrid1.Enabled = !started;
+            btnReinstall.Enabled = Reinstallable && !started && !StartingDisabled;
+            btnReloadConfig.Enabled = !started;
+
+            if (started && !_wasStarted) OnStarted?.Invoke(null, null);
+            if (!started && _wasStarted) OnStopped?.Invoke(null, null);
+            _wasStarted = started;
         }
 
         private void btnReloadConfig_Click(object sender, EventArgs e)
@@ -179,6 +203,7 @@ namespace WvsBeta.Launcher
                 if (process != null)
                 {
                     Process = process;
+                    HookProcess(process);
                 }
             }
 

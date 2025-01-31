@@ -35,6 +35,8 @@ namespace WvsBeta.Launcher
             };
 
             ssMariaDB.Reinstall += ReinstallMariaDB;
+            ssMariaDB.OnStarted += (_, _) => UpdateServerStartingDisabled();
+            ssMariaDB.OnStopped += (_, _) => UpdateServerStartingDisabled();
 
             ssRedis.Configuration = redis;
             ssRedis.ExecutableName = "redis-server.exe";
@@ -43,12 +45,24 @@ namespace WvsBeta.Launcher
             {
                 ssRedis.StartProcess();
             };
+            
+            ssRedis.OnStarted += (_, _) => UpdateServerStartingDisabled();
+            ssRedis.OnStopped += (_, _) => UpdateServerStartingDisabled();
 
             var center = new Center("Center", redis);
             ConfigureServerConfiguration(ssCenter, center, "Center");
             ConfigureServerConfiguration(ssGame0, new Game("Game0", center), "Game");
             ConfigureServerConfiguration(ssShop0, new Shop("Shop0", center), "Shop");
             ConfigureServerConfiguration(ssLogin0, new Login("Login0", redis, center), "Login");
+
+            UpdateServerStartingDisabled();
+        }
+
+        private void UpdateServerStartingDisabled()
+        {
+            var enabled = ssMariaDB.Started && ssRedis.Started;
+            ssCenter.StartingDisabled =
+                ssGame0.StartingDisabled = ssShop0.StartingDisabled = ssLogin0.StartingDisabled = !enabled;
         }
 
         private void ReinstallMariaDB(object? sender, EventArgs e)
@@ -95,24 +109,33 @@ namespace WvsBeta.Launcher
             }
 
             // Start injecting data...
+            try
+            {
+                using var db = new MySQL_Connection(
+                    MasterThread.Instance,
+                    "root", config.RootPassword,
+                    "information_schema",
+                    "127.0.0.1", config.Port,
+                    noRecovery: true);
 
-            using var db = new MySQL_Connection(MasterThread.Instance, "root", config.RootPassword,
-                "information_schema",
-                "127.0.0.1", config.Port);
-
-            db.RunQuery($"""
-                         CREATE DATABASE {config.Database};
-                         CREATE USER '{config.Username}'@'localhost' IDENTIFIED BY '{config.Password}';
-                         FLUSH PRIVILEGES;
-                         GRANT ALTER, ALTER ROUTINE, CREATE, CREATE ROUTINE, CREATE TEMPORARY TABLES, CREATE VIEW, DELETE, DROP, EVENT, EXECUTE, INDEX, INSERT, LOCK TABLES, REFERENCES, SELECT, SHOW VIEW, TRIGGER, UPDATE ON `{config.Database}`.* TO '{config.Username}'@'localhost' WITH GRANT OPTION;
-                         """);
+                db.RunQuery($"""
+                             CREATE DATABASE {config.Database};
+                             CREATE USER '{config.Username}'@'localhost' IDENTIFIED BY '{config.Password}';
+                             FLUSH PRIVILEGES;
+                             GRANT ALTER, ALTER ROUTINE, CREATE, CREATE ROUTINE, CREATE TEMPORARY TABLES, CREATE VIEW, DELETE, DROP, EVENT, EXECUTE, INDEX, INSERT, LOCK TABLES, REFERENCES, SELECT, SHOW VIEW, TRIGGER, UPDATE ON `{config.Database}`.* TO '{config.Username}'@'localhost' WITH GRANT OPTION;
+                             """);
 
 
-            var preparedFiles = Path.Combine(Program.InstallationPath, "evolutions", "prepared");
-            db.RunQuery(File.ReadAllText(Path.Combine(preparedFiles, "rsvp-structure.sql")));
-            db.RunQuery(File.ReadAllText(Path.Combine(preparedFiles, "rsvp-evolutions.sql")));
+                var preparedFiles = Path.Combine(Program.InstallationPath, "evolutions", "prepared");
+                db.RunQuery(File.ReadAllText(Path.Combine(preparedFiles, "rsvp-structure.sql")));
+                db.RunQuery(File.ReadAllText(Path.Combine(preparedFiles, "rsvp-evolutions.sql")));
 
-            MessageBox.Show("MariaDB re-installed and data cleaned.");
+                MessageBox.Show("MariaDB re-installed and data cleaned.");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Exception while preparing database: {ex}");
+            }
         }
 
         private void ConfigureServerConfiguration(ServerStatus serverStatus, WvsConfig defaultConfig, string name)
@@ -145,6 +168,12 @@ namespace WvsBeta.Launcher
 
         private void userManagerToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (!ssMariaDB.Started)
+            {
+                MessageBox.Show("Start MariaDB first");
+                return;
+            }
+
             using var conn = db.Connect();
             using var userManager = new UserManager(conn);
             userManager.ShowDialog();
@@ -206,8 +235,9 @@ namespace WvsBeta.Launcher
                     anyFailed = true;
                 }
             }
-            
-            tsslLANStatus.Text = $"Transmitted beacon @ {DateTime.Now} on {string.Join(", ", broadcastIPs.Select(x => x.ToString()))}";
+
+            tsslLANStatus.Text =
+                $"Transmitted beacon @ {DateTime.Now} on {string.Join(", ", broadcastIPs.Select(x => x.ToString()))}";
 
             if (anyFailed)
             {
@@ -216,9 +246,9 @@ namespace WvsBeta.Launcher
         }
 
         private void eventManagerToolStripMenuItem_Click(object sender, EventArgs e)
-            {
-                var ev = new EventEditor();
-                ev.ShowDialog();
-            }
+        {
+            var ev = new EventEditor();
+            ev.ShowDialog();
         }
     }
+}
