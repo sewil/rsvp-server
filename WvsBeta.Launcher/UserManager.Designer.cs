@@ -51,6 +51,7 @@
             dgvUsers.TabIndex = 0;
             dgvUsers.VirtualMode = true;
             dgvUsers.CellEndEdit += dgvUsers_CellEndEdit;
+            dgvUsers.CellValueChanged += dgvUsers_CellValueChanged;
             dgvUsers.CellValuePushed += dgvUsers_CellValuePushed;
             // 
             // menuStrip1

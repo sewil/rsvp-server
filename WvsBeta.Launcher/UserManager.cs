@@ -25,13 +25,14 @@ namespace WvsBeta.Launcher
             users = new BindingList<User>();
         }
 
-        class User : INotifyPropertyChanged 
+        class User : INotifyPropertyChanged
         {
-            public int? ID { get; private set; }
+            public int? ID { get; private set; } = null;
             public string Username { get; set; } = "";
             public string Password { get; set; } = "";
-            public DateTime BanExpire { get; set; }
-            public byte GMLevel { get; set; }
+            public DateTime BanExpire { get; set; } = new DateTime(2000, 1, 1);
+            public byte GMLevel { get; set; } = 0;
+            public int CharDeletePassword { get; set; } = 11111111;
 
             public User(int id)
             {
@@ -40,11 +41,6 @@ namespace WvsBeta.Launcher
 
             public User()
             {
-                ID = null;
-                Username = "";
-                Password = "";
-                BanExpire = new DateTime(2000, 1, 1);
-                GMLevel = 0;
             }
 
             public event PropertyChangedEventHandler? PropertyChanged;
@@ -57,7 +53,8 @@ namespace WvsBeta.Launcher
                     "@username", Username,
                     "@password", Password,
                     "@banExpire", BanExpire,
-                    "@admin", GMLevel
+                    "@admin", GMLevel,
+                    "@charDeletePassword", CharDeletePassword
                 };
 
                 if (ID == null)
@@ -65,9 +62,9 @@ namespace WvsBeta.Launcher
                     connection.RunQuery(
                         """
                         INSERT INTO users
-                        (username, password, ban_expire, admin, email)
+                        (username, password, ban_expire, admin, email, char_delete_password)
                         VALUES
-                        (@username, @password, @banExpire, @admin, '')
+                        (@username, @password, @banExpire, @admin, '', @charDeletePassword)
                         """,
                         arguments
                     );
@@ -82,7 +79,8 @@ namespace WvsBeta.Launcher
                         username = @username,
                         password = @password,
                         ban_expire = @banExpire,
-                        admin = @admin
+                        admin = @admin,
+                        char_delete_password = @charDeletePassword
                         WHERE ID = @id
                         """,
                         arguments
@@ -114,21 +112,35 @@ namespace WvsBeta.Launcher
                     Username = reader.GetString("username"),
                     Password = reader.GetString("password"),
                     BanExpire = reader.GetDateTime("ban_expire"),
-                    GMLevel = reader.GetByte("admin")
+                    GMLevel = reader.GetByte("admin"),
+                    CharDeletePassword = reader.GetInt32("char_delete_password"),
                 });
             }
 
             dgvUsers.DataSource = users;
         }
 
+        private void SaveCurrentRow(int row)
+        {
+            try
+            {
+                var rowElem = dgvUsers.Rows[row];
+                (rowElem.DataBoundItem as User)?.Save(_connection);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Unable to save the changes: {ex}");
+            }
+        }
+
         private void dgvUsers_CellValuePushed(object sender, DataGridViewCellValueEventArgs e)
         {
-            (dgvUsers.Rows[e.RowIndex].DataBoundItem as User)?.Save(_connection);
+            SaveCurrentRow(e.RowIndex);
         }
 
         private void dgvUsers_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
-            (dgvUsers.Rows[e.RowIndex].DataBoundItem as User)?.Save(_connection);
+            SaveCurrentRow(e.RowIndex);
         }
 
         private void addToolStripMenuItem_Click(object sender, EventArgs e)
@@ -155,6 +167,11 @@ namespace WvsBeta.Launcher
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
             dgvUsers.EndEdit();
+        }
+
+        private void dgvUsers_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            SaveCurrentRow(e.RowIndex);
         }
     }
 }
