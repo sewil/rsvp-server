@@ -93,7 +93,7 @@ namespace WvsBeta.Launcher.Config
 
         public MySQL_Connection Connect()
         {
-            return new MySQL_Connection(MasterThread.Instance, cf);
+            return new MySQL_Connection(MasterThread.Instance, cf, true);
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
