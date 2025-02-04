@@ -60,19 +60,20 @@ namespace WvsBeta.Database
             return ret.ToString();
         }
 
-        public MySQL_Connection(MasterThread pMasterThread, ConfigReader configReader, bool noRecovery = false) :
+        public MySQL_Connection(MasterThread pMasterThread, ConfigReader configReader, bool noRecovery = false, bool pinger = true) :
             this(pMasterThread,
                 configReader["dbUsername"].GetString(),
                 configReader["dbPassword"].GetString(),
                 configReader["dbDatabase"].GetString(),
                 configReader["dbHost"].GetString(),
                 configReader["dbPort"]?.GetUShort() ?? 3306,
-                noRecovery
+                noRecovery,
+                pinger
             )
         {
         }
 
-        public MySQL_Connection(MasterThread pMasterThread, string pUsername, string pPassword, string pDatabase, string pHost, ushort pPort = 3306, bool noRecovery = false)
+        public MySQL_Connection(MasterThread pMasterThread, string pUsername, string pPassword, string pDatabase, string pHost, ushort pPort = 3306, bool noRecovery = false, bool pinger = true)
         {
             if (pMasterThread == null)
             {
@@ -84,9 +85,14 @@ namespace WvsBeta.Database
             NoRecovery = noRecovery;
             _connectionString = "Server=" + pHost + "; Port=" + pPort + "; Database=" + pDatabase + "; Uid=" + pUsername + "; Pwd=" + pPassword;
             RecoverConnection(true);
-            SetupPinger();
+
+            if (pinger)
+            {
+                SetupPinger();
+            }
         }
 
+        // WARNING: Pinger will run as a RepeatingAction. This means that any database calls outside of MasterThread MIGHT cause exceptions!
         private void SetupPinger()
         {
             _pingerAction = MasterThread.RepeatingAction.Start(
@@ -721,7 +727,7 @@ FROM users WHERE ban_expire > NOW()",
                 if (disposing)
                 {
                     Stop = true;
-                    _pingerAction.Stop();
+                    _pingerAction?.Stop();
                     _connection.Close();
                 }
 

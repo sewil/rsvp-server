@@ -116,7 +116,8 @@ namespace WvsBeta.Launcher
                     "root", config.RootPassword,
                     "information_schema",
                     "127.0.0.1", config.Port,
-                    noRecovery: true);
+                    noRecovery: true,
+                    pinger: false);
 
                 db.RunQuery($"""
                              CREATE DATABASE {config.Database};
