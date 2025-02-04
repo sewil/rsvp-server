@@ -274,15 +274,13 @@ namespace WvsBeta.Database
 
         public string CharacterNameById(int characterID)
         {
-            using (var mdr = (MySqlDataReader)RunQuery(
+            using var mdr = (MySqlDataReader)RunQuery(
                 "SELECT name FROM characters WHERE `ID` = @id",
                 "@id", characterID
-            ))
+            );
+            if (mdr.Read())
             {
-                if (mdr.Read())
-                {
-                    return mdr.GetString(0);
-                }
+                return mdr.GetString(0);
             }
 
             return null;
@@ -290,15 +288,13 @@ namespace WvsBeta.Database
 
         public int UserIDByUsername(string username)
         {
-            using (var mdr = (MySqlDataReader)RunQuery(
+            using var mdr = (MySqlDataReader)RunQuery(
                 "SELECT `ID` FROM users WHERE `username` = @name",
                 "@name", username
-            ))
+            );
+            if (mdr.Read())
             {
-                if (mdr.Read())
-                {
-                    return mdr.GetInt32(0);
-                }
+                return mdr.GetInt32(0);
             }
 
             return -1;
@@ -307,15 +303,13 @@ namespace WvsBeta.Database
 
         public int UserIDByCharacterName(string charname)
         {
-            using (var mdr = (MySqlDataReader)RunQuery(
+            using var mdr = (MySqlDataReader)RunQuery(
                 "SELECT `userid` FROM characters WHERE `name` = @name AND deleted_at IS NULL",
                 "@name", charname
-            ))
+            );
+            if (mdr.Read())
             {
-                if (mdr.Read())
-                {
-                    return mdr.GetInt32(0);
-                }
+                return mdr.GetInt32(0);
             }
 
             return -1;
@@ -323,15 +317,13 @@ namespace WvsBeta.Database
 
         public int UserIDByCharID(int charid)
         {
-            using (var mdr = (MySqlDataReader)RunQuery(
+            using var mdr = (MySqlDataReader)RunQuery(
                 "SELECT `userid` FROM characters WHERE ID = @id",
                 "@id", charid
-            ))
+            );
+            if (mdr.Read())
             {
-                if (mdr.Read())
-                {
-                    return mdr.GetInt32(0);
-                }
+                return mdr.GetInt32(0);
             }
 
             return -1;
@@ -339,24 +331,20 @@ namespace WvsBeta.Database
 
         public bool ExistsUser(int UserId)
         {
-            using (var mdr = (MySqlDataReader)RunQuery(
+            using var mdr = (MySqlDataReader)RunQuery(
                 "SELECT * FROM users WHERE ID = @id",
                 "@id", UserId
-            ))
-            {
-                return mdr.HasRows;
-            }
+            );
+            return mdr.HasRows;
         }
 
         public bool IsBanned(int id)
         {
-            using (var mdr = (MySqlDataReader)RunQuery(
+            using var mdr = (MySqlDataReader)RunQuery(
                 "SELECT 1 FROM users WHERE ID = @id AND ban_expire >= CURRENT_TIMESTAMP",
                 "@id", id
-            ))
-            {
-                return mdr.Read();
-            }
+            );
+            return mdr.Read();
         }
 
         public (int machineIdBans, int ipBans, int uniqueIdBans) GetUserBanRecord(int userId)
@@ -377,7 +365,7 @@ namespace WvsBeta.Database
 
         public (int machineIdBans, int ipBans, int uniqueIdBans) GetBanRecord(string machineID, string uniqueID, string IP)
         {
-            using (var mdr = RunQuery(
+            using var mdr = RunQuery(
                 @"
 SELECT 
 	SUM(last_machine_id = @machineId), 
@@ -387,43 +375,37 @@ FROM users WHERE ban_expire > NOW()",
                 "@machineId", machineID,
                 "@uniqueId", uniqueID,
                 "@ip", IP
-            ) as MySqlDataReader)
-            {
-                if (!mdr.Read() || mdr.IsDBNull(0)) return (0, 0, 0);
-                int machineBanCount = mdr.GetInt32(0);
-                int uniqueBanCount = mdr.GetInt32(1);
-                int ipBanCount = mdr.GetInt32(2);
+            ) as MySqlDataReader;
+            if (!mdr.Read() || mdr.IsDBNull(0)) return (0, 0, 0);
+            int machineBanCount = mdr.GetInt32(0);
+            int uniqueBanCount = mdr.GetInt32(1);
+            int ipBanCount = mdr.GetInt32(2);
 
-                return (machineBanCount, uniqueBanCount, ipBanCount);
-            }
+            return (machineBanCount, uniqueBanCount, ipBanCount);
         }
 
         public (int machineIdBans, int ipBans, int uniqueIdBans) GetUserBanRecordLimit(int userId)
         {
-            using (var mdr = RunQuery("SELECT 100, max_unique_id_ban_count + 0, max_ip_ban_count + 0 FROM users WHERE id = @id",
-                "@id", userId) as MySqlDataReader)
-            {
-                // Weird here
-                if (!mdr.Read() || mdr.IsDBNull(0)) return (0, 0, 0);
-                int machineBanCount = mdr.GetInt32(0);
-                int uniqueBanCount = mdr.GetInt32(1);
-                int ipBanCount = mdr.GetInt32(2);
+            using var mdr = RunQuery("SELECT 100, max_unique_id_ban_count + 0, max_ip_ban_count + 0 FROM users WHERE id = @id",
+                "@id", userId) as MySqlDataReader;
+            // Weird here
+            if (!mdr.Read() || mdr.IsDBNull(0)) return (0, 0, 0);
+            int machineBanCount = mdr.GetInt32(0);
+            int uniqueBanCount = mdr.GetInt32(1);
+            int ipBanCount = mdr.GetInt32(2);
 
-                return (machineBanCount, uniqueBanCount, ipBanCount);
-            }
+            return (machineBanCount, uniqueBanCount, ipBanCount);
         }
 
         public bool IsIpBanned(string ip)
         {
-            using (var mdr = (MySqlDataReader)RunQuery(
+            using var mdr = (MySqlDataReader)RunQuery(
                 "SELECT 1 FROM ipbans WHERE ip = @ip",
                 "@ip", ip
-            ))
+            );
+            if (mdr.Read())
             {
-                if (mdr.Read())
-                {
-                    return true;
-                }
+                return true;
             }
 
             return false;
