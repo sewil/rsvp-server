@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Runtime.InteropServices;
 using log4net;
+using WvsBeta.Common.Bullshit;
 
 namespace WvsBeta.Common
 {
@@ -23,6 +24,7 @@ namespace WvsBeta.Common
         protected MainFormConsole()
         {
             AddShutdownHook();
+            DisableConsoleQuickEdit.Go();
         }
 
         public void LogAppend(string what)
