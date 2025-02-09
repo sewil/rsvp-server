@@ -208,7 +208,7 @@ namespace WzTools.Objects
 
                         case WzVariantType.Uint16Variant: obj = reader.ReadUInt16(); break;
                         case WzVariantType.Int16Variant: obj = reader.ReadInt16(); break;
-                        case WzVariantType.BoolVariant: obj = reader.ReadInt16() == 0; break;
+                        case WzVariantType.BoolVariant: obj = reader.ReadInt16() != 0; break;
 
                         case WzVariantType.Uint32Variant: obj = (uint)reader.ReadCompressedInt(); break;
                         case WzVariantType.Int32Variant: obj = reader.ReadCompressedInt(); break;
@@ -378,6 +378,7 @@ namespace WzTools.Objects
         public override void Set(string key, object value)
         {
             _objects ??= new ObjectStore();
+
             _objects[key] = value;
             if (value is PcomObject po)
             {
@@ -388,9 +389,18 @@ namespace WzTools.Objects
 
         public override object Get(string key)
         {
+            _objects ??= new ObjectStore();
+
             _objects.TryGetValue(key, out var x);
             if (x is WzUOL uol) return uol.ActualObject();
             return x;
+        }
+
+        public void Remove(string key)
+        {
+            _objects ??= new ObjectStore();
+
+            _objects.Remove(key);
         }
 
         public bool HasMembers => _objects.Count > 0;

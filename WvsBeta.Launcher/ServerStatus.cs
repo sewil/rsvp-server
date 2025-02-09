@@ -60,14 +60,27 @@ namespace WvsBeta.Launcher
         [DefaultValue(null)] public event EventHandler Reinstall;
 
         [DefaultValue(null)] public event EventHandler Start;
-        
+
         [DefaultValue(null)] public event EventHandler OnStarted;
-        
+
         [DefaultValue(null)] public event EventHandler OnStopped;
-        
+
         [DefaultValue(false)]
         public bool StartingDisabled { get; set; } = false;
-        public bool Started => !(Process?.HasExited ?? true);
+        public bool Started
+        {
+            get
+            {
+                try
+                {
+                    return !(Process?.HasExited ?? true);
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+        }
         public string FullWorkingDirectory => Path.Combine(Program.InstallationPath, WorkingDirectory);
 
         public ServerStatus()
@@ -129,7 +142,7 @@ namespace WvsBeta.Launcher
 
             HookProcess(process);
             try
-            { 
+            {
                 process.Start();
                 Process = process;
                 return true;
@@ -196,7 +209,7 @@ namespace WvsBeta.Launcher
         {
             if (DesignMode) return;
             if (!Visible) return;
-            
+
             if (!Started)
             {
                 var process = FindProcess();

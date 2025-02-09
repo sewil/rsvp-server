@@ -28,7 +28,7 @@ namespace WvsBeta.Launcher
 
             ssMariaDB.Configuration = new MariaDB(db);
             ssMariaDB.ExecutableName = "mariadbd.exe";
-            ssMariaDB.Arguments = new[] {"--console"};
+            ssMariaDB.Arguments = new[] { "--console" };
             ssMariaDB.Start += (sender, args) =>
             {
                 ssMariaDB.StartProcess();
@@ -40,12 +40,12 @@ namespace WvsBeta.Launcher
 
             ssRedis.Configuration = redis;
             ssRedis.ExecutableName = "redis-server.exe";
-            ssRedis.Arguments = new[] {"redis.windows.conf"};
+            ssRedis.Arguments = new[] { "redis.windows.conf" };
             ssRedis.Start += (sender, args) =>
             {
                 ssRedis.StartProcess();
             };
-            
+
             ssRedis.OnStarted += (_, _) => UpdateServerStartingDisabled();
             ssRedis.OnStopped += (_, _) => UpdateServerStartingDisabled();
 
@@ -150,7 +150,7 @@ namespace WvsBeta.Launcher
             defaultConfig.Reload();
             serverStatus.Configuration = defaultConfig;
             serverStatus.ExecutableName = $"WvsBeta.{name}.exe";
-            serverStatus.Arguments = new[] {defaultConfig.ServerName};
+            serverStatus.Arguments = new[] { defaultConfig.ServerName };
 
             serverStatus.Start += (sender, eventArgs) =>
             {
@@ -206,10 +206,10 @@ namespace WvsBeta.Launcher
 
             var machineName = Environment.MachineName;
 
-            using var packet = new Packet((byte) 0x00);
+            using var packet = new Packet((byte)0x00);
             packet.WriteLong(DateTime.Now.ToFileTimeUtc());
             packet.WriteString(machineName);
-            packet.WriteByte((byte) loginServers.Count);
+            packet.WriteByte((byte)loginServers.Count);
             foreach (var loginServer in loginServers)
             {
                 var config = loginServer.Configuration as Login;
@@ -250,6 +250,12 @@ namespace WvsBeta.Launcher
         {
             var ev = new EventEditor();
             ev.ShowDialog();
+        }
+
+        private void toolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            var de = new DataEdit();
+            de.ShowDialog();
         }
     }
 }
