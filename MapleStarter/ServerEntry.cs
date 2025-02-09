@@ -23,6 +23,9 @@ namespace MapleStarter
         [DefaultValue(null)]
         public event EventHandler OnStart;
 
+        [DefaultValue(null)]
+        public event EventHandler OnShortCut;
+
         public ServerEntry(ServerBroadcast broadcast)
         {
             InitializeComponent();
@@ -35,7 +38,14 @@ namespace MapleStarter
 
             var loginServer = SelectedLoginServer;
 
-            lblIP.Text = IP ?? "No LoginServers started...";
+            var ipText = "No LoginServers started...";
+            if (loginServer != null)
+            {
+                ipText = $"{IP}:{Port}";
+            }
+
+            lblIP.Text = ipText;
+
             lblMachineName.Text = this.broadcast.MachineName;
 
             btnStart.Enabled = loginServer != null;
@@ -55,6 +65,11 @@ namespace MapleStarter
         private void ServerEntry_Load(object sender, EventArgs e)
         {
 
+        }
+
+        private void btnShortcut_Click(object sender, EventArgs e)
+        {
+            OnShortCut.Invoke(this, e);
         }
     }
 }
