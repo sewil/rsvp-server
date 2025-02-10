@@ -73,7 +73,7 @@ namespace WvsBeta.Launcher
             {
                 try
                 {
-                    return !(Process?.HasExited ?? true);
+                    return Process != null;
                 }
                 catch (Exception)
                 {

@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LANMode));
             lbInterfaces = new ListBox();
             label1 = new Label();
             button1 = new Button();
@@ -36,26 +37,28 @@
             // lbInterfaces
             // 
             lbInterfaces.FormattingEnabled = true;
-            lbInterfaces.Location = new Point(12, 32);
+            lbInterfaces.Location = new Point(14, 43);
+            lbInterfaces.Margin = new Padding(3, 4, 3, 4);
             lbInterfaces.Name = "lbInterfaces";
-            lbInterfaces.Size = new Size(354, 154);
+            lbInterfaces.Size = new Size(404, 204);
             lbInterfaces.TabIndex = 0;
             // 
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(12, 9);
+            label1.Location = new Point(14, 12);
             label1.Name = "label1";
-            label1.Size = new Size(202, 15);
+            label1.Size = new Size(250, 20);
             label1.TabIndex = 1;
             label1.Text = "Network to announce LAN server on:";
             // 
             // button1
             // 
             button1.DialogResult = DialogResult.Yes;
-            button1.Location = new Point(12, 192);
+            button1.Location = new Point(14, 256);
+            button1.Margin = new Padding(3, 4, 3, 4);
             button1.Name = "button1";
-            button1.Size = new Size(354, 23);
+            button1.Size = new Size(405, 31);
             button1.TabIndex = 2;
             button1.Text = "Apply Settings";
             button1.UseVisualStyleBackColor = true;
@@ -63,12 +66,14 @@
             // 
             // LANMode
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(378, 226);
+            ClientSize = new Size(432, 301);
             Controls.Add(button1);
             Controls.Add(label1);
             Controls.Add(lbInterfaces);
+            Icon = (Icon)resources.GetObject("$this.Icon");
+            Margin = new Padding(3, 4, 3, 4);
             Name = "LANMode";
             Text = "LAN Mode";
             Load += LANMode_Load;

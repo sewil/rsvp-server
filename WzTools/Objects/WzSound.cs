@@ -11,7 +11,7 @@
         public byte[] Blob = null;
         public override void Read(ArchiveReader reader)
         {
-            reader.ReadBytes(BlobSize);
+            Blob = reader.ReadBytes(BlobSize);
         }
 
         public override void Write(ArchiveWriter writer)

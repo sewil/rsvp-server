@@ -5,6 +5,9 @@ namespace WzTools.Helpers
 {
     static class ExtraTools
     {
+        public static bool DebugStringDedupe = false;
+        public static bool WriteWithoutXor = false;
+
         private static byte[] _asciiXorBuff = { 0xAA };
         private static object _asciiBuffLock = new object();
         private static byte[] _unicodeXorBuff = { 0xAA, 0xAA };

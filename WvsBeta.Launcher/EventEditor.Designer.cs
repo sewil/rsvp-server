@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(EventEditor));
             button1 = new Button();
             button2 = new Button();
             dgvEvents = new DataGridView();
@@ -38,9 +39,10 @@
             // 
             button1.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             button1.DialogResult = DialogResult.Yes;
-            button1.Location = new Point(281, 233);
+            button1.Location = new Point(321, 311);
+            button1.Margin = new Padding(3, 4, 3, 4);
             button1.Name = "button1";
-            button1.Size = new Size(107, 23);
+            button1.Size = new Size(122, 31);
             button1.TabIndex = 0;
             button1.Text = "Save";
             button1.UseVisualStyleBackColor = true;
@@ -50,9 +52,10 @@
             // 
             button2.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             button2.DialogResult = DialogResult.Cancel;
-            button2.Location = new Point(394, 233);
+            button2.Location = new Point(450, 311);
+            button2.Margin = new Padding(3, 4, 3, 4);
             button2.Name = "button2";
-            button2.Size = new Size(107, 23);
+            button2.Size = new Size(122, 31);
             button2.TabIndex = 1;
             button2.Text = "Cancel";
             button2.UseVisualStyleBackColor = true;
@@ -63,19 +66,23 @@
             dgvEvents.AllowUserToDeleteRows = false;
             dgvEvents.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             dgvEvents.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvEvents.Location = new Point(12, 12);
+            dgvEvents.Location = new Point(14, 16);
+            dgvEvents.Margin = new Padding(3, 4, 3, 4);
             dgvEvents.Name = "dgvEvents";
-            dgvEvents.Size = new Size(489, 215);
+            dgvEvents.RowHeadersWidth = 51;
+            dgvEvents.Size = new Size(559, 287);
             dgvEvents.TabIndex = 2;
             // 
             // EventEditor
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(513, 268);
+            ClientSize = new Size(586, 357);
             Controls.Add(dgvEvents);
             Controls.Add(button2);
             Controls.Add(button1);
+            Icon = (Icon)resources.GetObject("$this.Icon");
+            Margin = new Padding(3, 4, 3, 4);
             Name = "EventEditor";
             Text = "EventEditor";
             Load += EventEditor_Load;

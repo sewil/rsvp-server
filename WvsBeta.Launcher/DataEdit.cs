@@ -432,13 +432,6 @@ namespace WvsBeta.Launcher
 
         private void dataGridView1_UserDeletedRow(object sender, DataGridViewRowEventArgs e)
         {
-            var dgl = e.Row.DataBoundItem as DataGridLine;
-            if (dgl == null || dgl.New)
-            {
-                return;
-            }
-
-            _deletedGridData.Add(dgl);
         }
 
         private void dataGridView1_CellEndEdit(object sender, DataGridViewCellEventArgs e)
@@ -457,11 +450,12 @@ namespace WvsBeta.Launcher
 
             var isProperty = nd.Property != null && nd.File == null;
 
-            addWzPropertyToolStripMenuItem.Visible = isProperty;
+            addWzPropertyAfterToolStripMenuItem.Visible = isProperty && false;
+            addWzPropertyBeforeToolStripMenuItem.Visible = isProperty && false;
+            addWzPropertyInsideToolStripMenuItem.Visible = isProperty && false;
             deleteWzPropertyToolStripMenuItem.Visible = isProperty;
 
-            saveIMGToolStripMenuItem.Visible = nd.File != null;
-            saveIMGToolStripMenuItem.Enabled = nd.Modified;
+            saveIMGToolStripMenuItem1.Enabled = nd.Property != null;
         }
 
         private void deleteWzPropertyToolStripMenuItem_Click(object sender, EventArgs e)
@@ -471,6 +465,8 @@ namespace WvsBeta.Launcher
 
             var pnd = nd.Node.Parent.Tag as NodeData;
             if (pnd == null) return;
+
+            pnd.Modifications.Add(nd.Property.Name, null);
 
             // Delete in Property
             pnd.Property.Remove(nd.Property.Name);
@@ -484,12 +480,27 @@ namespace WvsBeta.Launcher
         static readonly string ModifiedMarker = " [modified]";
         void MarkIMGModified(NodeData nd = null)
         {
-            IterateUntilIMG(nd ?? SelectedNodeData,(nd, rootModificationNode) =>
+            IterateUntilIMG(nd ?? SelectedNodeData, (nd, rootModificationNode) =>
             {
                 nd.InheritedModifications.Add(rootModificationNode);
 
                 nd.UpdateNodeState();
             });
+        }
+
+        NodeData? GetIMGNode(NodeData nd)
+        {
+            if (nd == null) return null;
+            if (nd.File != null) return nd;
+
+            do
+            {
+                nd = nd.Node.Parent?.Tag as NodeData;
+            }
+            while (nd != null && nd.File == null);
+
+            if (nd == null || nd.File == null) return null;
+            return nd;
         }
 
         void IterateUntilIMG(NodeData nd, Action<NodeData, NodeData> action)
@@ -518,16 +529,14 @@ namespace WvsBeta.Launcher
 
         private void saveIMGToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var nd = SelectedNodeData;
+            var nd = GetIMGNode(SelectedNodeData);
             if (nd == null) return;
 
-            if (nd.File == null) return;
-
+            // Apply all mods
             foreach (var item in nd.InheritedModifications)
             {
                 if (item is NodeData ind)
                 {
-                    // TODO: APPLY CHANGES
                     foreach (var kvp in ind.Modifications)
                     {
                         if (kvp.Value == null)
@@ -539,13 +548,45 @@ namespace WvsBeta.Launcher
                             ind.Property.Set(kvp.Key, kvp.Value);
                         }
                     }
+                    ind.Modifications.Clear();
                     MarkIMGUnmodified(ind);
                 }
             }
 
-            using var writer = File.OpenWrite(nd.File.RealPath);
+            using var sfd = new SaveFileDialog();
+            sfd.FileName = nd.File.RealPath;
+            sfd.InitialDirectory = Path.GetDirectoryName(sfd.FileName);
+            sfd.Filter = "IMG file|*.img";
+
+            if (sfd.ShowDialog() != DialogResult.OK) return;
+
+            using var writer = sfd.OpenFile();
             using var archiveWriter = new ArchiveWriter(writer);
             PcomObject.WriteToBlob(archiveWriter, nd.File.Object);
+        }
+
+        private void dataGridView1_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
+        {
+            var dgl = e.Row.DataBoundItem as DataGridLine;
+            if (dgl == null || dgl.New)
+            {
+                return;
+            }
+
+            _deletedGridData.Add(dgl);
+        }
+
+        private void addWzPropertyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void addWzPropertyInsideToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var nd = SelectedNodeData;
+            if (nd == null) return;
+
+
         }
     }
 }

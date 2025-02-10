@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection.PortableExecutable;
 using System.Text;
+using System.Xml.Linq;
 using WvsBeta.WzTools.Helpers;
 using WzTools.Helpers;
 using Int8 = System.SByte;
@@ -13,7 +16,13 @@ namespace WzTools.Objects
 {
     public class WzProperty : PcomObject, IEnumerable<KeyValuePair<string, object>>
     {
+        public static bool DebugOffsets = false;
+
         protected ObjectStore _objects;
+
+        // Old versions use Dispatch for blobs. In newer versions, there is an explicit conversion when
+        // writing Dispatch to save it as Unknown instead.
+        private static bool UseDispatchForBlobs = true;
 
         public enum WzVariantType
         {
@@ -85,7 +94,7 @@ namespace WzTools.Objects
             if (long.TryParse(obj.ToString(), out var parsed)) return parsed;
             throw new Exception($"Don't know how to parse this value: {obj} (key {key})");
         }
-        
+
         public double? GetDouble(string key)
         {
             var obj = this[key];
@@ -95,7 +104,7 @@ namespace WzTools.Objects
             if (double.TryParse(obj.ToString(), out var parsed)) return parsed;
             throw new Exception($"Don't know how to parse this value: {obj} (key {key})");
         }
-        
+
         public float? GetFloat(string key)
         {
             var obj = this[key];
@@ -127,7 +136,7 @@ namespace WzTools.Objects
             if (obj == null) return null;
 
             if (obj is bool value) return value;
-            
+
             return GetInt32(key) == 1;
         }
 
@@ -163,13 +172,13 @@ namespace WzTools.Objects
             if (obj == null) return null;
             return obj as string ?? obj.ToString();
         }
-        
+
         public override ICollection<object> Children => _objects.Values;
 
         public IEnumerable<string> Keys => _objects.Keys;
         public IEnumerable<WzProperty> PropertyChildren => _objects.Values.OfType<WzProperty>();
         public override bool HasChild(string key) => _objects.ContainsKey(key);
-        
+
         public override void Dispose()
         {
             _objects.Clear();
@@ -177,6 +186,8 @@ namespace WzTools.Objects
 
         public override void Read(ArchiveReader reader)
         {
+            Debug.WriteLineIf(DebugOffsets, $"Start reading WzProperty at {reader.BaseStream.Position}");
+
             var b = reader.ReadByte();
             if (b != 0)
             {
@@ -194,6 +205,9 @@ namespace WzTools.Objects
                 {
                     var name = reader.ReadString(1, 0);
                     var type = (WzVariantType)reader.ReadByte();
+
+                    Debug.WriteLineIf(DebugOffsets, $"Subprop {name} type {type} at {reader.BaseStream.Position}");
+
 
                     if (type == WzVariantType.DispatchVariant)
                         type = WzVariantType.UnknownVariant;
@@ -260,11 +274,19 @@ namespace WzTools.Objects
                     _objects[name] = obj;
                 }
             }
+
+            Debug.WriteLineIf(DebugOffsets, $"Finish reading WzProperty at {reader.BaseStream.Position}");
         }
 
-        public static void WriteObj(ArchiveWriter writer, object obj)
+
+        public static void WriteObj(ArchiveWriter writer, string name, object obj)
         {
-            void WriteVariant(WzVariantType vt) => writer.Write((byte)vt);
+            void WriteVariant(WzVariantType vt)
+            {
+                writer.Write(name, 1, 0);
+                writer.Write((byte)vt);
+                Debug.WriteLineIf(DebugOffsets, $"Subprop {name} type {vt} at {writer.BaseStream.Position}");
+            }
 
             switch (obj)
             {
@@ -337,7 +359,7 @@ namespace WzTools.Objects
                     break;
 
                 case PcomObject po:
-                    WriteVariant(WzVariantType.UnknownVariant);
+                    WriteVariant(UseDispatchForBlobs ? WzVariantType.DispatchVariant : WzVariantType.UnknownVariant);
                     writer.Write((int)0);
                     var tmp = writer.BaseStream.Position;
 
@@ -345,7 +367,8 @@ namespace WzTools.Objects
 
                     var cur = writer.BaseStream.Position;
                     writer.BaseStream.Position = tmp - 4;
-                    writer.Write((int)(cur - tmp));
+                    var size = (int)(cur - tmp);
+                    writer.Write(size);
                     writer.BaseStream.Position = cur;
 
                     break;
@@ -357,6 +380,8 @@ namespace WzTools.Objects
 
         public override void Write(ArchiveWriter writer)
         {
+            Debug.WriteLineIf(DebugOffsets, $"Start writing WzProperty at {writer.BaseStream.Position}");
+
             writer.Write((byte)0); // ASCII
             writer.Write((byte)0);
 
@@ -370,9 +395,10 @@ namespace WzTools.Objects
 
             foreach (var o in _objects)
             {
-                writer.Write(o.Key, 1, 0);
-                WriteObj(writer, o.Value);
+                WriteObj(writer, o.Key, o.Value);
             }
+
+            Debug.WriteLineIf(DebugOffsets, $"Finish writing WzProperty at {writer.BaseStream.Position}");
         }
 
         public override void Set(string key, object value)
@@ -492,7 +518,7 @@ namespace WzTools.Objects
                     foundLine += "\r\n" + line;
                     continue;
                 }
-                
+
                 line = line.Trim();
                 if (line.Length == 0) continue;
                 var firstChar = line[0];
@@ -506,7 +532,7 @@ namespace WzTools.Objects
                     multilineMode = true;
                     continue;
                 }
-                
+
                 break;
             }
 
@@ -587,7 +613,7 @@ namespace WzTools.Objects
         #endregion
 
         #region ASCII Writing
-        
+
         public void write_ascii(StreamWriter sw)
         {
             sw.WriteLine("#Property");

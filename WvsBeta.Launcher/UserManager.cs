@@ -154,6 +154,8 @@ namespace WvsBeta.Launcher
 
             var user = dgvUsers.CurrentRow.DataBoundItem as User;
 
+            if (user == null) return;
+
             if (MessageBox.Show($"Are you sure you want to delete {user.Username}?", "Hol' up", MessageBoxButtons.OKCancel) != DialogResult.OK)
             {
                 return;

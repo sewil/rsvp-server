@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             ssMariaDB = new ServerStatus();
             ssRedis = new ServerStatus();
             ssCenter = new ServerStatus();
@@ -40,11 +41,11 @@
             userManagerToolStripMenuItem = new ToolStripMenuItem();
             eventManagerToolStripMenuItem = new ToolStripMenuItem();
             configureLANModeToolStripMenuItem = new ToolStripMenuItem();
+            toolStripMenuItem1 = new ToolStripMenuItem();
             statusStrip1 = new StatusStrip();
             toolStripStatusLabel1 = new ToolStripStatusLabel();
             tsslLANStatus = new ToolStripStatusLabel();
             tmrServerAnnouncer = new System.Windows.Forms.Timer(components);
-            toolStripMenuItem1 = new ToolStripMenuItem();
             tableLayoutPanel1.SuspendLayout();
             menuStrip1.SuspendLayout();
             statusStrip1.SuspendLayout();
@@ -177,6 +178,13 @@
             configureLANModeToolStripMenuItem.Text = "Configure LAN mode";
             configureLANModeToolStripMenuItem.Click += configureLANModeToolStripMenuItem_Click;
             // 
+            // toolStripMenuItem1
+            // 
+            toolStripMenuItem1.Name = "toolStripMenuItem1";
+            toolStripMenuItem1.Size = new Size(99, 24);
+            toolStripMenuItem1.Text = "Data Editor";
+            toolStripMenuItem1.Click += toolStripMenuItem1_Click;
+            // 
             // statusStrip1
             // 
             statusStrip1.ImageScalingSize = new Size(20, 20);
@@ -207,13 +215,6 @@
             tmrServerAnnouncer.Interval = 2000;
             tmrServerAnnouncer.Tick += tmrServerAnnouncer_Tick;
             // 
-            // toolStripMenuItem1
-            // 
-            toolStripMenuItem1.Name = "toolStripMenuItem1";
-            toolStripMenuItem1.Size = new Size(99, 24);
-            toolStripMenuItem1.Text = "Data Editor";
-            toolStripMenuItem1.Click += toolStripMenuItem1_Click;
-            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
@@ -222,6 +223,7 @@
             Controls.Add(tableLayoutPanel1);
             Controls.Add(menuStrip1);
             Controls.Add(statusStrip1);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             MainMenuStrip = menuStrip1;
             Margin = new Padding(3, 4, 3, 4);
             Name = "Form1";

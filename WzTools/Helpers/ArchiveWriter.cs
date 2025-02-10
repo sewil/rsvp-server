@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -8,8 +9,8 @@ namespace WzTools.Helpers
 {
     public class ArchiveWriter : BinaryWriter
     {
-        private Dictionary<string, int> _stringPool = new Dictionary<string, int>();
-
+        private Dictionary<string, long> _stringPool = new();
+        private int contentsStart = 0;
 
         public ArchiveWriter(Stream output) : base(output)
         {
@@ -17,14 +18,20 @@ namespace WzTools.Helpers
 
         public void Write(string value, byte existingId, byte newId)
         {
-            if (_stringPool.TryGetValue(value, out var offset))
+            if (_stringPool.TryGetValue(value, out var location))
             {
                 Write((byte)existingId);
-                this.WriteCompressedInt(offset);
+                var offset = (int)(location - contentsStart);
+                Debug.WriteLineIf(ExtraTools.DebugStringDedupe, $"Writing deduped '{value}' with offset '{offset}'");
+                this.Write(offset);
             }
             else
             {
                 Write((byte)newId);
+
+                if (value.Length > 4)
+                    _stringPool[value] = BaseStream.Position;
+
                 var bytes = EncodeString(value, out var unicode);
                 var actualLength = bytes.Length;
                 if (unicode)
@@ -32,12 +39,12 @@ namespace WzTools.Helpers
                     actualLength /= 2;
                     if (actualLength >= 127)
                     {
-                        Write((sbyte) 127);
-                        Write((int) actualLength);
+                        Write((sbyte)127);
+                        Write((int)actualLength);
                     }
                     else
                     {
-                        Write((sbyte) actualLength);
+                        Write((sbyte)actualLength);
                     }
                 }
                 else
@@ -59,8 +66,7 @@ namespace WzTools.Helpers
 
         public byte[] EncodeString(string value, out bool unicode)
         {
-            unicode = ArchiveReader.IsLegalUnicode(value);
-            
+            unicode = value.Any(x => x >= 0x80);
 
             byte[] bytes;
 
@@ -70,8 +76,10 @@ namespace WzTools.Helpers
 
             // Encryption.Encrypt(bytes);
 
-            bytes = bytes.ApplyStringXor(unicode);
-
+            if (!ExtraTools.WriteWithoutXor)
+            {
+                bytes = bytes.ApplyStringXor(unicode);
+            }
             return bytes;
         }
     }

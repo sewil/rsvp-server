@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
 
- namespace WzTools.Helpers
+namespace WzTools.Helpers
 {
     public class ArchiveReader : BinaryReader
     {
@@ -44,7 +45,10 @@ using System.Text;
 
             off += contentsStart;
 
-            return this.JumpAndReturn(off, DecodeString);
+            var ret = this.JumpAndReturn(off, DecodeString);
+
+            Debug.WriteLineIf(ExtraTools.DebugStringDedupe, $"Reading deduped '{ret}' with offset '{off - contentsStart}'");
+            return ret;
         }
 
 
