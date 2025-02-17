@@ -1,7 +1,7 @@
 #Property
 redis = {
-	password = 
-	hostname = 127.0.0.1
+	password = mypassword
+	hostname = redis
 	port = 6379
 }
 HaProxyIPs = {
@@ -12,7 +12,7 @@ versionUpdates = {
 port = 8484
 adminPort = 7071
 PublicIP = 127.0.0.1
-PrivateIP = 127.0.0.1
+PrivateIP = 10.5.0.5
 center = {
 	Scania = {
 		userNoMultiplier = 7
@@ -21,7 +21,7 @@ center = {
 		worldState = 0
 		adult = false
 		BlockCharCreation = false
-		ip = 127.0.0.1
+		ip = 10.5.0.6
 		port = 8383
 		world = 0
 	}

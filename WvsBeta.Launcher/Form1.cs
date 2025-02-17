@@ -128,8 +128,8 @@ namespace WvsBeta.Launcher
 
 
                 var preparedFiles = Path.Combine(Program.InstallationPath, "evolutions", "prepared");
-                db.RunQuery(File.ReadAllText(Path.Combine(preparedFiles, "rsvp-structure.sql")));
-                db.RunQuery(File.ReadAllText(Path.Combine(preparedFiles, "rsvp-evolutions.sql")));
+                db.RunQuery(File.ReadAllText(Path.Combine(preparedFiles, "001_rsvp-structure.sql")));
+                db.RunQuery(File.ReadAllText(Path.Combine(preparedFiles, "002_rsvp-evolutions.sql")));
 
                 MessageBox.Show("MariaDB re-installed and data cleaned.");
             }

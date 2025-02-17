@@ -1,7 +1,7 @@
 #Property
 redis = {
-	password = 
-	hostname = 127.0.0.1
+	password = mypassword
+	hostname = redis
 	port = 6379
 }
 HaProxyIPs = {
@@ -10,9 +10,9 @@ memoryAutobanEnabled = true
 port = 8585
 gameWorldId = 0
 PublicIP = 127.0.0.1
-PrivateIP = 127.0.0.1
+PrivateIP = 10.5.0.7
 center = {
-	ip = 127.0.0.1
+	ip = 10.5.0.6
 	port = 8383
 	worldName = Scania
 }

@@ -267,3 +267,4 @@ sql_export_transfer/
 *.lnk
 Data/
 BinSvr_Published/
+.env

@@ -1,7 +1,7 @@
 #Property
 redis = {
-	password = 
-	hostname = 127.0.0.1
+	password = mypassword
+	hostname = redis
 	port = 6379
 }
 port = 8383
@@ -11,26 +11,26 @@ userLimitITC = 10
 login = {
 	Login0 = {
 		PublicIP = 127.0.0.1
-		PrivateIP = 127.0.0.1
+		PrivateIP = 10.5.0.5
 		port = 8484
 	}
 }
 game = {
 	Game0 = {
 		PublicIP = 127.0.0.1
-		PrivateIP = 127.0.0.1
+		PrivateIP = 10.5.0.7
 		port = 8585
 	}
 }
 shop = {
 	Shop0 = {
 		PublicIP = 127.0.0.1
-		PrivateIP = 127.0.0.1
+		PrivateIP = 10.5.0.8
 		port = 8787
 	}
 }
 PublicIP = 127.0.0.1
-PrivateIP = 127.0.0.1
+PrivateIP = 10.5.0.6
 userWarning = 400
 userLimit = 600
 tespia = false

@@ -1,0 +1,118 @@
+services:
+  rsvp-login:
+    container_name: rsvp-login
+    build:
+      context: ..
+      dockerfile: ./rsvp-server/WvsBeta.Login/Dockerfile
+      args:
+        SERVER_PROJECT: WvsBeta.Login
+        SERVER_ARG: Login0
+    depends_on:
+      redis:
+        condition: service_started
+      db:
+        condition: service_healthy
+    volumes:
+      - shared:/shared
+    networks:
+      vpcbr:
+        ipv4_address: 10.5.0.5
+    ports:
+      - '8484:8484'
+    expose:
+      - '8484'
+  rsvp-center:
+    container_name: rsvp-center
+    build:
+      context: ..
+      dockerfile: ./rsvp-server/WvsBeta.Center/Dockerfile
+    depends_on:
+      - rsvp-login
+    volumes:
+      - shared:/shared
+    ports:
+      - '8383:8383'
+    expose:
+      - '8383'
+    networks:
+      vpcbr:
+        ipv4_address: 10.5.0.6
+  rsvp-game:
+    container_name: rsvp-game
+    build:
+      context: ..
+      dockerfile: ./rsvp-server/WvsBeta.Game/Dockerfile
+    depends_on:
+      - rsvp-center
+    volumes:
+      - shared:/shared
+    networks:
+      vpcbr:
+        ipv4_address: 10.5.0.7
+    ports:
+      - '8585:8585'
+    expose:
+      - '8585'
+  rsvp-shop:
+    container_name: rsvp-shop
+    build:
+      context: ..
+      dockerfile: ./rsvp-server/WvsBeta.Shop/Dockerfile
+    depends_on:
+      - rsvp-center
+    volumes:
+      - shared:/shared
+    ports:
+      - '8787:8787'
+    expose:
+      - '8787'
+    networks:
+      vpcbr:
+        ipv4_address: 10.5.0.8
+  redis:
+    container_name: redis
+    image: redis:6.2-alpine
+    restart: always
+    ports:
+      - '6379:6379'
+    expose:
+      - '6379'
+    command: redis-server --save 20 1 --loglevel warning --requirepass ${REDIS_PASSWORD}
+    volumes: 
+      - cache:/data
+    networks:
+      - vpcbr
+  db:
+    image: mysql:9.2.0
+    container_name: db
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./WvsBeta.Database/evolutions/prepared:/docker-entrypoint-initdb.d # Run prepared sql files on initial DB create
+    restart: always
+    environment:
+      MYSQL_ROOT_USER: ${DB_ROOT_USER}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "3306:3306"
+    expose:
+      - '3306'
+    healthcheck:
+      test: "exit 0"
+      timeout: 10s # Wait for DB to do its thang
+    networks:
+      - vpcbr
+volumes:
+  cache:
+    driver: local
+  shared:
+  db_data:
+networks:
+  vpcbr:
+    driver: bridge
+    ipam:
+     config:
+       - subnet: 10.5.0.0/16
+         gateway: 10.5.0.1
