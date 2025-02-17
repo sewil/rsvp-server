@@ -24,36 +24,37 @@ namespace WvsBeta.Database
         public bool NoRecovery { get; set; } = false;
         private MySqlConnection _connection;
         private MySqlCommand _command;
-        private string _connectionString;
-        private Common.Logfile _logFile;
-        private Stack<Tuple<string, object[], string>> _queryList = new Stack<Tuple<string, object[], string>>(MAX_QUERY_LIST_BACKTRACE);
+        private readonly string _connectionString;
+        private readonly Common.Logfile _logFile;
+        private readonly Queue<(string query, object[] parameters, string stacktrace)> _queryList = new (MAX_QUERY_LIST_BACKTRACE);
         private MasterThread.RepeatingAction _pingerAction;
 
         private void AddQuery(string pQuery, object[] pParameters)
         {
-            if (_queryList.Count > MAX_QUERY_LIST_BACKTRACE) _queryList.Pop();
-            _queryList.Push(new Tuple<string, object[], string>(pQuery, pParameters, new StackTrace().ToString()));
+            if (_queryList.Count > MAX_QUERY_LIST_BACKTRACE) _queryList.Dequeue();
+
+            _queryList.Enqueue(new (pQuery, pParameters, new StackTrace(skipFrames: 1).ToString()));
         }
 
         private string GetLastQueries()
         {
             var ret = new StringBuilder();
             ret.AppendLine("---------- BEGIN LIST -------------");
-            foreach (var kvp in _queryList)
+            foreach (var kvp in _queryList.ToArray())
             {
-                ret.AppendLine("Query: " + kvp.Item1);
-                var parametersLength = kvp.Item2?.Length ?? 0;
+                ret.AppendLine("Query: " + kvp.query);
+                var parametersLength = kvp.parameters?.Length ?? 0;
                 if (parametersLength > 0)
                 {
                     ret.AppendLine("Parameters:");
 
                     for (var i = 0; i < parametersLength; i += 2)
                     {
-                        ret.AppendFormat("\t{0}: {1}", kvp.Item2[i + 0], kvp.Item2[i + 1]).AppendLine();
+                        ret.AppendFormat("\t{0}: {1}", kvp.parameters[i + 0], kvp.Item2[i + 1]).AppendLine();
                     }
                 }
 
-                ret.AppendLine("Stacktrace:").AppendLine(kvp.Item3);
+                ret.AppendLine("Stacktrace:").AppendLine(kvp.stacktrace);
             }
 
             ret.AppendLine("------------- END LIST ---------------");
