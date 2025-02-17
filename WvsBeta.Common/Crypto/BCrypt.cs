@@ -390,7 +390,9 @@ namespace WvsBeta.Common
 
             StringBuilder rs = new StringBuilder(length * 2);
 
-            for (int offset = 0, c1, c2; offset < length;)
+            int c1, c2;
+
+            for (int offset = 0; offset < length;)
             {
                 c1 = d[offset++] & 0xff;
                 rs.Append(base64_code[(c1 >> 2) & 0x3f]);
