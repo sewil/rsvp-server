@@ -189,7 +189,7 @@ namespace WvsBeta.Launcher
             Debug.WriteLine("Node {0} modified: {1}", nd.Node.Text, modified);
         }
 
-        public void ApplyModifications()
+        public void StoreModificationsInNodeData()
         {
             var nd = SelectedNodeData;
             if (nd == null) return;
@@ -221,6 +221,10 @@ namespace WvsBeta.Launcher
             {
                 MarkIMGUnmodified();
             }
+
+            nd.UpdateNodeState();
+
+            UpdateMenus();
         }
 
         void DisplayNodeInfo(NodeData nd)
@@ -411,7 +415,7 @@ namespace WvsBeta.Launcher
 
         private void tvImg_BeforeSelect(object sender, TreeViewCancelEventArgs e)
         {
-            ApplyModifications();
+            StoreModificationsInNodeData();
 
             var node = e.Node;
 
@@ -428,6 +432,8 @@ namespace WvsBeta.Launcher
             {
                 DisplayNodeInfo(nd);
             }
+
+            UpdateMenus();
         }
 
         private void dataGridView1_UserDeletedRow(object sender, DataGridViewRowEventArgs e)
@@ -436,7 +442,9 @@ namespace WvsBeta.Launcher
 
         private void dataGridView1_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
-            UpdateModifiedState();
+            Debug.WriteLine($"Cell editing of row {e.RowIndex}, col {e.ColumnIndex} finished.");
+            
+            StoreModificationsInNodeData();
         }
 
         private void cmsTreeView_Opening(object sender, CancelEventArgs e)
@@ -448,14 +456,26 @@ namespace WvsBeta.Launcher
                 return;
             }
 
-            var isProperty = nd.Property != null && nd.File == null;
+            UpdateMenus();
+        }
+
+        private void UpdateMenus()
+        {
+            Debug.WriteLine($"Updating menus");
+            var nd = SelectedNodeData;
+
+            nd?.UpdateNodeState();
+
+            var isProperty = nd != null && nd.Property != null && nd.File == null;
+
+            var isEditing = dataGridView1.IsCurrentCellInEditMode;
 
             addWzPropertyAfterToolStripMenuItem.Visible = isProperty && false;
             addWzPropertyBeforeToolStripMenuItem.Visible = isProperty && false;
             addWzPropertyInsideToolStripMenuItem.Visible = isProperty && false;
-            deleteWzPropertyToolStripMenuItem.Visible = isProperty;
+            deleteWzPropertyToolStripMenuItem.Visible = isProperty && !isEditing;
 
-            saveIMGToolStripMenuItem1.Enabled = nd.Property != null;
+            saveIMGToolStripMenuItem1.Enabled = nd != null && nd.Property != null && !isEditing && nd.Modified;
         }
 
         private void deleteWzPropertyToolStripMenuItem_Click(object sender, EventArgs e)
@@ -567,6 +587,7 @@ namespace WvsBeta.Launcher
 
         private void dataGridView1_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
         {
+            Debug.WriteLine($"Deleting {e.Row}");
             var dgl = e.Row.DataBoundItem as DataGridLine;
             if (dgl == null || dgl.New)
             {
@@ -587,6 +608,24 @@ namespace WvsBeta.Launcher
             if (nd == null) return;
 
 
+        }
+
+        private void dataGridView1_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
+        {
+            Debug.WriteLine($"Editing row {e.RowIndex}, col {e.ColumnIndex}");
+            if (e.ColumnIndex == 0)
+            {
+                var dgl = dataGridView1.Rows[e.RowIndex].DataBoundItem as DataGridLine;
+                // Only on new rows it should be editable
+                if (dgl != null && !dgl.New)
+                {
+                    // Do not allow editing the name
+                    e.Cancel = true;
+                    return;
+                }
+            }
+
+            UpdateMenus();
         }
     }
 }

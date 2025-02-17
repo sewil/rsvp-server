@@ -84,7 +84,7 @@
             cmsTreeView.ImageScalingSize = new Size(20, 20);
             cmsTreeView.Items.AddRange(new ToolStripItem[] { addWzPropertyBeforeToolStripMenuItem, addWzPropertyAfterToolStripMenuItem, addWzPropertyInsideToolStripMenuItem, deleteWzPropertyToolStripMenuItem, saveIMGToolStripMenuItem });
             cmsTreeView.Name = "cmsTreeView";
-            cmsTreeView.Size = new Size(236, 152);
+            cmsTreeView.Size = new Size(236, 124);
             cmsTreeView.Opening += cmsTreeView_Opening;
             // 
             // addWzPropertyBeforeToolStripMenuItem
@@ -130,6 +130,7 @@
             dataGridView1.RowHeadersWidth = 51;
             dataGridView1.Size = new Size(826, 663);
             dataGridView1.TabIndex = 1;
+            dataGridView1.CellBeginEdit += dataGridView1_CellBeginEdit;
             dataGridView1.CellEndEdit += dataGridView1_CellEndEdit;
             dataGridView1.UserDeletedRow += dataGridView1_UserDeletedRow;
             dataGridView1.UserDeletingRow += dataGridView1_UserDeletingRow;
