@@ -1,23 +1,25 @@
 ﻿using System;
-  using System.Collections.Generic;
-  using System.IO;
+using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using WzTools.FileSystem;
 using WzTools.Helpers;
 
-  namespace WzTools.Objects
+namespace WzTools.Objects
 {
     public abstract class PcomObject : INameSpaceNode
     {
         public PcomObject Parent = null;
 
         public abstract ICollection<object> Children { get; }
-        
+
         public string GetName() => Name;
-        
+
         public string Name { get; set; }
 
         public int BlobSize { get; set; }
+
+        public bool IsASCII { get; set; }
 
         public PcomObject this[string key]
         {
@@ -49,7 +51,7 @@ using WzTools.Helpers;
                     case "Canvas": 
                     */
                         break;
-                        
+
                     default:
                         throw new Exception($"Don't know how to read this proptype: {type}");
                 }
@@ -69,9 +71,10 @@ using WzTools.Helpers;
             }
 
             PcomObject obj;
+            bool ascii = false;
             if (t == '#')
             {
-                blobSize = (int) reader.BaseStream.Length;
+                blobSize = (int)reader.BaseStream.Length;
                 type = reader.ReadAndReturn(() =>
                 {
                     // Try to read #Property
@@ -82,6 +85,7 @@ using WzTools.Helpers;
                 });
 
                 reader.BaseStream.Position += type.Length + 2; // \r\n
+                ascii = true;
             }
             else
             {
@@ -91,7 +95,7 @@ using WzTools.Helpers;
             switch (type)
             {
                 case "Property":
-                    obj = isFileProp ? new WzFileProperty() : new WzProperty(); 
+                    obj = isFileProp ? new WzFileProperty() : new WzProperty();
                     break;
                 case "List": obj = new WzList(); break;
                 case "UOL": obj = new WzUOL(); break;
@@ -112,12 +116,20 @@ using WzTools.Helpers;
 
             obj.BlobSize = blobSize - (int)(reader.BaseStream.Position - start);
             obj.Name = name;
+            obj.IsASCII = ascii;
             obj.Read(reader);
             return obj;
         }
 
         public static void WriteToBlob(ArchiveWriter writer, PcomObject obj)
         {
+            if (obj is WzProperty prop && prop.IsASCII)
+            {
+                using var sw = new StreamWriter(writer.BaseStream);
+                prop.write_ascii(sw);
+                return;
+            }
+
             void WriteType(string type) => writer.Write(type, 0x1B, 0x73);
             switch (obj)
             {
@@ -146,7 +158,7 @@ using WzTools.Helpers;
         public string GetFullPath()
         {
             string ret = Name;
-            var curParent = (INameSpaceNode) GetParent();
+            var curParent = (INameSpaceNode)GetParent();
             while (curParent != null)
             {
                 ret = curParent.GetName() + "/" + ret;

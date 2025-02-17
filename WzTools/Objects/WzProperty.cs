@@ -193,6 +193,7 @@ namespace WzTools.Objects
             {
                 reader.BaseStream.Position -= 1;
                 _objects = new ObjectStore();
+                IsASCII = true;
                 // Note: do not use disposing, as it would dispose the stream
                 parse_ascii(new StringReader(Encoding.ASCII.GetString(reader.ReadBytes(BlobSize))));
             }
@@ -436,7 +437,7 @@ namespace WzTools.Objects
         IEnumerator IEnumerable.GetEnumerator() => _objects.GetEnumerator();
 
         /// <summary>
-        /// Allow multiline strings using """ """ blocks
+        /// Allow multiline strings using """ """ blocks. Not compatible with the official client.
         /// </summary>
         public static bool ExtendedASCIIFeatures = false;
 
@@ -476,6 +477,7 @@ namespace WzTools.Objects
                     Name = s,
                     _objects = new ObjectStore(),
                     Parent = currentProperty,
+                    IsASCII = true,
                 };
                 return;
             }
@@ -488,6 +490,7 @@ namespace WzTools.Objects
                     Absolute = false,
                     Path = sv.Substring(1),
                     Parent = currentProperty,
+                    IsASCII = true,
                 };
             }
             else
@@ -536,8 +539,7 @@ namespace WzTools.Objects
                 break;
             }
 
-
-            foundLine = foundLine.Trim().Trim('"');
+            foundLine = foundLine.Trim();
             return foundLine != "";
         }
 
@@ -587,7 +589,7 @@ namespace WzTools.Objects
                 // The code does not check if you actually filled in a variable!
 
                 v = line.Substring(equalPos + 1);
-                v = v.Trim().Trim('"');
+                v = v.Trim();
                 // skipping null check
 
                 if (v.Length == 1 && v[0] == '{')
@@ -617,6 +619,7 @@ namespace WzTools.Objects
         public void write_ascii(StreamWriter sw)
         {
             sw.WriteLine("#Property");
+            sw.WriteLine();
             write_ascii_nodes(sw);
         }
 
