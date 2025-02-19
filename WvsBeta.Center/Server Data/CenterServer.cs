@@ -257,7 +257,7 @@ namespace WvsBeta.Center
             LocalServerType lst;
             foreach (var serverCategory in reader.RootNode.Where(x => x.SubNodes != null))
             {
-                if (serverCategory.Name == "redis") continue;
+                if (serverCategory.Name == "redis" || serverCategory.Name == "discord") continue;
                 
                 switch (serverCategory.Name)
                 {
