@@ -838,7 +838,7 @@ namespace WvsBeta.Game
             MonsterBook.Load();
 
             Wishlist = new List<int>();
-            using (var data = (MySqlDataReader)Server.Instance.CharacterDatabase.RunQuery("SELECT serial FROM character_wishlist WHERE charid = " + ID + " AND serial <> 0"))
+            using (var data = (MySqlDataReader)Server.Instance.CharacterDatabase.RunQuery("SELECT serial FROM character_wishlist WHERE charid = @charid AND serial <> 0", "@charid", ID))
             {
                 while (data.Read())
                 {

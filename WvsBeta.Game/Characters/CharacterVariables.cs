@@ -40,7 +40,7 @@ namespace WvsBeta.Game
 
         public bool Load()
         {
-            using (var data = (MySqlDataReader)Server.Instance.CharacterDatabase.RunQuery("SELECT * FROM character_variables WHERE charid = " + Character.ID))
+            using (var data = (MySqlDataReader)Server.Instance.CharacterDatabase.RunQuery("SELECT * FROM character_variables WHERE charid = @charid", "@charid", Character.ID))
             {
                 if (!data.HasRows)
                 {

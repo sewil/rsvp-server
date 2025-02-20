@@ -2095,7 +2095,7 @@ namespace WvsBeta.Game
                 case "eventreset":
                     {
                         var ytd = new DateTime(2010, 1, 1);
-                        Server.Instance.CharacterDatabase.RunQuery("UPDATE characters SET event = '" + ytd.ToString("yyyy-MM-dd HH:mm:ss") + "' WHERE ID = @charid", "@charid", _character.ID);
+                        Server.Instance.CharacterDatabase.RunQuery("UPDATE characters SET event = @eventDate WHERE ID = @charid", "@charid", _character.ID, "@eventDate",  ytd.ToString("yyyy-MM-dd HH:mm:ss"));
                         SendNotice("Reset event participation time.");
                         return true;
                     }

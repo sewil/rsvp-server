@@ -91,12 +91,12 @@ namespace WvsBeta.Game
             var worldId = Server.Instance.WorldID;
 
             Server.Instance.CharacterDatabase.RunQuery(
-                "UPDATE storage SET " +
-                "slots = " + MaxSlots + ", " +
-                "mesos = " + Mesos + " " +
-                "WHERE " +
-                "userid = " + userId + " AND " +
-                "world_id = " + worldId);
+                "UPDATE storage SET slots = @slots, mesos = @mesos " +
+                "WHERE userid = @userId AND world_id = @worldId",
+                "@userId", userId,
+                "@worldId", worldId,
+                "@mesos", Mesos,
+                "@slots", MaxSlots);
 
             short slot = 0;
             for (var i = 0; i < _items.Length; i++)

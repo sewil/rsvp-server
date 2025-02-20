@@ -49,7 +49,7 @@ namespace WvsBeta.SharedDataProvider
 
         protected void LoadInventory()
         {
-            using (var data = Connection.RunQuery("SELECT mesos, equip_slots, use_slots, setup_slots, etc_slots, cash_slots FROM characters WHERE id = " + CharacterID) as MySqlDataReader)
+            using (var data = Connection.RunQuery("SELECT mesos, equip_slots, use_slots, setup_slots, etc_slots, cash_slots FROM characters WHERE id = @charid", "@charid", CharacterID) as MySqlDataReader)
             {
                 if (!data.Read())
                 {
@@ -95,7 +95,7 @@ namespace WvsBeta.SharedDataProvider
             _cashItems.Bundles.Clear();
             _cashItems.Pets.Clear();
 
-            using (var data = Connection.RunQuery("SELECT mapindex, mapid FROM teleport_rock_locations WHERE charid = " + CharacterID) as MySqlDataReader)
+            using (var data = Connection.RunQuery("SELECT mapindex, mapid FROM teleport_rock_locations WHERE charid = @charid", "@charid", CharacterID) as MySqlDataReader)
             {
                 while (data.Read())
                 {
