@@ -106,22 +106,37 @@ namespace WvsBeta.Common
                     {
                         _log.Error($"Unable to send message to Discord. {content}", ex);
 
-                        // Some error occurred, try to squash all the messages
-                        var msgCount = 1;
-                        var totalStr = content;
-                        while (totalStr.Length < 2000 && msgCount < 5 && _messagesToPost.TryDequeue(out content))
+                        // Split long message
+                        if (content.Length > 2000)
                         {
-                            if (totalStr.Length + content.Length > 2000)
+                            string restContent = content;
+                            while (restContent.Length > 0)
                             {
-                                // Ignore this message, for now
-                                _messagesToPost.Enqueue(content);
-                                break;
+                                int len = Math.Min(2000, restContent.Length);
+                                string chunk = restContent.Substring(0, len);
+                                restContent = restContent.Substring(len);
+                                _messagesToPost.Enqueue(chunk);
                             }
-                            totalStr += "\r\n" + content;
-                            msgCount++;
                         }
+                        else
+                        {
+                            // Some error occurred, try to squash all the messages
+                            var msgCount = 1;
+                            var totalStr = content;
+                            while (totalStr.Length < 2000 && msgCount < 5 && _messagesToPost.TryDequeue(out content))
+                            {
+                                if (totalStr.Length + content.Length > 2000)
+                                {
+                                    // Ignore this message, for now
+                                    _messagesToPost.Enqueue(content);
+                                    break;
+                                }
+                                totalStr += "\r\n" + content;
+                                msgCount++;
+                            }
 
-                        _messagesToPost.Enqueue(totalStr);
+                            _messagesToPost.Enqueue(totalStr);
+                        }
 
                         try
                         {
