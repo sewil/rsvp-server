@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using MySql.Data.MySqlClient;
+using MySqlConnector;
 using WvsBeta.Common;
 using WvsBeta.Common.Sessions;
 using WvsBeta.Database;

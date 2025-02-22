@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using MySql.Data.MySqlClient;
+using MySqlConnector;
 
 namespace WvsBeta.Center.DBAccessor
 {

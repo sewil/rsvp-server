@@ -1,9 +1,10 @@
-﻿using MySql.Data.MySqlClient;
+﻿using MySqlConnector;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.IO;
+using System.Net;
 using System.Text;
 using WvsBeta.Common;
 
@@ -179,7 +180,7 @@ namespace WvsBeta.Database
                         _connection.Open();
 
 
-                        _logFile.WriteLine($"Connected with MySQL server with version info: {_connection.ServerVersion} and uses {(_connection.UseCompression ? "" : "no ")}compression");
+                        _logFile.WriteLine($"Connected with MySQL server with version info: {_connection.ServerVersion}");
 
                         _logFile.WriteLine("Make sure we are making our reads from committed data.");
                         try
@@ -522,7 +523,7 @@ FROM users WHERE ban_expire > NOW()",
         }
 
         /// <summary>
-        /// 
+        /// Run a prepared statement.
         /// </summary>
         /// <param name="pQuery"></param>
         /// <param name="parameters">Supply 2 pairs, first string (parameter name), second any type (parameter value)</param>
@@ -540,20 +541,26 @@ FROM users WHERE ban_expire > NOW()",
             {
                 CloseReaders();
                 _command = new MySqlCommand(pQuery, _connection);
-                _command.EnableCaching = false;
                 if (parametersLength > 0)
                 {
                     for (var i = 0; i < parametersLength; i += 2)
                     {
+                        var paramName = (string)parameters[i + 0];
+                        var paramVal = parameters[i + 1];
+
                         _command.Parameters.AddWithValue(
-                            (string)parameters[i + 0],
-                            parameters[i + 1]
+                            paramName,
+                            paramVal switch
+                            {
+                                IPAddress ip => ip.ToString(),
+                                _ => paramVal,
+                            }
                         );
                     }
 
                     // Changed in new Connector; prepare after AddWithValue. Documentation still shows before...
                     // https://stackoverflow.com/questions/71897708/parameter-was-not-found-during-prepare-using-prepared-statement-in-c-sharp
-                    _command.Prepare();
+                    //_command.Prepare();
                 }
 
                 AddQuery(pQuery, parameters);
@@ -596,7 +603,6 @@ FROM users WHERE ban_expire > NOW()",
             {
                 CloseReaders();
                 _command = new MySqlCommand(pQuery, _connection);
-                _command.EnableCaching = false;
                 AddQuery(pQuery, null);
 
                 return ExecuteAndReturnPossibleReader(pQuery);
@@ -645,7 +651,6 @@ FROM users WHERE ban_expire > NOW()",
                     Transaction = transaction,
                     Connection = _connection
                 };
-                executor.EnableCaching = false;
 
                 try
                 {

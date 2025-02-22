@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using MySql.Data.MySqlClient;
+using MySqlConnector;
 using WvsBeta.Common;
 
 namespace WvsBeta.Game

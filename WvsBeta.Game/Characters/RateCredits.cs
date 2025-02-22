@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using log4net;
-using MySql.Data.MySqlClient;
+using MySqlConnector;
 using WvsBeta.Common;
 using WvsBeta.Game.GameObjects;
 using WvsBeta.Game.Packets;

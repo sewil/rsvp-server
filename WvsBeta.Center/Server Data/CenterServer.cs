@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using log4net;
-using MySql.Data.MySqlClient;
+using MySqlConnector;
 using WvsBeta.Center.DBAccessor;
 using WvsBeta.Common;
 using WvsBeta.Common.Character;

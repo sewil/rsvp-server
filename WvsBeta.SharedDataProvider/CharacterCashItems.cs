@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using MySql.Data.MySqlClient;
+using MySqlConnector;
 using WvsBeta.Common;
 using WvsBeta.Database;
 using WvsBeta.Game;

@@ -1,4 +1,4 @@
-﻿using MySql.Data.MySqlClient;
+﻿using MySqlConnector;
 using WvsBeta.Common.Sessions;
 
 namespace WvsBeta.Game

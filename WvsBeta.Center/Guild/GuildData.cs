@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using MySql.Data.MySqlClient;
+using MySqlConnector;
 using WvsBeta.Common;
 
 namespace WvsBeta.Center.Guild

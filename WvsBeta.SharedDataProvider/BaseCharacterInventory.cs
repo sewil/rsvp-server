@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using log4net;
-using MySql.Data.MySqlClient;
+using MySqlConnector;
 using WvsBeta.Common;
 using WvsBeta.Common.Sessions;
 using WvsBeta.Database;

@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using log4net;
-using MySql.Data.MySqlClient;
+using MySqlConnector;
 using WvsBeta.Common;
 using WvsBeta.Common.Character;
 using WvsBeta.Common.Sessions;
@@ -1146,7 +1146,7 @@ login_count = login_count + 1
                     userId = data.GetInt32("ID");
                     dbpass = data.GetString("password");
                     banReason = data.GetByte("ban_reason");
-                    banExpire = data.GetMySqlDateTime("ban_expire").Value.ToFileTimeUtc();
+                    banExpire = ((DateTime)data.GetMySqlDateTime("ban_expire")).ToFileTimeUtc();
                     Player.GMLevel = data.GetByte("admin");
                     Player.PinSecret = data.GetString("pin_secret");
 

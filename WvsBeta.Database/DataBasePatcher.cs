@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using log4net;
-using MySql.Data.MySqlClient;
+using MySqlConnector;
 
 namespace WvsBeta.Database
 {

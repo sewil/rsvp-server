@@ -1,7 +1,7 @@
-﻿using System;
+﻿using MySqlConnector;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using MySql.Data.MySqlClient;
 
 namespace WvsBeta.Common
 {
@@ -68,29 +68,6 @@ namespace WvsBeta.Common
             return ret;
         }
 
-        public static IEnumerable<T> FlatMap<T>(this MySqlDataReader reader, Func<MySqlDataReader, T> mapper)
-        {
-            List<T> ret = new List<T>();
-
-            while (reader.Read())
-            {
-                ret.Add(mapper(reader));
-            }
-
-            return ret;
-        }
-
-        public static T Map<T>(this MySqlDataReader reader, Func<MySqlDataReader, T> mapper)
-        {
-            if (reader.Read())
-            {
-                var ret = mapper(reader);
-                reader.Close();
-                return ret;
-            }
-            else
-                return default(T);
-        }
         
         public static bool TryFind<T>(this IEnumerable<T> enumerable, Predicate<T> predicate, Action<T> onFound, Action onNotFound)
         {
@@ -126,6 +103,31 @@ namespace WvsBeta.Common
             }
 
             return default;
+        }
+        
+        
+        public static IEnumerable<T> FlatMap<T>(this MySqlDataReader reader, Func<MySqlDataReader, T> mapper)
+        {
+            var ret = new List<T>();
+
+            while (reader.Read())
+            {
+                ret.Add(mapper(reader));
+            }
+
+            return ret;
+        }
+
+        public static T Map<T>(this MySqlDataReader reader, Func<MySqlDataReader, T> mapper)
+        {
+            if (reader.Read())
+            {
+                var ret = mapper(reader);
+                reader.Close();
+                return ret;
+            }
+            else
+                return default(T);
         }
     }
 }
