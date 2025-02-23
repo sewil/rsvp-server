@@ -558,9 +558,7 @@ FROM users WHERE ban_expire > NOW()",
                         );
                     }
 
-                    // Changed in new Connector; prepare after AddWithValue. Documentation still shows before...
-                    // https://stackoverflow.com/questions/71897708/parameter-was-not-found-during-prepare-using-prepared-statement-in-c-sharp
-                    //_command.Prepare();
+                    // NEVER Prepare()!
                 }
 
                 AddQuery(pQuery, parameters);
