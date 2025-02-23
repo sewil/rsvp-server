@@ -56,6 +56,7 @@ namespace WvsBeta.Launcher
 
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public Process? Process { get; set; }
+        private bool ProcessCanThrowExit { get; set; }
 
         [DefaultValue(null)] public event EventHandler Reinstall;
 
@@ -73,6 +74,12 @@ namespace WvsBeta.Launcher
             {
                 try
                 {
+                    if (!ProcessCanThrowExit)
+                    {
+                        // Update it by checking if it still exists
+                        UpdateProcess();
+                    }
+
                     return Process != null;
                 }
                 catch (Exception)
@@ -81,6 +88,7 @@ namespace WvsBeta.Launcher
                 }
             }
         }
+
         public string FullWorkingDirectory => Path.Combine(Program.InstallationPath, WorkingDirectory);
 
         public ServerStatus()
@@ -109,6 +117,16 @@ namespace WvsBeta.Launcher
             }
 
             return processes.First();
+        }
+
+        public void UpdateProcess()
+        {
+            var process = FindProcess();
+            if (process != null)
+            {
+                Process = process;
+                HookProcess(process);
+            }
         }
 
         public void StartProcess()
@@ -158,16 +176,34 @@ namespace WvsBeta.Launcher
         {
             if (!Started || Process == null) return;
             Process.WaitForExit();
-            Process.Close();
+            Process?.Close();
             Process = null;
         }
 
         private void HookProcess(Process process)
         {
-            process.Exited += (sender, eventArgs) =>
+            process.Exited += Process_Exited;
+            try
             {
-                Invoke((MethodInvoker)UpdateButtonStates);
-            };
+                process.EnableRaisingEvents = true;
+                ProcessCanThrowExit = true;
+            }
+            catch (Exception)
+            {
+                // We need special care for these processes.
+                ProcessCanThrowExit = false;
+            }
+        }
+
+        private void Process_Exited(object? sender, EventArgs e)
+        {
+            Process.Exited -= Process_Exited;
+            Invoke((MethodInvoker)delegate
+            {
+                Process?.Close();
+                Process = null;
+                UpdateButtonStates();
+            });
         }
 
         private bool _wasStarted = false;
@@ -175,7 +211,10 @@ namespace WvsBeta.Launcher
         {
             var started = Started;
 
-            btnStart.Enabled = !StartingDisabled;
+            var startButtonEnabled = !StartingDisabled;
+            if (startButtonEnabled && started && !ProcessCanThrowExit) startButtonEnabled = false;
+            btnStart.Enabled = startButtonEnabled;
+           
 
             btnStart.Text = started ? "Restart" : "Start";
             propertyGrid1.Enabled = !started;
@@ -212,12 +251,7 @@ namespace WvsBeta.Launcher
 
             if (!Started)
             {
-                var process = FindProcess();
-                if (process != null)
-                {
-                    Process = process;
-                    HookProcess(process);
-                }
+                UpdateProcess();
             }
 
             UpdateButtonStates();
