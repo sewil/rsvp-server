@@ -55,9 +55,11 @@
     <Content Include="evolutions\center\22.sql" />
     <Content Include="evolutions\center\23.sql" />
     <Content Include="evolutions\center\24.sql" />
+    <Content Include="evolutions\center\25.sql" />
     <Content Include="evolutions\login\1.sql" />
     <Content Include="evolutions\login\10.sql" />
     <Content Include="evolutions\login\2.sql" />
+    <Content Include="evolutions\login\17.sql" />
     <Content Include="evolutions\login\3.sql" />
     <Content Include="evolutions\login\4.sql" />
     <Content Include="evolutions\login\5.sql" />

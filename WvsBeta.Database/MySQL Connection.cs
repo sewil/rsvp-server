@@ -85,7 +85,13 @@ namespace WvsBeta.Database
             _logFile = new Common.Logfile("Database", true, Path.Combine("Logs", pMasterThread.ServerName, "Database"));
             Stop = false;
             NoRecovery = noRecovery;
-            _connectionString = "Server=" + pHost + "; Port=" + pPort + "; Database=" + pDatabase + "; Uid=" + pUsername + "; Pwd=" + pPassword;
+            _connectionString = string.Join("; ", 
+                "Server=" + pHost,
+                "Port=" + pPort,
+                "Database=" + pDatabase,
+                "Uid=" + pUsername,
+                "Pwd=" + pPassword
+            );
             RecoverConnection(true);
 
             if (pinger)
@@ -507,6 +513,12 @@ FROM users WHERE ban_expire > NOW()",
                 Reader.Close();
                 Reader.Dispose();
                 Reader = null;
+            }
+
+            if (_command != null)
+            {
+                _command.Dispose();
+                _command = null;
             }
         }
 
