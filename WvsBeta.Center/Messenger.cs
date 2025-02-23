@@ -244,7 +244,7 @@ namespace WvsBeta.Center
                 log.Info($"{sender.Name} invited {recipient.Name} to messenger [ID: {messenger.ID}]");
             });
 
-            recipient.SendPacket(MessengerPacket.Invite(sender.Name, sender.ChannelID, messenger.ID, sender.IsAdmin));
+            recipient.SendPacket(MessengerPacket.Invite(sender.Name, sender.ChannelID, messenger.ID, sender.IsGM));
             sender.SendPacket(MessengerPacket.InviteResult(recipientName, true));
         }
 

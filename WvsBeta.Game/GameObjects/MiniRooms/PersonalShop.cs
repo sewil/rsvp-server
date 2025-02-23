@@ -88,7 +88,7 @@ namespace WvsBeta.Game.GameObjects.MiniRooms
 
             if (onCreate)
             {
-                if (false && chr.IsAdmin) return ErrorMessage.UnableToDoIt;
+                if (false && chr.IsGM) return ErrorMessage.UnableToDoIt;
 
                 int itemID;
 
@@ -380,7 +380,7 @@ namespace WvsBeta.Game.GameObjects.MiniRooms
             if (CurUsers == 0 ||
                 !Opened ||
                 userSlot < 1 ||
-                (false && chr.IsAdmin) ||
+                (false && chr.IsGM) ||
                 buySlot < 0 ||
                 buySlot >= SlotCount ||
                 buySlot >= Items.Count)

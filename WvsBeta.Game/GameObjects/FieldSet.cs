@@ -352,7 +352,7 @@ namespace WvsBeta.Game
 
         public void BanishUser(bool exceptAdmin)
         {
-            CastOut(Characters.Where(x => !exceptAdmin || !x.IsAdmin).ToArray(), 0, null, "Banished");
+            CastOut(Characters.Where(x => !exceptAdmin || !x.IsGM).ToArray(), 0, null, "Banished");
         }
 
 
@@ -753,7 +753,7 @@ namespace WvsBeta.Game
             switch (Name)
             {
                 case "Party1":
-                    if (!chr.IsAdmin)
+                    if (!chr.IsGM)
                     {
                         if (party == null) return EnterError.NeedsParty;
                         if (partyMemberCount < 3 || partyMemberCount > 4) return EnterError.WrongNumberOfPartyMembers;
@@ -763,7 +763,7 @@ namespace WvsBeta.Game
                     break;
 
                 case "Party2":
-                    if (!chr.IsAdmin)
+                    if (!chr.IsGM)
                     {
                         if (party == null) return EnterError.NeedsParty;
 

@@ -49,7 +49,7 @@ namespace WvsBeta.Game
 
         public void PermaBan(string reason, BanReasons banReason = BanReasons.Hack, bool doNotBanForNow = false, int extraDelay = 0)
         {
-            if (IsAdmin) doNotBanForNow = true;
+            if (IsGM) doNotBanForNow = true;
             if (!doNotBanForNow)
             {
                 Server.Instance.AddDelayedBanRecord(this, reason, banReason, extraDelay);

@@ -309,7 +309,7 @@ namespace WvsBeta.Game
         public static void SendBossHPBarToAdmins(Map pField, int pHP, int pMaxHP, uint pColorBottom, uint pColorTop)
         {
             var pw = GetBossHPBarPacket(pHP, pMaxHP, pColorBottom, pColorTop);
-            pField.Characters.Where(x => x.IsAdmin).ForEach(x => x.SendPacket(pw));
+            pField.Characters.Where(x => x.IsGM).ForEach(x => x.SendPacket(pw));
         }
 
         private static Packet GetBossHPBarPacket(int pHP, int pMaxHP, uint pColorBottom, uint pColorTop)

@@ -415,7 +415,7 @@ namespace WvsBeta.Game.GameObjects.MiniRooms
             var inviteCharacterId = packet.ReadInt();
             var inviteCharacter = Server.Instance.GetCharacter(inviteCharacterId);
 
-            if (inviteCharacter == null || inviteCharacter == chr || (inviteCharacter.IsAdmin && !chr.IsAdmin))
+            if (inviteCharacter == null || inviteCharacter == chr || (inviteCharacter.IsGM && !chr.IsGM))
             {
                 _log.Info("Tried to invite character that does not exist, is himself or is an admin");
                 var p = new Packet(ServerMessages.MINI_ROOM_BASE);

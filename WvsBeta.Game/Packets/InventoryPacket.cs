@@ -144,7 +144,7 @@ namespace WvsBeta.Game
                 new Pos(chr.Position),
                 chr.Position.X,
                 0,
-                chr.IsAdmin && !chr.Undercover,
+                chr.IsGM && !chr.Undercover,
                 (short)(chr.Field.DropPool.DropEverlasting ? droppingItem.InventorySlot : 0),
                 false
             );
