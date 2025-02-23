@@ -98,6 +98,15 @@ namespace WvsBeta.Launcher
                 "bind-address = 127.0.0.1"
             });
 
+            /*
+             *  performance_schema=ON
+                performance-schema-instrument='stage/%=ON'
+                performance-schema-consumer-events-stages-current=ON
+                performance-schema-consumer-events-stages-history=ON
+                performance-schema-consumer-events-stages-history-long=ON
+             */
+
+
             // Start the server
             ssMariaDB.StartProcess();
 
