@@ -411,9 +411,7 @@ namespace WvsBeta.Game
 
             var partyMembers = chr.Party?.GetAvailablePartyMembers()?.ToArray() ?? Array.Empty<int>();
 
-            var partyMemberCount = partyMembers.Length;
-
-            if (partyMemberCount == 0) return; // No party...
+            var partyMemberCount = Math.Max(partyMembers.Length, 1);
 
             var mapDecRate = field.DecRate;
 
