@@ -15,7 +15,6 @@ namespace WvsBeta.Game.GameObjects
     public class QuestDemand
     {
         public int ID { get; set; }
-        public string Name { get; set; }
         public int[] Mobs { get; set; }
     }
 
@@ -64,7 +63,6 @@ namespace WvsBeta.Game.GameObjects
                 quest.ID = (int) Utils.ConvertNameToID(property.Name);
 
 
-                quest.Name = killQuests.GetValueOrDefault(quest.ID) ?? "???";
 
                 // Current implementation only covers mobs...
                 quest.Mobs = property.Children.Select(x => (int) Utils.ConvertNameToID(x.ToString())).ToArray();

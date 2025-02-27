@@ -1307,7 +1307,7 @@ namespace WvsBeta.Game
                         }
                         else if (Args[0] == "quest")
                         {
-                            query = QuestsProvider.QuestDemands.Select(i => ((int)i.Key, i.Value.Name));
+                            query = QuestNamesProvider.QuestNames.Select(i => ((int)i.Key, i.Value));
                         }
                         else if (Args[0] == "npc")
                         {
