@@ -62,7 +62,7 @@ namespace WvsBeta.Game.GameObjects
                 return;
             }
             
-            TotalPoints += amount;
+            TotalPoints = Math.Min(9999, TotalPoints + amount);
 
             UpdatePoints();
         }
