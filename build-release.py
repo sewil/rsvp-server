@@ -13,9 +13,17 @@ subprocess.run(["git", "fetch"])
 subprocess.run(["git", "pull"])
 subprocess.run(["dotnet", "publish", "WvsBeta_REVAMP.sln", "-r", "win-x64", "--self-contained", "false", "-c", "Release", "-o", pub_dir, "-p:DebugType=embedded"])
 os.system(f'git log -1 --oneline > {os.path.join(pub_dir, "buildver.txt")}')
-os.system(f'echo WvsBeta.Center Center > "{os.path.join(pub_dir, "launch Center.bat")}"')
-os.system(f'echo WvsBeta.Game Game0 > "{os.path.join(pub_dir, "launch Game0.bat")}"')
-os.system(f'echo WvsBeta.Login Login0 > "{os.path.join(pub_dir, "launch Login0.bat")}"')
-os.system(f'echo WvsBeta.Login Login1 > "{os.path.join(pub_dir, "launch Login1.bat")}"')
-os.system(f'echo WvsBeta.Shop Shop0 > "{os.path.join(pub_dir, "launch Shop0.bat")}"')
+with open(os.path.join(pub_dir, "launch Center.bat"), "w") as f:
+    f.write(f'TITLE Center\nWvsBeta.Center Center')
+with open(os.path.join(pub_dir, "launch Game0.bat"), "w") as f:
+    f.write(f'TITLE Game0\nWvsBeta.Game Game0')
+with open(os.path.join(pub_dir, "launch Login1.bat"), "w") as f:
+    f.write(f'TITLE Login1\nWvsBeta.Login Login1')
+with open(os.path.join(pub_dir, "launch Login0.bat"), "w") as f:
+    f.write(f'TITLE Login0\nWvsBeta.Login Login0')
+with open(os.path.join(pub_dir, "launch Shop0.bat"), "w") as f:
+    f.write(f'TITLE Shop0\nWvsBeta.Shop Shop0')
+with open(os.path.join(pub_dir, "launch Redis.bat"), "w") as f:
+    f.write(f'TITLE Redis\n"{os.path.join("..", "WvsBeta.Launcher", "redist", "redis", "redis-server.exe")}" "{os.path.join("..", "WvsBeta.Launcher", "redist", "redis", "redis.windows.conf")}"')
+
 shutil.copytree(os.path.join(bin_dir, "evolutions"), os.path.join(pub_dir, "evolutions"))
