@@ -133,6 +133,7 @@ namespace WvsBeta.Game
         public Dictionary<int, Map> Maps { get; } = new Dictionary<int, Map>();
         public Dictionary<int, Map> MapsAffected { get; } = new Dictionary<int, Map>();
         public TimeSpan CheckTimeOut { get; private set; }
+        public double DecRate { get; set; }
 
         public TIMER OccupiedTimer { get; set; } 
         public TIMER EnterTimer { get; set; }
@@ -185,6 +186,7 @@ namespace WvsBeta.Game
             CheckTimeOut = TimeSpan.FromSeconds(property.GetInt32("timeOut") ?? 0);
             FieldSetStart = (property.GetBool("manualstart") ?? false) == false;
             EndFieldSetAct = property.GetBool("endfieldset") ?? false;
+            DecRate = property.GetDouble("decRate") ?? 0.0;
 
             if (property["event"] is WzProperty evt) LoadEvents(evt);
             if (property["action"] is WzProperty act) LoadReactorActions(act);

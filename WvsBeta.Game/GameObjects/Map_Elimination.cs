@@ -30,13 +30,7 @@ namespace WvsBeta.Game.GameObjects
         /// <summary>
         /// % of Point gain deduction * amount of party players.
         /// </summary>
-        public double DecRate { get; set; }
-        
-
-        public override void LoadExtraData(WzProperty mapProperty, WzProperty infoProperty)
-        {
-            DecRate = infoProperty.GetDouble("decRate") ?? 0.0;
-        }
+        public double DecRate => ParentFieldSet?.DecRate ?? 0.0;
 
         public override void RemovePlayer(Character chr, bool gmhide = false)
         {
