@@ -8,6 +8,7 @@
 {
     public class WzSound : PcomObject
     {
+        public override string SerializedName => "Sound_DX8";
         public byte[] Blob = null;
         public override void Read(ArchiveReader reader)
         {

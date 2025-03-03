@@ -9,6 +9,8 @@ namespace WzTools.Objects
 {
     public class WzList : PcomObject, IEnumerable<PcomObject>
     {
+        public override string SerializedName => "List";
+
         protected object _obj;
         public int ChildCount { get; protected set; }
         public bool IsArray { get; protected set; }

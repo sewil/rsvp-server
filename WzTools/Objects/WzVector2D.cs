@@ -8,6 +8,7 @@ namespace WzTools.Objects
 {
     public class WzVector2D : PcomObject
     {
+        public override string SerializedName => "Shape2D#Vector2D";
         public int X { get; set; }
         public int Y { get; set; }
 

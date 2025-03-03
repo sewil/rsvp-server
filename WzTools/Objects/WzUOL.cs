@@ -9,6 +9,7 @@ namespace WzTools.Objects
 {
     public class WzUOL : PcomObject
     {
+        public override string SerializedName => "UOL";
         public string Path { get; set; }
         public bool Absolute { get; set; } = false;
 

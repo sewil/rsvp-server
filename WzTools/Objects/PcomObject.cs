@@ -9,6 +9,8 @@ namespace WzTools.Objects
 {
     public abstract class PcomObject : INameSpaceNode
     {
+        public abstract string SerializedName { get; }
+
         public PcomObject Parent = null;
 
         public abstract ICollection<object> Children { get; }
@@ -27,6 +29,36 @@ namespace WzTools.Objects
             set => Set(key, value);
         }
 
+        public static Dictionary<string, Type> ObjectTypes { get; } = [];
+
+        static PcomObject()
+        {
+            foreach (var t in new[] { typeof(WzBareCanvas), typeof(WzList), typeof(WzSound), typeof(WzVector2D), typeof(WzConvex2D), typeof(WzUOL) })
+            {
+                ConstructObject(t).Register();
+            }
+        }
+
+        public void Register()
+        {
+            RegisterObjectType(SerializedName, GetType());
+        }
+        
+        public static void RegisterObjectType<T>() where T : PcomObject
+        {
+            ConstructObject(typeof(T)).Register();
+        }
+
+        public static void RegisterObjectType(string typeName, Type type)
+        {
+            ObjectTypes[typeName] = type;
+        }
+
+        static PcomObject ConstructObject(Type objectType)
+        {
+            return Activator.CreateInstance(objectType) as PcomObject;
+        }
+
         public static void PrepareEncryption(ArchiveReader reader)
         {
             var start = reader.BaseStream.Position;
@@ -42,14 +74,6 @@ namespace WzTools.Objects
                 {
                     // Only a Property is valid on this level
                     case "Property":
-                        /*
-                    case "List": 
-                    case "UOL": 
-                    case "Shape2D#Vector2D": 
-                    case "Shape2D#Convex2D": 
-                    case "Sound_DX8": 
-                    case "Canvas": 
-                    */
                         break;
 
                     default:
@@ -97,15 +121,17 @@ namespace WzTools.Objects
                 case "Property":
                     obj = isFileProp ? new WzFileProperty() : new WzProperty();
                     break;
-                case "List": obj = new WzList(); break;
-                case "UOL": obj = new WzUOL(); break;
-                case "Shape2D#Vector2D": obj = new WzVector2D(); break;
-                case "Shape2D#Convex2D": obj = new WzConvex2D(); break;
-                case "Sound_DX8": obj = new WzSound(); break;
-                case "Canvas": obj = new WzCanvas(); break;
                 default:
-                    Console.WriteLine("Don't know how to read this proptype: {0}", type);
-                    return null;
+                    if (ObjectTypes.TryGetValue(type, out var objectType))
+                    {
+                        obj = ConstructObject(objectType);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Don't know how to read this proptype: {0}", type);
+                        return null;
+                    }
+                    break;
             }
 
             if (t == '#' && !(obj is WzProperty))
@@ -130,19 +156,7 @@ namespace WzTools.Objects
                 return;
             }
 
-            void WriteType(string type) => writer.Write(type, 0x1B, 0x73);
-            switch (obj)
-            {
-                case WzConvex2D _: WriteType("Shape2D#Convex2D"); break;
-                case WzCanvas _: WriteType("Canvas"); break;
-                case WzProperty _: WriteType("Property"); break;
-                case WzList _: WriteType("List"); break;
-                case WzUOL _: WriteType("UOL"); break;
-                case WzVector2D _: WriteType("Shape2D#Vector2D"); break;
-                case WzSound _: WriteType("Sound_DX8"); break;
-                default: throw new NotImplementedException(obj.ToString());
-            }
-
+            writer.Write(obj.SerializedName, 0x1B, 0x73);
             obj.Write(writer);
         }
 

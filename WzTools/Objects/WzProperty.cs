@@ -16,6 +16,8 @@ namespace WzTools.Objects
 {
     public class WzProperty : PcomObject, IEnumerable<KeyValuePair<string, object>>
     {
+        public override string SerializedName => "Property";
+
         public static bool DebugOffsets = false;
 
         protected ObjectStore _objects;
@@ -115,14 +117,14 @@ namespace WzTools.Objects
             throw new Exception($"Don't know how to parse this value: {obj} (key {key})");
         }
 
-        private bool IsCastableToInt64(object x)
+        private static bool IsCastableToInt64(object x)
         {
             return x is short ||
                    x is int ||
                    x is long ||
                    x is sbyte;
         }
-        private bool IsCastableToUInt64(object x)
+        private static bool IsCastableToUInt64(object x)
         {
             return x is ushort ||
                    x is uint ||

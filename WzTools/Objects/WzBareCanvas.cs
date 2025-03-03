@@ -6,14 +6,16 @@ using WzTools.Helpers;
 
 namespace WzTools.Objects
 {
-    public class WzCanvas : WzProperty
+    public class WzBareCanvas : WzProperty
     {
-        public static bool DebugOffsets = false;
-        byte[] RawData;
+        public override string SerializedName => "Canvas";
+
+        public new static bool DebugOffsets = false;
+        protected byte[] RawData { get; set; }
 
         public int Width { get; private set; }
         public int Height { get; private set; }
-        public int PixFormat { get; private set; }
+        public int RawPixFormat { get; private set; }
         public int MagLevel { get; private set; }
 
 
@@ -29,12 +31,12 @@ namespace WzTools.Objects
             }
             else
             {
-                _objects = new ObjectStore();
+                _objects = new();
             }
 
             Width = reader.ReadCompressedInt();
             Height = reader.ReadCompressedInt();
-            PixFormat = reader.ReadCompressedInt();
+            RawPixFormat = reader.ReadCompressedInt();
             MagLevel = reader.ReadCompressedInt();
 
             for (var i = 0; i < 4; i++)
@@ -65,7 +67,7 @@ namespace WzTools.Objects
 
             writer.WriteCompressedInt(Width);
             writer.WriteCompressedInt(Height);
-            writer.WriteCompressedInt(PixFormat);
+            writer.WriteCompressedInt(RawPixFormat);
             writer.WriteCompressedInt(MagLevel);
 
             for (var i = 0; i < 4; i++)
@@ -73,7 +75,7 @@ namespace WzTools.Objects
 
             // Note: not compressed
             writer.Write((int)RawData.Length);
-             
+
             writer.Write(RawData);
             Debug.WriteLineIf(DebugOffsets, $"Finish writing WzCanvas at {writer.BaseStream.Position}");
 

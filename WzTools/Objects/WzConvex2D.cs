@@ -5,6 +5,7 @@ namespace WzTools.Objects
 {
     public class WzConvex2D : WzList
     {
+        public override string SerializedName => "Shape2D#Convex2D";
 
         public override void Read(ArchiveReader reader)
         {
