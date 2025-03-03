@@ -415,9 +415,9 @@ namespace WvsBeta.Game
 
             var mapDecRate = field.DecRate;
 
-            var actualPoints = elimPoints * (1.0 - (mapDecRate * partyMemberCount));
+            double actualPoints = elimPoints * (1.0 - (mapDecRate * partyMemberCount));
 
-            field.AddPoints((uint)actualPoints);
+            field.AddPoints(actualPoints);
         }
 
         /// <summary>
