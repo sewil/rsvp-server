@@ -41,6 +41,8 @@
             dataGridView1 = new DataGridView();
             menuStrip1 = new MenuStrip();
             saveIMGToolStripMenuItem1 = new ToolStripMenuItem();
+            splitContainer2 = new SplitContainer();
+            pictureBox1 = new PictureBox();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
             splitContainer1.Panel1.SuspendLayout();
             splitContainer1.Panel2.SuspendLayout();
@@ -48,6 +50,11 @@
             cmsTreeView.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             menuStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)splitContainer2).BeginInit();
+            splitContainer2.Panel1.SuspendLayout();
+            splitContainer2.Panel2.SuspendLayout();
+            splitContainer2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
             // 
             // splitContainer1
@@ -62,7 +69,7 @@
             // 
             // splitContainer1.Panel2
             // 
-            splitContainer1.Panel2.Controls.Add(dataGridView1);
+            splitContainer1.Panel2.Controls.Add(splitContainer2);
             splitContainer1.Size = new Size(1245, 663);
             splitContainer1.SplitterDistance = 415;
             splitContainer1.TabIndex = 1;
@@ -128,10 +135,11 @@
             dataGridView1.Location = new Point(0, 0);
             dataGridView1.Name = "dataGridView1";
             dataGridView1.RowHeadersWidth = 51;
-            dataGridView1.Size = new Size(826, 663);
+            dataGridView1.Size = new Size(826, 328);
             dataGridView1.TabIndex = 1;
             dataGridView1.CellBeginEdit += dataGridView1_CellBeginEdit;
             dataGridView1.CellEndEdit += dataGridView1_CellEndEdit;
+            dataGridView1.CellToolTipTextNeeded += dataGridView1_CellToolTipTextNeeded;
             dataGridView1.UserDeletedRow += dataGridView1_UserDeletedRow;
             dataGridView1.UserDeletingRow += dataGridView1_UserDeletingRow;
             // 
@@ -151,6 +159,34 @@
             saveIMGToolStripMenuItem1.Size = new Size(85, 24);
             saveIMGToolStripMenuItem1.Text = "Save IMG";
             saveIMGToolStripMenuItem1.Click += saveIMGToolStripMenuItem_Click;
+            // 
+            // splitContainer2
+            // 
+            splitContainer2.Dock = DockStyle.Fill;
+            splitContainer2.Location = new Point(0, 0);
+            splitContainer2.Name = "splitContainer2";
+            splitContainer2.Orientation = Orientation.Horizontal;
+            // 
+            // splitContainer2.Panel1
+            // 
+            splitContainer2.Panel1.Controls.Add(dataGridView1);
+            // 
+            // splitContainer2.Panel2
+            // 
+            splitContainer2.Panel2.Controls.Add(pictureBox1);
+            splitContainer2.Size = new Size(826, 663);
+            splitContainer2.SplitterDistance = 328;
+            splitContainer2.TabIndex = 2;
+            // 
+            // pictureBox1
+            // 
+            pictureBox1.Dock = DockStyle.Fill;
+            pictureBox1.Location = new Point(0, 0);
+            pictureBox1.Name = "pictureBox1";
+            pictureBox1.Size = new Size(826, 331);
+            pictureBox1.SizeMode = PictureBoxSizeMode.CenterImage;
+            pictureBox1.TabIndex = 0;
+            pictureBox1.TabStop = false;
             // 
             // DataEdit
             // 
@@ -172,6 +208,11 @@
             ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
+            splitContainer2.Panel1.ResumeLayout(false);
+            splitContainer2.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)splitContainer2).EndInit();
+            splitContainer2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -189,5 +230,7 @@
         private ToolStripMenuItem addWzPropertyBeforeToolStripMenuItem;
         private ToolStripMenuItem addWzPropertyAfterToolStripMenuItem;
         private ToolStripMenuItem addWzPropertyInsideToolStripMenuItem;
+        private SplitContainer splitContainer2;
+        private PictureBox pictureBox1;
     }
 }

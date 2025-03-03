@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using WvsBeta.Common;
+using WzTools.Extra;
 using WzTools.FileSystem;
 using WzTools.Helpers;
 using WzTools.Objects;
@@ -26,6 +27,8 @@ namespace WvsBeta.Launcher
         {
             InitializeComponent();
             dataGridView1.DataSource = _dataGridData;
+
+            PcomObject.RegisterObjectType<WzCanvas>();
         }
 
         NodeData? SelectedNodeData => tvImg.SelectedNode?.Tag as NodeData;
@@ -235,12 +238,25 @@ namespace WvsBeta.Launcher
             var property = nd.Property;
             if (property == null) return;
 
+
+            if (property is WzCanvas canvas)
+            {
+                _dataGridData.Add(new DataGridLineImage(canvas));
+                pictureBox1.Image = canvas.GetImage();
+            }
+            else
+            {
+                pictureBox1.Image = null;
+            }
+
             foreach (var kvp in property)
             {
                 if (kvp.Value is PcomObject || kvp.Value is byte[]) continue;
 
+                var name = kvp.Key;
+
                 object changedValue = kvp.Value;
-                if (nd.Modifications?.TryGetValue(kvp.Key, out var tmp) ?? false)
+                if (nd.Modifications?.TryGetValue(name, out var tmp) ?? false)
                 {
                     changedValue = tmp;
                     if (changedValue == null)
@@ -250,7 +266,7 @@ namespace WvsBeta.Launcher
                     }
                 }
 
-                var dgl = new DataGridLine(kvp.Key, kvp.Value, changedValue);
+                var dgl = new DataGridLine(name, kvp.Value, changedValue);
 
                 _dataGridData.Add(dgl);
             }
@@ -259,6 +275,21 @@ namespace WvsBeta.Launcher
             {
                 var dgl = new DataGridLine(item.Key, "", item.Value, isNew: true);
                 _dataGridData.Add(dgl);
+            }
+        }
+
+        class DataGridLineImage : DataGridLine
+        {
+            private readonly WzCanvas _canvas = null;
+
+            public int Width => _canvas?.Width ?? 0;
+            public int Height => _canvas?.Height ?? 0;
+
+            public DataGridLineImage() : base() { }
+
+            public DataGridLineImage(WzCanvas canvas, bool isNew = false) : base("[image]", canvas, canvas, isNew)
+            {
+                _canvas = canvas;
             }
         }
 
@@ -276,6 +307,7 @@ namespace WvsBeta.Launcher
             }
 
             [DisplayName("Original Value")]
+            [ReadOnly(true)]
             public object OriginalValue { get; init; }
 
             public string Type => Value?.GetType().Name ?? "[unknown]";
@@ -443,7 +475,7 @@ namespace WvsBeta.Launcher
         private void dataGridView1_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
             Debug.WriteLine($"Cell editing of row {e.RowIndex}, col {e.ColumnIndex} finished.");
-            
+
             StoreModificationsInNodeData();
         }
 
@@ -626,6 +658,13 @@ namespace WvsBeta.Launcher
             }
 
             UpdateMenus();
+        }
+
+        private void dataGridView1_CellToolTipTextNeeded(object sender, DataGridViewCellToolTipTextNeededEventArgs e)
+        {
+            Debug.WriteLine($"Getting tooltip for {e.RowIndex}, col {e.ColumnIndex}");
+
+
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35707.178 d17.12
+VisualStudioVersion = 17.12.35707.178
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WvsBeta.Center", "WvsBeta.Center\WvsBeta.Center.csproj", "{138D433A-5947-4A3D-BCA4-C3A3B02C6B09}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -76,6 +76,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WvsBeta.Launcher", "WvsBeta
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MapleStarter", "MapleStarter\MapleStarter.csproj", "{C60164EE-7614-4DAD-8D3F-A2F1FEB0B24E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WvsBeta.WzTools.Extra", "WvsBeta.WzTools.Extra\WvsBeta.WzTools.Extra.csproj", "{FEC05ADA-6C22-4EA5-81FD-8E655732CE40}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -145,6 +147,10 @@ Global
 		{C60164EE-7614-4DAD-8D3F-A2F1FEB0B24E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C60164EE-7614-4DAD-8D3F-A2F1FEB0B24E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C60164EE-7614-4DAD-8D3F-A2F1FEB0B24E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FEC05ADA-6C22-4EA5-81FD-8E655732CE40}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FEC05ADA-6C22-4EA5-81FD-8E655732CE40}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FEC05ADA-6C22-4EA5-81FD-8E655732CE40}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FEC05ADA-6C22-4EA5-81FD-8E655732CE40}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

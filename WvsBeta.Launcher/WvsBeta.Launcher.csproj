@@ -39,6 +39,7 @@
   <ItemGroup>
     <ProjectReference Include="..\WvsBeta.Common\WvsBeta.Common.csproj" />
     <ProjectReference Include="..\WvsBeta.Database\WvsBeta.Database.csproj" />
+    <ProjectReference Include="..\WvsBeta.WzTools.Extra\WvsBeta.WzTools.Extra.csproj" />
     <ProjectReference Include="..\WzTools\WvsBeta.WzTools.csproj" />
   </ItemGroup>
 
