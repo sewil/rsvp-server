@@ -124,6 +124,7 @@ namespace WvsBeta.Launcher
             var process = FindProcess();
             if (process != null)
             {
+                if (Process != null && Process.Id == process.Id) return;
                 Process = process;
                 HookProcess(process);
             }
@@ -198,10 +199,10 @@ namespace WvsBeta.Launcher
         private void Process_Exited(object? sender, EventArgs e)
         {
             Process.Exited -= Process_Exited;
+            Process?.Close();
+            Process = null;
             Invoke((MethodInvoker)delegate
             {
-                Process?.Close();
-                Process = null;
                 UpdateButtonStates();
             });
         }
