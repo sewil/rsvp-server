@@ -8,6 +8,7 @@ using log4net;
 using WvsBeta.Common;
 using WvsBeta.Game.GameObjects;
 using WvsBeta.Game.Packets;
+using WvsBeta.SharedDataProvider.Templates;
 // ReSharper disable HeuristicUnreachableCode
 
 #pragma warning disable 162
@@ -641,8 +642,7 @@ namespace WvsBeta.Game
 
         }
 
-        public int PortalID { get; set; }
-        protected int GetPortalID() => PortalID;
+        public Portal Portal { get; set; }
 
         protected void AddBuff(int itemID) => chr.Buffs.AddItemBuff(itemID);
         protected void RemoveBuff(int itemID) => chr.Buffs.RemoveItemBuff(itemID);

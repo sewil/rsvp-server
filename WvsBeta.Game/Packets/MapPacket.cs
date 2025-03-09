@@ -105,7 +105,7 @@ namespace WvsBeta.Game
 
             if (!string.IsNullOrEmpty(portal.Script))
             {
-                if (!NpcPacket.StartScript(chr, portal.Script, portalID: portal.ID))
+                if (!NpcPacket.StartScript(chr, portal.Script, portal: portal))
                 {
                     BlockedMessage(chr, PortalBlockedMessage.ClosedForNow);
                 }
@@ -182,7 +182,7 @@ namespace WvsBeta.Game
 
                             if (!string.IsNullOrEmpty(portal.Script))
                             {
-                                if (!NpcPacket.StartScript(chr, portal.Script, portalID: portal.ID))
+                                if (!NpcPacket.StartScript(chr, portal.Script, portal: portal))
                                 {
                                     BlockedMessage(chr, PortalBlockedMessage.ClosedForNow);
                                 }

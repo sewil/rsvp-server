@@ -99,7 +99,7 @@ namespace WvsBeta.Game
             }
         }
 
-        public static bool StartScript(Character chr, int npcID, object NPC, int portalID = 0)
+        public static bool StartScript(Character chr, int npcID, object NPC, Portal portal = null)
         {
             if (chr.NpcSession != null)
             {
@@ -127,7 +127,7 @@ namespace WvsBeta.Game
                         return false;
                     }
                     v2Script.ScriptName = scriptName;
-                    v2Script.PortalID = portalID;
+                    v2Script.Portal = portal;
                     
                     chr.NpcSession = v2Script;
                     v2Script.Setup(chr, npcID);
@@ -141,7 +141,7 @@ namespace WvsBeta.Game
             return true;
         }
 
-        public static bool StartScript(Character chr, string scriptName, int npcID = 9900000, int portalID = 0)
+        public static bool StartScript(Character chr, string scriptName, int npcID = 9900000, Portal portal = null)
         {
             if (chr.NpcSession != null)
             {
@@ -171,7 +171,7 @@ namespace WvsBeta.Game
                 return false;
             }
 
-            return StartScript(chr, npcID, NPC, portalID);
+            return StartScript(chr, npcID, NPC, portal);
         }
 
         public static void HandleNPCChat(Character chr, Packet packet)
