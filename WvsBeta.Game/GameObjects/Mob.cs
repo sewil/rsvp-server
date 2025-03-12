@@ -254,7 +254,7 @@ namespace WvsBeta.Game
             {
                 if (!fucker.IsGM)
                 {
-                    if (//amount >= 90000 ||
+                    if (amount >= 90000 ||
                         amount < 0)
                     {
                         fucker.PermaBan($"Impossible damage ({amount})");
