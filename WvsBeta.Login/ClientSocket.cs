@@ -362,18 +362,14 @@ namespace WvsBeta.Login
             {
                 hackDisconnect("Too many files in directory: " + checksums.Count);
             }
-            else if (checksums.ContainsKey("Data.wz") && checksums["Data.wz"] != Server.Instance.DataChecksum)
+            else if (Server.Instance.DataChecksum == 0 && checksums.ContainsKey("Data.wz"))
             {
-                if (Server.Instance.DataChecksum == 0)
-                {
-                    Program.MainForm.LogAppend("No data checksum set! User {0} sent {1:X8}", Player.UserID,
-                        checksums["Data.wz"]);
-                }
-                else
-                {
-                    hackDisconnect(
-                        $"Data.wz checksum invalid: 0x{checksums["Data.wz"]:X8} != 0x{Server.Instance.DataChecksum:X8}");
-                }
+                Program.MainForm.LogAppend("No data checksum set! User {0} sent {1:X8}", Player.UserID,
+                    checksums["Data.wz"]);
+            }
+            else if (Server.Instance.DataChecksum != 0 && (!checksums.ContainsKey("Data.wz") || checksums["Data.wz"] != Server.Instance.DataChecksum))
+            {
+                hackDisconnect($"Data.wz checksum invalid: 0x{checksums["Data.wz"]:X8} != 0x{Server.Instance.DataChecksum:X8}");
             }
 
             checksums.ForEach(c => Common.Tracking.ClientChecksum.LogFileChecksum(machineID, IP, c.Key, "" + c.Value));
