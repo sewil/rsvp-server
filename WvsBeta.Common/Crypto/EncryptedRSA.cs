@@ -18,20 +18,20 @@ namespace WvsBeta.Common.Crypto
 
         private static string GetKeyFileName(string keyPrefix, bool privKey)
         {
+            if (File.Exists(keyPrefix)) return keyPrefix;
             var ext = privKey ? "_private.key.xml" : "_public.key.xml";
             return keyPrefix + ext;
         }
 
         public static EncryptedKeyCreationResult CreatePasswordProtectedKeys(string password)
         {
-            using var rng = new RNGCryptoServiceProvider();
             using var rsa = new RSACryptoServiceProvider();
 
             var xmlPrivate = rsa.ToXmlString(true);
             var xmlPublic = rsa.ToXmlString(false);
 
             var salt = new byte[8];
-            rng.GetBytes(salt);
+            RandomNumberGenerator.Fill(salt);
             using var k = new Rfc2898DeriveBytes(password, salt, 2000);
             var encryption = Aes.Create();
             encryption.IV = k.GetBytes(16);

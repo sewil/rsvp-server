@@ -1015,10 +1015,29 @@ login_count = login_count + 1
 
             var challengeResult = packet.ReadBool();
             var challengeLength = packet.ReadInt();
-            byte[] response = packet.ReadBytes(challengeLength);
+            var response = packet.ReadBytes(challengeLength);
 
             var username = packet.ReadString();
-            var password = packet.ReadString();
+            string password;
+
+            var sentEncryptedPassword = packet.ReadBool();
+            var expectEncryptedPassword = Server.Instance.ServerKey != null;
+
+            AssertError(sentEncryptedPassword && !expectEncryptedPassword, "Received encrypted password, but unable to decode it (key not loaded).");
+            AssertWarning(!sentEncryptedPassword && expectEncryptedPassword, "Did not send an encrypted password, even though we expected one.");
+
+            if (sentEncryptedPassword)
+            {
+                // Use rsa encrypted password
+                var encryptedPasswordLength = packet.ReadInt();
+                var encryptedPassword = packet.ReadBytes(encryptedPasswordLength);
+                var decryptedPassword = Server.Instance.ServerKey.Decrypt(encryptedPassword, true);
+                password = Encoding.UTF8.GetString(decryptedPassword);
+            }
+            else
+            {
+                password = packet.ReadString();
+            }
 
             if (AssertWarning(username.Length < 4 || username.Length > 12, "Username length wrong (len: " + username.Length + "): " + username) ||
                 AssertWarning(password.Length < 4 || password.Length > 12, "Password length wrong (len: " + password.Length + ")"))

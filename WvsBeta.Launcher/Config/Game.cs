@@ -156,6 +156,13 @@ namespace WvsBeta.Launcher.Config
 
         [ConfigField("requireEULA", "false")] public bool RequireEULA { get; set; }
 
+
+        [ConfigField("privateKey.path", "")]
+        public string PrivateKeyPath { get; set; }
+
+        [ConfigField("privateKey.password", "")]
+        public string PrivateKeyPassword { get; set; }
+
         public override void Reload()
         {
             foreach (var node in cf["center"])
