@@ -58,13 +58,13 @@ namespace WvsBeta.Launcher
         public Process? Process { get; set; }
         private bool ProcessCanThrowExit { get; set; }
 
-        [DefaultValue(null)] public event EventHandler Reinstall;
+        [DefaultValue(null)] public event EventHandler? Reinstall;
 
-        [DefaultValue(null)] public event EventHandler Start;
+        [DefaultValue(null)] public event EventHandler? Start;
 
-        [DefaultValue(null)] public event EventHandler OnStarted;
+        [DefaultValue(null)] public event EventHandler? OnStarted;
 
-        [DefaultValue(null)] public event EventHandler OnStopped;
+        [DefaultValue(null)] public event EventHandler? OnStopped;
 
         [DefaultValue(false)]
         public bool StartingDisabled { get; set; } = false;

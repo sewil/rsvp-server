@@ -47,7 +47,7 @@ namespace WvsBeta.Launcher
 
             public void Save(MySQL_Connection connection)
             {
-                var arguments = new object[]
+                var arguments = new object?[]
                 {
                     "@id", ID,
                     "@username", Username,

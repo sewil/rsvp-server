@@ -201,7 +201,7 @@ namespace WvsBeta.Launcher
         {
         }
 
-        private UdpClient broadcastClient = new UdpClient();
+        private UdpClient broadcastClient = new ();
 
         private void tmrServerAnnouncer_Tick(object sender, EventArgs e)
         {

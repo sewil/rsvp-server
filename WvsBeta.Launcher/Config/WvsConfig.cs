@@ -51,7 +51,7 @@ namespace WvsBeta.Launcher.Config
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Unable to find '{filePath}'. Application will exit.");
+                MessageBox.Show($"Unable to load '{filePath}'. Application will exit. Error: " + ex);
                 Environment.Exit(1);
                 return null;
             }
@@ -69,7 +69,7 @@ namespace WvsBeta.Launcher.Config
         public string Password { get; set; } = "";
 
 
-        private ConfigReader cf;
+        private ConfigReader? cf;
 
         public void Reload()
         {
