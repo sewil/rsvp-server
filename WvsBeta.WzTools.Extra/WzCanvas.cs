@@ -10,16 +10,17 @@ namespace WzTools.Extra
 {
     public class WzCanvas : WzBareCanvas
     {
-        private Bitmap Bitmap { get; set; }
+        private Bitmap? Bitmap { get; set; }
 
-        public WzPixFormat PixFormat => (WzPixFormat)RawPixFormat;
+        public WzPixFormat PixFormat
+        {
+            get => (WzPixFormat)RawPixFormat;
+            set => RawPixFormat = (int)value;
+        }
 
         public Bitmap GetImage()
         {
-            if (Bitmap != null) return Bitmap;
-
-            return Bitmap = DeserializeRawData();
-
+            return Bitmap ??= DeserializeRawData();
         }
 
         void ValidateHeader()
@@ -78,45 +79,85 @@ namespace WzTools.Extra
                 inputStream.CopyTo(outputStream);
             }
 
-
             outputStream.Position = 0;
-            using var convertedPixels = ConvertPixels(outputStream);
 
-            var arr = convertedPixels.ToArray();
-            var format = PixFormat switch
+            return ConvertRawPixelsToBitmap(outputStream);
+        }
+
+        public Bitmap ConvertRawPixelsToBitmap(MemoryStream pixels)
+        {
+            return ConvertRawPixelsToBitmap(pixels, PixFormat, Width, Height);
+        }
+
+        public static Bitmap ConvertRawPixelsToBitmap(MemoryStream pixels, WzPixFormat pixFormat, Bitmap baseBitmap)
+        {
+            return ConvertRawPixelsToBitmap(pixels, pixFormat, baseBitmap.Width, baseBitmap.Height);
+        }
+
+        public static Bitmap ConvertRawPixelsToBitmap(MemoryStream pixels, WzPixFormat pixFormat, int width, int height)
+        {
+            var format = pixFormat switch
             {
                 WzPixFormat.R5G6B5 => PixelFormat.Format16bppRgb565,
                 _ => PixelFormat.Format32bppArgb,
             };
 
-            var output = new Bitmap(Width, Height, format);
-            var rect = new Rectangle(0, 0, output.Width, output.Height);
-            var bmpData = output.LockBits(rect, ImageLockMode.ReadWrite, output.PixelFormat);
+            using var convertedPixels = ConvertPixels(pixels, pixFormat);
 
-            var arrRowLength = rect.Width * (Image.GetPixelFormatSize(output.PixelFormat) / 8);
-            var ptr = bmpData.Scan0;
-            var line = new byte[arrRowLength];
-            for (var i = 0; i < rect.Height; i++)
-            {
-                convertedPixels.Read(line, 0, arrRowLength);
-                Marshal.Copy(line, 0, ptr, arrRowLength);
-                ptr += bmpData.Stride;
-            }
-
-            output.UnlockBits(bmpData);
+            var output = new Bitmap(width, height, format);
+            WritePixelsToImage(output, convertedPixels);
 
             return output;
         }
 
-
-        private MemoryStream ConvertPixels(MemoryStream input)
+        private static void WritePixelsToImage(Bitmap bitmap, MemoryStream pixelsStream)
         {
-            return PixFormat switch
+            ProcessPixelLinesInBitmap(bitmap, (addr, lineSize, tempLineBuff) =>
+            {
+                pixelsStream.Read(tempLineBuff, 0, lineSize);
+                Marshal.Copy(tempLineBuff, 0, addr, lineSize);
+            });
+        }
+
+        private static void ReadPixelsFromImage(Bitmap bitmap, MemoryStream pixelsStream)
+        {
+            ProcessPixelLinesInBitmap(bitmap, (addr, lineSize, tempLineBuff) =>
+            {
+                Marshal.Copy(addr, tempLineBuff, 0, lineSize);
+                pixelsStream.Write(tempLineBuff, 0, lineSize);
+            });
+        }
+
+
+        private delegate void ProcessPixelLine(nint addr, int lineSize, byte[] tempLineBuff);
+
+        private static void ProcessPixelLinesInBitmap(Bitmap bitmap, ProcessPixelLine process)
+        {
+            var rect = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
+            var bmpData = bitmap.LockBits(rect, ImageLockMode.ReadWrite, bitmap.PixelFormat);
+
+            var arrRowLength = rect.Width * (Image.GetPixelFormatSize(bitmap.PixelFormat) / 8);
+            var ptr = bmpData.Scan0;
+            var line = new byte[arrRowLength];
+            for (var i = 0; i < rect.Height; i++)
+            {
+                process.Invoke(ptr, arrRowLength, line);
+                ptr += bmpData.Stride;
+            }
+
+            bitmap.UnlockBits(bmpData);
+        }
+
+        private static MemoryStream ConvertPixels(MemoryStream input, WzPixFormat pixFormat)
+        {
+            return pixFormat switch
             {
                 WzPixFormat.A4R4G4B4 => ARGB16toARGB32(input, input.Length),
+                // can be read as-is
                 WzPixFormat.A8R8G8B8 => input,
+                // can be read as-is
                 WzPixFormat.R5G6B5 => input,
-                _ => throw new Exception($"Unsupported PixFormat {PixFormat}")
+                _ => throw new Exception($"Unsupported PixFormat {pixFormat}")
             };
         }
 
@@ -137,17 +178,16 @@ namespace WzTools.Extra
             return output;
         }
 
-        private static MemoryStream ARGB32toARGB16(MemoryStream input, long inputLen)
+        private static MemoryStream ARGB32toARGB16(MemoryStream input, long inputLen, MemoryStream output)
         {
-            var output = new MemoryStream((int)(inputLen / 2));
-            for (var i = 0; i < inputLen; i++)
+            for (var i = 0; i < inputLen; i += 2)
             {
                 var a = input.ReadByte();
                 var b = input.ReadByte();
 
                 byte c = 0;
-                c |= (byte)((a / 0x11) << 4);
-                c |= (byte)((b / 0x11) << 0);
+                c |= (byte)((a / 0x11) << 0);
+                c |= (byte)((b / 0x11) << 4);
 
                 output.WriteByte(c);
             }
@@ -156,6 +196,8 @@ namespace WzTools.Extra
             return output;
         }
 
+        const byte bit6_mask = 0x3F;
+        const byte bit5_mask = 0x1F;
         private static MemoryStream RGB565toARGB32(MemoryStream input, long inputLen)
         {
             // 16 bit colors to 32 bit colors...
@@ -170,11 +212,9 @@ namespace WzTools.Extra
             // 1011100101111100
             //            |   |, byte 2 & 0x
 
-            const byte bit6_mask = 0x3F;
-            const byte bit5_mask = 0x1F;
 
             var output = new MemoryStream((int)(inputLen * 2));
-            for (var i = 0; i < inputLen; i++)
+            for (var i = 0; i < inputLen; i += 2)
             {
                 var low = input.ReadByte();
                 var high = input.ReadByte();
@@ -196,6 +236,81 @@ namespace WzTools.Extra
 
             output.Position = 0;
             return output;
+        }
+
+
+        private static MemoryStream ARGB32toRGB565(MemoryStream input, long inputLen, MemoryStream output)
+        {
+            for (var i = 0; i < inputLen; i += 4)
+            {
+                var b = input.ReadByte();
+                var g = input.ReadByte();
+                var r = input.ReadByte();
+                var a = input.ReadByte(); // ignored
+
+                r /= 8;
+                g /= 4;
+                b /= 8;
+
+                r &= 0b0001_1111;
+                g &= 0b0011_1111;
+                b &= 0b0001_1111;
+
+                ushort tmp = 0;
+                tmp |= (ushort)r;
+                tmp <<= 6;
+                tmp |= (ushort)g;
+                tmp <<= 5;
+                tmp |= (ushort)b;
+
+                output.WriteByte((byte)(tmp & 0xFF));
+                output.WriteByte((byte)((tmp >> 8) & 0xFF));
+            }
+
+            output.Position = 0;
+            return output;
+        }
+
+        public static Bitmap Convert(Bitmap input, WzPixFormat targetFormat)
+        {
+            switch (input.PixelFormat)
+            {
+                case PixelFormat.Format32bppArgb:
+                case PixelFormat.Format32bppRgb:
+                    break;
+
+                default:
+                    // Convert it to something more usable
+                    input.ConvertFormat(PixelFormat.Format32bppArgb);
+                    break;
+            }
+
+            using var msInput = new MemoryStream();
+            ReadPixelsFromImage(input, msInput);
+
+            msInput.Position = 0;
+            var inputLen = msInput.Length;
+
+            using var msOutput = new MemoryStream();
+
+            switch (targetFormat)
+            {
+                case WzPixFormat.A8R8G8B8: msInput.CopyTo(msOutput); break;
+                case WzPixFormat.A4R4G4B4: ARGB32toARGB16(msInput, inputLen, msOutput); break;
+                case WzPixFormat.R5G6B5: ARGB32toRGB565(msInput, inputLen, msOutput); break;
+            }
+
+            msOutput.Position = 0;
+
+            return ConvertRawPixelsToBitmap(msOutput, targetFormat, input);
+        }
+
+        public void ChangeImage(Bitmap bitmap, WzPixFormat format)
+        {
+            Bitmap = bitmap;
+            PixFormat = format;
+            Width = Bitmap.Width;
+            Height = Bitmap.Height;
         }
     }
 }

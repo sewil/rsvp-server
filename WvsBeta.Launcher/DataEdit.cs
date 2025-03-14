@@ -12,6 +12,7 @@ using WvsBeta.Common;
 using WzTools.Extra;
 using WzTools.FileSystem;
 using WzTools.Helpers;
+using WzTools.Helpers.Helpers;
 using WzTools.Objects;
 using Int8 = System.SByte;
 using UInt8 = System.Byte;
@@ -513,10 +514,10 @@ namespace WvsBeta.Launcher
         private void deleteWzPropertyToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var nd = SelectedNodeData;
-            if (nd == null) return;
+            if (nd == null || nd.Property == null) return;
 
             var pnd = nd.Node.Parent.Tag as NodeData;
-            if (pnd == null) return;
+            if (pnd == null || pnd.Property == null) return;
 
             pnd.Modifications.Add(nd.Property.Name, null);
 
@@ -555,7 +556,7 @@ namespace WvsBeta.Launcher
             return nd;
         }
 
-        void IterateUntilIMG(NodeData nd, Action<NodeData, NodeData> action)
+        void IterateUntilIMG(NodeData? nd, Action<NodeData, NodeData> action)
         {
             if (nd == null) return;
             var rootModificationNode = nd;
@@ -569,7 +570,7 @@ namespace WvsBeta.Launcher
             while (nd != null && nd.Property != null);
         }
 
-        void MarkIMGUnmodified(NodeData nd = null)
+        void MarkIMGUnmodified(NodeData? nd = null)
         {
             IterateUntilIMG(nd ?? SelectedNodeData, (nd, rootModificationNode) =>
             {
@@ -645,15 +646,26 @@ namespace WvsBeta.Launcher
         private void dataGridView1_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
         {
             Debug.WriteLine($"Editing row {e.RowIndex}, col {e.ColumnIndex}");
+
+            var dgl = dataGridView1.Rows[e.RowIndex].DataBoundItem as DataGridLine;
             if (e.ColumnIndex == 0)
             {
-                var dgl = dataGridView1.Rows[e.RowIndex].DataBoundItem as DataGridLine;
                 // Only on new rows it should be editable
                 if (dgl != null && !dgl.New)
                 {
                     // Do not allow editing the name
                     e.Cancel = true;
                     return;
+                }
+            }
+            else if (dgl is DataGridLineImage dgli)
+            {
+                e.Cancel = true;
+                var canvas = dgli.Value as WzCanvas;
+                var imageEdit = new ImageEdit(canvas);
+                if (imageEdit.ShowDialog() == DialogResult.Yes)
+                {
+                    canvas.ChangeImage(imageEdit.NewBitmap, (WzPixFormat)imageEdit.NewFormat);
                 }
             }
 
