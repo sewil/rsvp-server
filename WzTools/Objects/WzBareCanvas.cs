@@ -13,10 +13,10 @@ namespace WzTools.Objects
         public new static bool DebugOffsets = false;
         protected byte[] RawData { get; set; }
 
-        public int Width { get; private set; }
-        public int Height { get; private set; }
-        public int RawPixFormat { get; private set; }
-        public int MagLevel { get; private set; }
+        public int Width { get; protected set; }
+        public int Height { get; protected set; }
+        public int RawPixFormat { get; protected set; }
+        public int MagLevel { get; protected set; }
 
 
         public override void Read(ArchiveReader reader)

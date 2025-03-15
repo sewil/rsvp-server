@@ -48,21 +48,34 @@ namespace WvsBeta.AdminKeygen
             return password;
         }
 
-        static void Main(string[] args)
+        static void SignServerConfig(string serverConfigPath, string privateKeyPath)
         {
-            var keyname = "";
-            if (args.Length == 1)
-            {
-                keyname = args[0];
-            }
-            else
-            {
-                Console.Write("Key name: ");
-                keyname = Console.ReadLine();
-            }
+            const uint magic = 0x31333337;
 
-            if (keyname == "") return;
+            Console.Write("Key Password: ");
+            var pass = GetConsolePassword();
 
+            var rsa = ReadPrivateKeyFromFile(privateKeyPath, pass);
+
+            var serverConfigContents = File.ReadAllBytes(serverConfigPath);
+
+            var sign = rsa.SignData(serverConfigContents, SHA256.Create());
+
+            var signedPath = serverConfigPath + ".signed";
+            File.WriteAllBytes(signedPath, serverConfigContents);
+            File.AppendAllBytes(signedPath, sign);
+            File.AppendAllBytes(signedPath, BitConverter.GetBytes((uint)sign.Length));
+            File.AppendAllBytes(signedPath, BitConverter.GetBytes((uint)magic));
+
+            Console.WriteLine("Signed file, stored at {0}", signedPath);
+            Console.WriteLine("Press OK to exit");
+            Console.ReadLine();
+        }
+
+        static void GenerateKeys()
+        {
+            Console.Write("Key name: ");
+            var keyname = Console.ReadLine();
             Console.Write("Password: ");
             var pass = GetConsolePassword();
 
@@ -92,6 +105,42 @@ namespace WvsBeta.AdminKeygen
             Console.WriteLine();
             Console.WriteLine("Press OK to exit");
             Console.ReadLine();
+        }
+
+        static void Main(string[] args)
+        {
+            if (args.Length == 0 || args[0] == "help")
+            {
+                Console.WriteLine(@"
+Usage:
+ help (or no arguments)
+    - show this message
+ generate
+    - Generate RSA private/public keypair
+ sign <path to ServerConfig.img> <path to server private.key>
+    - Sign the ServerConfig.img with the given private key
+");
+                return;
+            }
+
+            switch (args[0])
+            {
+                case "generate":
+                    GenerateKeys();
+                    return;
+                case "sign":
+                    if (args.Length != 3)
+                    {
+                        Console.WriteLine("Missing path to ServerConfig.img, and path to Server private key.");
+                        return;
+                    }
+
+                    SignServerConfig(args[1], args[2]);
+                    return;
+                default:
+                    Console.WriteLine("Not sure what this is: {0}", args[0]);
+                    return;
+            }
         }
     }
 }

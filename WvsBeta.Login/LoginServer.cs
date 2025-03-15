@@ -8,6 +8,8 @@ using WvsBeta.Common;
 using WvsBeta.Common.Sessions;
 using WvsBeta.Database;
 using System.Linq;
+using System.Security.Cryptography;
+using WvsBeta.Common.Crypto;
 
 namespace WvsBeta.Login
 {
@@ -19,7 +21,7 @@ namespace WvsBeta.Login
         public string[] AllowedHaProxyIPs { get; set; }
         public ushort Port { get; set; }
         public ushort AdminPort { get; set; }
-        public ushort LTLPort => (ushort) (Port + 10000);
+        public ushort LTLPort => (ushort)(Port + 10000);
         public IPAddress PublicIP { get; set; }
         public IPAddress PrivateIP { get; set; }
         public bool RequiresEULA { get; set; }
@@ -30,7 +32,7 @@ namespace WvsBeta.Login
         public int DataChecksum { get; private set; }
         public short CurrentPatchVersion { get; private set; }
         public bool AdminsRequirePublicKeyAuth { get; private set; }
-        
+
         private LoginAcceptor LoginAcceptor { get; set; }
         public LoginHaProxyAcceptor LoginHaProxyAcceptor { get; private set; }
         public LoginToLoginAcceptor LoginToLoginAcceptor { get; set; }
@@ -40,8 +42,9 @@ namespace WvsBeta.Login
 
         public MySQL_Connection UsersDatabase { get; private set; }
 
-        private ConcurrentDictionary<string, Player> PlayerList { get; } = new ConcurrentDictionary<string,Player>();
-        
+        private ConcurrentDictionary<string, Player> PlayerList { get; } = new ConcurrentDictionary<string, Player>();
+
+        public RSACryptoServiceProvider ServerKey { get; private set; }
 
         public void AddPlayer(Player player)
         {
@@ -93,7 +96,6 @@ namespace WvsBeta.Login
 
         private string ServerConfigFile => Path.Combine(Environment.CurrentDirectory, "..", "DataSvr", Name + ".img");
 
-
         public void Load()
         {
             Program.MainForm.LogAppend("Reading Config File... ", false);
@@ -101,7 +103,7 @@ namespace WvsBeta.Login
             LoadClientPatchData(ServerConfigFile);
             LoadDBConfig(Path.Combine(Environment.CurrentDirectory, "..", "DataSvr", "Database.img"));
             Program.MainForm.LogAppend(" Done!", false);
-            
+
             Program.MainForm.LogAppend("Starting to patch... ", false);
             DataBasePatcher.StartPatching(UsersDatabase, Path.Combine(Environment.CurrentDirectory, "evolutions", "login"), "login");
 
@@ -179,7 +181,7 @@ namespace WvsBeta.Login
                     StartListening();
                 }
             }
-            
+
             DiscordReporter.Username = Name;
             ServerTraceDiscordReporter = new DiscordReporter(DiscordReporter.ServerTraceURL, "ServerTrace");
 
@@ -266,8 +268,32 @@ namespace WvsBeta.Login
                 AllowedHaProxyIPs = haProxyIPs.Select(x => x.Value).ToArray();
             }
 
+            LoadPrivateKey(reader["privateKey"]);
+
             RedisBackend.Init(reader);
             LoginDataProvider.Load();
+        }
+
+        private void LoadPrivateKey(Node config)
+        {
+            var path = config?["path"]?.GetString();
+            var password = config?["password"]?.GetString();
+
+            if (path != null && password != null)
+            {
+                if (!File.Exists(path))
+                {
+                    Program.MainForm.LogAppend("Unable to load private key, path does not exist: {0}", path);
+                    return;
+                }
+
+                Program.MainForm.LogAppend("Loading Private Key: {0}", path);
+                ServerKey = EncryptedRSA.ReadPrivateKeyFromFile(path, password);
+            }
+            else
+            {
+                Program.MainForm.LogAppend("Unable to load private key. Either missing 'password' or 'path' in config under 'privateKey'");
+            }
         }
 
         private void LoadClientPatchData(string configFile)
