@@ -48,16 +48,16 @@ namespace WvsBeta.Game
         public void Save()
         {
             Server.Instance.CharacterDatabase.RunQuery(
-                "INSERT INTO gamestats (id, omokwins, omokties, omoklosses, omokscore, matchcardwins, matchcardties, matchcardlosses, matchcardscore) VALUES (" + 
-                "@charid, @ow, @ot, @ol, @os, @mw, @mt, @ml, @ms) "+
-                "ON DUPLICATE KEY UPDATE" + 
-                "  omokwins = @ow" + 
-                ", omokties = @ot" + 
+                "INSERT INTO gamestats (id, omokwins, omokties, omoklosses, omokscore, matchcardwins, matchcardties, matchcardlosses, matchcardscore) VALUES (" +
+                "@charid, @ow, @ot, @ol, @os, @mw, @mt, @ml, @ms) " +
+                "ON DUPLICATE KEY UPDATE" +
+                "  omokwins = @ow" +
+                ", omokties = @ot" +
                 ", omoklosses = @ol" +
-                ", omokscore = @os",
-                ", matchcardwins = @mw" + 
-                ", matchcardties = @mt" + 
-                ", matchcardlosses = @ml",
+                ", omokscore = @os" +
+                ", matchcardwins = @mw" +
+                ", matchcardties = @mt" +
+                ", matchcardlosses = @ml" +
                 ", matchcardscore = @ms",
                 "@charid", CharacterID,
                 "@ow", OmokWins,

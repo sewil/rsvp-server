@@ -254,7 +254,7 @@ namespace WvsBeta.Game
             {
                 if (!fucker.IsGM)
                 {
-                    if (//amount >= 90000 ||
+                    if (amount >= 90000 ||
                         amount < 0)
                     {
                         fucker.PermaBan($"Impossible damage ({amount})");
@@ -411,15 +411,13 @@ namespace WvsBeta.Game
 
             var partyMembers = chr.Party?.GetAvailablePartyMembers()?.ToArray() ?? Array.Empty<int>();
 
-            var partyMemberCount = partyMembers.Length;
-
-            if (partyMemberCount == 0) return; // No party...
+            var partyMemberCount = Math.Max(partyMembers.Length, 1);
 
             var mapDecRate = field.DecRate;
 
-            var actualPoints = elimPoints * (1.0 - (mapDecRate * partyMemberCount));
+            double actualPoints = elimPoints * (1.0 - (mapDecRate * partyMemberCount));
 
-            field.AddPoints((uint)actualPoints);
+            field.AddPoints(actualPoints);
         }
 
         /// <summary>

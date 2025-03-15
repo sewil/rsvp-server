@@ -8,6 +8,7 @@ using log4net;
 using WvsBeta.Common;
 using WvsBeta.Game.GameObjects;
 using WvsBeta.Game.Packets;
+using WvsBeta.SharedDataProvider.Templates;
 // ReSharper disable HeuristicUnreachableCode
 
 #pragma warning disable 162
@@ -641,8 +642,7 @@ namespace WvsBeta.Game
 
         }
 
-        public int PortalID { get; set; }
-        protected int GetPortalID() => PortalID;
+        public Portal Portal { get; set; }
 
         protected void AddBuff(int itemID) => chr.Buffs.AddItemBuff(itemID);
         protected void RemoveBuff(int itemID) => chr.Buffs.RemoveItemBuff(itemID);
@@ -1229,6 +1229,9 @@ namespace WvsBeta.Game
         protected int WeekOfYear => AmericanCulture.Calendar.GetWeekOfYear(MasterThread.CurrentDate, AmericanCulture.DateTimeFormat.CalendarWeekRule, AmericanCulture.DateTimeFormat.FirstDayOfWeek);
         protected int DayOfYear => AmericanCulture.Calendar.GetDayOfYear(MasterThread.CurrentDate);
 
+        protected ChineseLunisolarCalendar ChineseCalendar = new();
+        protected string[] Zodiacs = { "Rat", "Ox", "Tiger", "Rabbit", "Dragon", "Snake", "Horse", "Goat", "Monkey", "Rooster", "Dog", "Pig" };
+
         protected bool eventActive(string eventName) => EventDateMan.IsEventActive(eventName);
         protected bool eventDone(string eventName) => EventDateMan.IsEventDone(eventName);
 
@@ -1245,6 +1248,50 @@ namespace WvsBeta.Game
             return tuple.Value.endDate;
         }
 
+        protected string getZodiac(DateTime date, out int terrestrialBranch)
+        {
+            int sexagenaryYear = ChineseCalendar.GetSexagenaryYear(date);
+            terrestrialBranch = ChineseCalendar.GetTerrestrialBranch(sexagenaryYear);
+            return Zodiacs[terrestrialBranch - 1];
+        }
+
+        protected bool isEventDate(string eventName)
+        {
+            return isEventDate(eventName, out var _, out var __);
+        }
+        protected bool isEventDate(string eventName, out DateTime startDate, out DateTime endDate)
+        {
+            var now = DateTime.UtcNow;
+
+            if (eventName == "newyear")
+            {
+                int newYear = now.Month == 12 ? now.Year + 1 : now.Year;
+                startDate = DateTime.Parse(newYear - 1 + "-12-31");
+                endDate = DateTime.Parse(newYear + "-01-02");
+            }
+            else if (eventName == "pride")
+            {
+                startDate = DateTime.Parse(now.Year + "-06-01");
+                endDate = DateTime.Parse(now.Year + "-07-01");
+            }
+            else if (eventName == "summer")
+            {
+                startDate = DateTime.Parse(now.Year + "-08-12");
+                endDate = DateTime.Parse(now.Year + "-09-01");
+            }
+            else if (eventName == "lunarnewyear")
+            {
+                startDate = ChineseCalendar.ToDateTime(now.Year, 1, 1, 0, 0, 0, 0);
+                endDate = startDate.AddDays(16);
+            }
+            else
+            {
+                startDate = DateTime.UnixEpoch;
+                endDate = DateTime.UnixEpoch;
+                return false;
+            }
+            return startDate <= now && now < endDate;
+        }
         #endregion
 
         #region Logging

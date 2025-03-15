@@ -17,6 +17,7 @@ namespace WvsBeta.Game.GameObjects
         
         // Format: YYYYMMDDHH
         public static int CurrentYYYYMMDDHH { get; private set; }
+        public static int CurrentYYYY { get; private set; }
 
         public static void Init()
         {
@@ -33,6 +34,7 @@ namespace WvsBeta.Game.GameObjects
                 var t = 0;
                 t = 0;
                 t += date.Year * 1000000;
+                CurrentYYYY = t;
                 t += date.Month * 10000;
                 t += date.Day * 100;
                 t += date.Hour;
@@ -102,6 +104,8 @@ namespace WvsBeta.Game.GameObjects
             {
                 return null;
             }
+            if (tuple.startDate < 1000000) tuple.startDate += CurrentYYYY; // TODO: Check if the tuple value is changed in _events
+            if (tuple.endDate < 1000000) tuple.endDate += CurrentYYYY;
             return tuple;
         }
 

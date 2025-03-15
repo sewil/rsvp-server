@@ -15,9 +15,9 @@ namespace WvsBeta.Game.GameObjects
         {
         }
 
-        public uint TotalPoints
+        public double TotalPoints
         {
-            get => uint.Parse(ParentFieldSet?.GetVar("points", "0") ?? "0");
+            get => double.Parse(ParentFieldSet?.GetVar("points", "0") ?? "0");
             set => ParentFieldSet?.SetVar("points", value.ToString());
         }
 
@@ -30,20 +30,14 @@ namespace WvsBeta.Game.GameObjects
         /// <summary>
         /// % of Point gain deduction * amount of party players.
         /// </summary>
-        public double DecRate { get; set; }
-        
-
-        public override void LoadExtraData(WzProperty mapProperty, WzProperty infoProperty)
-        {
-            DecRate = infoProperty.GetDouble("decRate") ?? 0.0;
-        }
+        public double DecRate => ParentFieldSet?.DecRate ?? 0.0;
 
         public override void RemovePlayer(Character chr, bool gmhide = false)
         {
             base.RemovePlayer(chr, gmhide);
 
             // Update points in the users quest data
-            chr.Quests.SetQuestData(1001304, TotalPoints.ToString());
+            chr.Quests.SetQuestData(1001304, ((uint)TotalPoints).ToString());
         }
 
         public override void AddPlayer(Character chr)
@@ -54,7 +48,7 @@ namespace WvsBeta.Game.GameObjects
         }
 
 
-        public void AddPoints(uint amount)
+        public void AddPoints(double amount)
         {
             if (ParentFieldSet == null)
             {
@@ -62,7 +56,7 @@ namespace WvsBeta.Game.GameObjects
                 return;
             }
             
-            TotalPoints += amount;
+            TotalPoints = Math.Min(9999, TotalPoints + amount);
 
             UpdatePoints();
         }
@@ -84,17 +78,31 @@ namespace WvsBeta.Game.GameObjects
         {
             var p = new Packet(ServerMessages.FIELD_SPECIFIC_DATA);
             p.WriteByte(FSDOpcodes.UpdateAll);
-            p.WriteUInt(TotalPoints);
+            p.WriteUInt((uint)TotalPoints);
             p.WriteByte(RevivesLeft);
-            SendPacket(p);
+            if (ParentFieldSet != null)
+            {
+                ParentFieldSet.SendPacket(p);
+            }
+            else
+            {
+                SendPacket(p);
+            }
         }
 
         public void UpdatePoints()
         {
             var p = new Packet(ServerMessages.FIELD_SPECIFIC_DATA);
             p.WriteByte(FSDOpcodes.UpdatePoints);
-            p.WriteUInt(TotalPoints);
-            SendPacket(p);
+            p.WriteUInt((uint)TotalPoints);
+            if (ParentFieldSet != null)
+            {
+                ParentFieldSet.SendPacket(p);
+            }
+            else
+            {
+                SendPacket(p);
+            }
         }
 
         public void UpdateRevives()
@@ -102,7 +110,14 @@ namespace WvsBeta.Game.GameObjects
             var p = new Packet(ServerMessages.FIELD_SPECIFIC_DATA);
             p.WriteByte(FSDOpcodes.UpdateRevives);
             p.WriteByte(RevivesLeft);
-            SendPacket(p);
+            if (ParentFieldSet != null)
+            {
+                ParentFieldSet.SendPacket(p);
+            }
+            else
+            {
+                SendPacket(p);
+            }
         }
     }
 }

@@ -335,6 +335,18 @@ namespace WvsBeta.Game
                             }
                         }
                     }
+                    else if (reward.ItemID == 4030017) // Ticket to Premium Road
+                    {
+                        ItemTransfer.ItemPickedUp(
+                            chr.ID,
+                            chr.MapID,
+                            rewardItemID,
+                            reward.Amount,
+                            chr.MapID + ", " + drop.GetHashCode() + ", " + drop.OwnerID,
+                            rewardItem,
+                            drop.GetDropInfo()
+                        );
+                    }
                 }
             }
 

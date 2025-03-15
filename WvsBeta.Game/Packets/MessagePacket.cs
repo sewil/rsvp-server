@@ -138,6 +138,12 @@ namespace WvsBeta.Game
         {
             var what = packet.ReadLocalizedString(chr.ClientActiveCodePage);
 
+            if (!chr.IsGM && what.ToString().Length > 40) // Temporary fix until client crash is resolved
+            {
+                SendTextPlayer(MessageTypes.PopupBox, "Your have exceeded the maximum number of characters.", chr, true);
+                return;
+            }
+
             if (chr.IsGM == false && CheatInspector.CheckTextSpam(what))
             {
                 log.Error("Disconnecting player for chat spam");

@@ -1280,6 +1280,58 @@ namespace WvsBeta.Game
 
                         return true;
                     }
+
+                case "lookup":
+                    {
+                        Func<string, string, bool> findItem = (name, query) => name?.ToLowerInvariant().Contains(query.ToLowerInvariant()) ?? false;
+                        var query = Enumerable.Empty<(int id, string name)>();
+                        if (Args.Count < 2)
+                        {
+                            SendRed("Too few arguments!");
+                        }
+                        else if (Args[0] == "item")
+                        {
+                            query = DataProvider.Items.Select(i => (i.Value.ID, i.Value.Name));
+                        }
+                        else if (Args[0] == "equip")
+                        {
+                            query = DataProvider.Equips.Select(i => (i.Value.ID, i.Value.Name));
+                        }
+                        else if (Args[0] == "map")
+                        {
+                            query = MapProvider.Maps.Select(i => (i.Value.ID, i.Value.Name));
+                        }
+                        else if (Args[0] == "mob")
+                        {
+                            query = DataProvider.Mobs.Select(i => (i.Value.ID, i.Value.Name));
+                        }
+                        else if (Args[0] == "quest")
+                        {
+                            query = QuestNamesProvider.QuestNames.Select(i => ((int)i.Key, i.Value));
+                        }
+                        else if (Args[0] == "npc")
+                        {
+                            query = DataProvider.NPCs.Select(i => (i.Key, i.Value.Name));
+                        }
+                        else
+                        {
+                            SendRed("Unknown lookup type!");
+                            return true;
+                        }
+                        string searchQuery = string.Join(" ", Args.Args.Skip(1));
+
+                        var results = query.Where(i => findItem(i.name, searchQuery)).Take(10).ToList();
+                        if (results.Count == 0)
+                        {
+                            SendRed("Lookup query returned no results.");
+                        }
+                        else
+                        {
+                            SendNotice($"Lookup query returned {results.Count} results:");
+                            results.Select(i => $"({i.id}) {i.name}").ForEach(msg => SendNotice(msg));
+                        }
+                        return true;
+                    }
             }
 
             return false;
