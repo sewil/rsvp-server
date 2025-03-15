@@ -14,8 +14,11 @@ namespace WvsBeta.Launcher
 {
     public partial class ImageEdit : Form
     {
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public string? NewImagePath { get; set; }
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public WzPixFormat? NewFormat { get; set; }
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public Bitmap? NewBitmap { get; set; }
 
         public ImageEdit(WzCanvas canvas)
