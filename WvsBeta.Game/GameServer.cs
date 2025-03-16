@@ -413,6 +413,8 @@ namespace WvsBeta.Game
                 TimeSpan.FromMinutes(1)
             );
 
+            MasterThread.RepeatingAction.Start("Seed GlobalRnd", () => Rand32.Next(), 0, 1000);
+
             OnlineStats.StartLogger();
             EventDateMan.Init();
 
