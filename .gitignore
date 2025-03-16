@@ -260,7 +260,6 @@ paket-files/
 __pycache__/
 *.pyc
 BinSvr*/
-DataSvr*/
 
 redis/
 sql_export_transfer/
