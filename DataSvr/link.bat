@@ -17,7 +17,7 @@ ln -s Map ../../rsvp-data/Map
 ln -s Mob ../../rsvp-data/Mob
 ln -s Npc ../../rsvp-data/Npc
 ln -s Reactor ../../rsvp-data/Reactor
-ln -s scripts ../../rsvp-scripts-2
+ln -s scripts ../../rsvp-scripts
 ln -s Server ../../rsvp-data/Server
 ln -s Skill ../../rsvp-data/Skill
 ln -s String ../../rsvp-data/String
