@@ -46,6 +46,8 @@
             toolStripStatusLabel1 = new ToolStripStatusLabel();
             tsslLANStatus = new ToolStripStatusLabel();
             tmrServerAnnouncer = new System.Windows.Forms.Timer(components);
+            backupToolStripMenuItem = new ToolStripMenuItem();
+            fromMariaDBDataToolStripMenuItem = new ToolStripMenuItem();
             tableLayoutPanel1.SuspendLayout();
             menuStrip1.SuspendLayout();
             statusStrip1.SuspendLayout();
@@ -149,7 +151,7 @@
             // menuStrip1
             // 
             menuStrip1.ImageScalingSize = new Size(20, 20);
-            menuStrip1.Items.AddRange(new ToolStripItem[] { userManagerToolStripMenuItem, eventManagerToolStripMenuItem, configureLANModeToolStripMenuItem, toolStripMenuItem1 });
+            menuStrip1.Items.AddRange(new ToolStripItem[] { userManagerToolStripMenuItem, eventManagerToolStripMenuItem, configureLANModeToolStripMenuItem, toolStripMenuItem1, backupToolStripMenuItem });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
             menuStrip1.Padding = new Padding(7, 3, 0, 3);
@@ -215,6 +217,20 @@
             tmrServerAnnouncer.Interval = 2000;
             tmrServerAnnouncer.Tick += tmrServerAnnouncer_Tick;
             // 
+            // backupToolStripMenuItem
+            // 
+            backupToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { fromMariaDBDataToolStripMenuItem });
+            backupToolStripMenuItem.Name = "backupToolStripMenuItem";
+            backupToolStripMenuItem.Size = new Size(71, 24);
+            backupToolStripMenuItem.Text = "Backup";
+            // 
+            // fromMariaDBDataToolStripMenuItem
+            // 
+            fromMariaDBDataToolStripMenuItem.Name = "fromMariaDBDataToolStripMenuItem";
+            fromMariaDBDataToolStripMenuItem.Size = new Size(224, 26);
+            fromMariaDBDataToolStripMenuItem.Text = "From MariaDB data";
+            fromMariaDBDataToolStripMenuItem.Click += fromMariaDBDataToolStripMenuItem_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
@@ -255,5 +271,7 @@
         private System.Windows.Forms.Timer tmrServerAnnouncer;
         private ToolStripMenuItem eventManagerToolStripMenuItem;
         private ToolStripMenuItem toolStripMenuItem1;
+        private ToolStripMenuItem backupToolStripMenuItem;
+        private ToolStripMenuItem fromMariaDBDataToolStripMenuItem;
     }
 }
