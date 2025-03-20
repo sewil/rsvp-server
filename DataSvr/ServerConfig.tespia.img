@@ -1,0 +1,50 @@
+#Property
+login = {
+	maxCharacters = 3
+	ip = openmg.net
+	port = 8485
+}
+cashshop = {
+	slotIncreasePrice = 2000
+	trunkIncreasePrice = 2000
+	maxSlots = 80
+	maxTrunk = 80
+}
+secondaryStat = {
+	minimumSpeedAndJump = 80
+	maximumSpeed = 140
+	maximumJump = 127
+}
+app = {
+	mapleVersion = 24
+	patchVersion = 1
+	loadDataFolder = False
+	signedDataFile = True
+	dataPackageKey = 42e3fbee-cbe9-4366-ae4e-c38d651d7dc2
+}
+text = {
+	leetspeak = False
+	sofl = False
+	spongeboob = False
+	urwin = False
+}
+map = {
+	swimEverywhere = False
+	swimSpeed = 700
+}
+discord = {
+	clientId = 945052182091292702
+}
+game = {
+	cursingAllowed = True
+	chatLimit = 1023
+}
+stringPool = {
+	783 = MapleStory (TESPIA)
+	2133 = Ver. %d.%02d.1
+	100100 = https://openmg.net/Tespia/patch/notice/
+	100101 = https://openmg.net/Tespia/patch/patchdir/
+	100102 = https://openmg.net/Tespia/patch/download/FullVersion/RSVPTSetup.exe
+}
+expTable = {
+}
