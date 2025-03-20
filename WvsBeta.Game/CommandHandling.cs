@@ -389,7 +389,73 @@ namespace WvsBeta.Game
 
                         return true;
                     }
+                case "mapportal":
+                case "gotoportal":
+                    {
+                        if (Args.Count == 0)
+                        {
+                            SendNotice($"You are currently in map {_character.Field.ID}");
+                        }
+                        else if (Args.Count < 2)
+                        {
+                            SendRed("Missing portal name");
+                        }
+                        else if (Args.Count > 0)
+                        {
+                            var FieldID = -1;
 
+                            if (!Args[0].IsNumber())
+                            {
+                                var MapStr = Args[0];
+                                var TempID = GetMapidFromName(MapStr);
+
+                                if (TempID == -1)
+                                {
+                                    switch (MapStr)
+                                    {
+                                        case "here":
+                                            FieldID = _character.MapID;
+                                            break;
+                                        case "town":
+                                            FieldID = _character.Field.ReturnMap;
+                                            break;
+                                    }
+                                }
+                                else
+                                    FieldID = TempID;
+                            }
+                            else
+                                FieldID = Args[0].GetInt32();
+
+                            if (!MapProvider.Maps.TryGetValue(FieldID, out Map map))
+                            {
+                                SendRed($"Map {FieldID} not found");
+                            }
+                            else
+                            {
+                                Portal portal;
+                                if (byte.TryParse(Args[1], out var portalID))
+                                {
+                                    portal = map.SpawnPoints.FirstOrDefault(p => p.ID == portalID);
+                                    portal ??= map.DoorPoints.FirstOrDefault(p => p.ID == portalID);
+                                }
+                                else
+                                {
+                                    string portalName = Args[1];
+                                    map.Portals.TryGetValue(portalName, out portal);
+                                }
+                                if (portal == null)
+                                {
+                                    SendRed("Portal not found");
+                                }
+                                else
+                                {
+                                    _character.ChangeMap(FieldID, portal);
+                                }
+                            }
+                        }
+                        return true;
+                    }
                 #endregion
 
                 #region Chase / Warp to player
