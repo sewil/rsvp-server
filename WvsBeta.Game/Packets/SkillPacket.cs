@@ -68,9 +68,9 @@ namespace WvsBeta.Game
 
             if (SkillID == (int)Constants.Spearman.Skills.HyperBody && !chr.PrimaryStats.HasBuff((int)Constants.Spearman.Skills.HyperBody)) // Buff already exists, do not execute bonus again. Allow multiple casts for duration refresh
             {
-                var hpmpBonus = (short)((double)chr.PrimaryStats.MaxHP * ((double)sld.XValue / 100.0d));
+                var hpmpBonus = (short)((double)(chr.PrimaryStats.MaxHP + chr.PrimaryStats.EquipBonuses.MaxHP) * ((double)sld.XValue / 100.0d));
                 chr.PrimaryStats.BuffBonuses.MaxHP = hpmpBonus;
-                hpmpBonus = (short)((double)chr.PrimaryStats.MaxMP * ((double)sld.YValue / 100.0d));
+                hpmpBonus = (short)((double)(chr.PrimaryStats.MaxMP + chr.PrimaryStats.EquipBonuses.MaxMP) * ((double)sld.YValue / 100.0d));
                 chr.PrimaryStats.BuffBonuses.MaxMP = hpmpBonus;
             }
 
@@ -201,9 +201,9 @@ namespace WvsBeta.Game
                         {
                             if (!victim.PrimaryStats.HasBuff((int)Constants.Spearman.Skills.HyperBody)) // Buff already exists, do not execute bonus again. Allow multiple casts for duration refresh
                             {
-                                var hpmpBonus = (short)((double)victim.PrimaryStats.MaxHP * ((double)sld.XValue / 100.0d));
+                                var hpmpBonus = (short)((double)(victim.PrimaryStats.MaxHP + victim.PrimaryStats.EquipBonuses.MaxHP) * ((double)sld.XValue / 100.0d));
                                 victim.PrimaryStats.BuffBonuses.MaxHP = hpmpBonus;
-                                hpmpBonus = (short)((double)victim.PrimaryStats.MaxMP * ((double)sld.YValue / 100.0d));
+                                hpmpBonus = (short)((double)(victim.PrimaryStats.MaxMP + victim.PrimaryStats.EquipBonuses.MaxMP) * ((double)sld.YValue / 100.0d));
                                 victim.PrimaryStats.BuffBonuses.MaxMP = hpmpBonus;
                             }
 
