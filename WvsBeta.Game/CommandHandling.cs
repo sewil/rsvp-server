@@ -1865,6 +1865,35 @@ namespace WvsBeta.Game
 
                 #endregion
 
+                #region globaldrops
+                case "globaldrops":
+                    {
+                        List<string> messageLines = ["Global drops"];
+                        foreach (var dt in DataProvider.GlobalDrops)
+                        {
+                            var percent = (dt.Chance / DropData.DropChanceCalcFloat);
+                            var percentText = (percent * 100.0).ToString("0.########") + "%";
+                            percentText = $"1 of {(1 / percent):0.##} drops";
+                            var premiumText = dt.Premium ? " (premium)" : "";
+                            var mobLevel = (dt.MobMinLevel > 0 || dt.MobMaxLevel < int.MaxValue) ? $" (mob lv. {(dt.MobMinLevel > 0 ? dt.MobMinLevel : "")}-{(dt.MobMaxLevel < int.MaxValue ? dt.MobMaxLevel : "")})" : "";
+                            var limitedName = !string.IsNullOrWhiteSpace(dt.LimitedName) ? $" (limited to {dt.LimitedName})" : "";
+                            var expire = dt.DateExpire < DateTime.MaxValue ? $" (expires on {dt.DateExpire})" : "";
+                            if (dt.Mesos > 0)
+                            {
+                                messageLines.Add($"Mesos {IScriptV2.number(dt.Mesos)} @ {percentText}" + premiumText + mobLevel + limitedName + expire);
+                            }
+                            else
+                            {
+                                var minmax = dt.Min == 0 && dt.Max == 0 ? "" : $" ({dt.Min} - {dt.Max})";
+                                messageLines.Add($"{IScriptV2.itemIconAndName(dt.ItemID)} ({dt.ItemID}) {minmax} @ {percentText}" + premiumText + mobLevel + limitedName + expire);
+                            }
+                        }
+
+                        NpcPacket.SendNPCChatTextSimple(_character, Constants.MapleAdminNpc, string.Join(IScriptV2.Newline, messageLines), NpcChatSimpleTypes.OK);
+                        return true;
+                    }
+                #endregion
+
                 #region KillMobs / KillAll
 
                 case "killmobs":
