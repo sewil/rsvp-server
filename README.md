@@ -1,6 +1,17 @@
-# Preparation
+# rsvp-server
 
-## Codebase
+This repository contains the sourcecode of the RSVP server.
+
+*Requirements*:
+
+- Windows (for this guide, you can compile it to another OS using dotnet SDK!)
+- Visual Studio 2022 or higher with .net 9.0 SDK installed
+- Up-to-date client (see Discord for latest WzMss.dll)
+
+## Prepared installation
+You can find a download to the server installation in the [Discord #announcements chat](https://discord.gg/2P8w9KSuD3).
+
+## Manual Setup
 
 Check out all 3 repos in a single folder. Make sure rspv-scripts-2 is called rsvp-scripts.
 
@@ -12,72 +23,50 @@ git clone https://github.com/diamondo25/rsvp-server.git
 git clone https://github.com/diamondo25/rsvp-data.git
 ```
 
-## Database
-1. Install MariaDB on your local machine and write down the root password
-2. Install a SQL editor like SQLyog Community Edition
-3. Open the SQL editor and connect to your MariaDB.
-4. Create a schema/database called "rsvp"
-5. Load the two SQL files from the rsvp-server/SQLs folder, first the schema, then evolutions.
-6. Create an account for the servers to connect with:
-```sql
-CREATE USER 'rsvp'@'localhost' IDENTIFIED BY 'mypassword'; 
-FLUSH PRIVILEGES; 
-GRANT ALTER, ALTER ROUTINE, CREATE, CREATE ROUTINE, CREATE TEMPORARY TABLES, CREATE VIEW, DELETE, DROP, EVENT, EXECUTE, INDEX, INSERT, LOCK TABLES, REFERENCES, SELECT, SHOW VIEW, TRIGGER, UPDATE ON `rsvp`.* TO 'rsvp'@'localhost' WITH GRANT OPTION; 
-```
 
-### Accounts
-Add an account through SQL using the following query:
-```sql
-INSERT INTO `users` (`username`, `password`, `email`) VALUES ('Diamondo25', 'yomama', '');
-```
+### Building servers
+1. Open rsvp-server `WvsBeta_REVAMP.sln`
+2. Build the solution (all projects) through Build -> Build Solution
+3. All binaries are now available under the rsvp-server/BinSvr folder
 
-## Redis
-1. Download [Redis for Windows](https://github.com/tporadowski/redis/releases)
-2. (optional) configure the redis password in the Redis config.
-3. Launch the Redis server 
+### Setup data links
+The server will use the same datafiles as the client.
 
-## Building servers
-1. Open rsvp-server WvsBeta_REVAMP.sln
-2. (!!!) Change the authentication password for your server: open WvsBeta.Common/Constants.cs and edit the 'AUTH_KEY' value.
-3. Build the solution (all projects) through Build -> Build Solution
+To link the datafiles, go to the rsvp-server/DataSvr folder and run `link.bat`.
 
-## Configuring servers
-1. Open rsvp-server/DataSvr/Database.img in a text editor
-2. Update the login information to the database
+### Using the launcher to manage the server
+The launcher (WvsBeta.Launcher) was developed to make setting up the server easy. It is recommended to run this if you do LAN play. For production servers, I would recommend investing time in running the binaries standalone and with a dedicated Redis and MariaDB installation.
 
-### Updating Redis password
-For each server, update the redis password in its config file.
+#### Opening the launcher
+1. Go to rsvp-server/BinSvr
+2. Launch `WvsBeta.Launcher.exe`
 
-```
-redis = {
-	password = redis-password
-}
-```
+#### Configure PublicIP
+The PublicIP field is given to the client when they change channel or connect to channel or shop. It is therefor required that it is configured correctly. You can automatically configure this by using the Launcher "LAN mode" option.
 
-## Data linking
-Run "link.bat" in DataSvr to link the rsvp-data git repo folder, and rsvp-scripts git repo folder.
+1. Open the Launcher
+2. Go to Configure LAN Mode
+3. Select the interface of which IP you want to use. It is usually called something like "Ethernet", and has an IP starting with 192.168, 10.0, or 172).
+4. Apply settings
 
-## firewalld config (linux only)
+#### Starting the server
+1. Open the Launcher
+2. (Only for initial setup) Click the 'Reinstall' button for M
+MariaDB
+3. Make sure MariaDB and Redis are started
+4. Start Login, Center, Game, and Shop. *This is not possible if the launcher did not detect a running MariaDB and Redis instance.*
 
-Import through
-```
-firewall-cmd --permanent --new-service-from-file=maplestory.xml --name=maplestory
-```
+#### Add accounts
+1. In the Launcher, go to the User Manager
+2. Press Add
+3. Fill in the information (except ID column). Note: GM level is max 3 (admin).
+4. The information should be saved when switching between each column.
 
-# Running the server
 
-Make sure that:
-- MariaDB is running
-- Redis is running
-- DataSvr config files are OK
-- Datafiles are linked
-
-Now you can launch the servers through their bat scripts (Launch X.bat).
-
-## Putting it public
+### Putting it public
 1. Port forward to your pc.
 2. Use canyouseeme.org to test port forwards
-3. Edit the config files 'PublicIP' field to your WAN IP.
+3. Use the launcher or manually change the PublicIP fields in the configuration files.
 
-# Starting the client
-Install RSVP v22. Create a shortcut to the exe with additional arguments like `Maple.exe 127.0.0.1 8484`
+### Starting the client
+Install RSVP v24. It should automatically connect to localhost.
