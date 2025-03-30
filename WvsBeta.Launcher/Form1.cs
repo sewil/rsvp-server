@@ -1,3 +1,4 @@
+using System.IO.Compression;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
@@ -55,7 +56,13 @@ namespace WvsBeta.Launcher
             ConfigureServerConfiguration(ssShop0, new Shop("Shop0", center), "Shop");
             ConfigureServerConfiguration(ssLogin0, new Login("Login0", redis, center), "Login");
 
+            if (!MariaDBDataFolder.Exists)
+            {
+                ssMariaDB.StartingDisabled = true;
+            }
+
             UpdateServerStartingDisabled();
+
         }
 
         private void UpdateServerStartingDisabled()
@@ -65,9 +72,11 @@ namespace WvsBeta.Launcher
                 ssGame0.StartingDisabled = ssShop0.StartingDisabled = ssLogin0.StartingDisabled = !enabled;
         }
 
+        DirectoryInfo MariaDBDataFolder => new DirectoryInfo(Path.Combine(ssMariaDB.FullWorkingDirectory, "..", "data"));
+
         private void ReinstallMariaDB(object? sender, EventArgs e)
         {
-            var dataPath = new DirectoryInfo(Path.Combine(ssMariaDB.FullWorkingDirectory, "..", "data"));
+            var dataPath = MariaDBDataFolder;
             if (dataPath.Exists)
             {
                 // Do not delete the main folder so we keep the permissions
@@ -75,7 +84,8 @@ namespace WvsBeta.Launcher
                 dataPath.GetDirectories().ForEach(x => x.Delete(true));
             }
 
-            if (MessageBox.Show("This will erase everything in the database. Are you sure you want to continue?",
+            if (dataPath.Exists &&
+                MessageBox.Show("This will erase everything in the database. Are you sure you want to continue?",
                     "Wait a minute", MessageBoxButtons.OKCancel) == DialogResult.Cancel)
             {
                 return;
@@ -116,6 +126,9 @@ namespace WvsBeta.Launcher
                 MessageBox.Show("Unable to start MariaDB! Process exited early.");
                 return;
             }
+            
+            // Make sure the person is watching this dialog, not the mariadb one
+            Activate();
 
             // Start injecting data...
             try
@@ -140,6 +153,8 @@ namespace WvsBeta.Launcher
                 db.RunQuery(File.ReadAllText(Path.Combine(preparedFiles, "rsvp-structure.sql")));
                 db.RunQuery(File.ReadAllText(Path.Combine(preparedFiles, "rsvp-evolutions.sql")));
 
+
+                ssMariaDB.StartingDisabled = false;
                 MessageBox.Show("MariaDB re-installed and data cleaned.");
             }
             catch (Exception ex)
@@ -201,7 +216,7 @@ namespace WvsBeta.Launcher
         {
         }
 
-        private UdpClient broadcastClient = new ();
+        private UdpClient broadcastClient = new();
 
         private void tmrServerAnnouncer_Tick(object sender, EventArgs e)
         {
@@ -265,6 +280,47 @@ namespace WvsBeta.Launcher
         {
             var de = new DataEdit();
             de.ShowDialog();
+        }
+
+        private void fromMariaDBDataToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var folder = MariaDBDataFolder;
+            if (!folder.Exists)
+            {
+                MessageBox.Show($"Could not find {folder}");
+                return;
+            }
+
+            if (ssMariaDB.Started)
+            {
+                MessageBox.Show("Please stop the MariaDB server prior to backing up.");
+                return;
+            }
+
+            var sfd = new SaveFileDialog();
+            sfd.InitialDirectory = Program.DataSvr;
+
+            sfd.Filter = "Zip file|*.zip";
+            sfd.FileName = $"mariadb-data-{DateTime.Now:yyyyMMdd-HHmmss}.zip";
+
+            if (sfd.ShowDialog() != DialogResult.OK) return;
+
+            try
+            {
+                if (File.Exists(sfd.FileName))
+                {
+                    File.Delete(sfd.FileName);
+                }
+
+                ZipFile.CreateFromDirectory(folder.FullName, sfd.FileName);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Unable to create backup. Make sure database is not running!\n\n{ex}");
+                return;
+            }
+
+            MessageBox.Show($"Database backup of MariaDB made at {sfd.FileName}.\nNext time you can just replace the {folder} data with the content in the zip...!");
         }
     }
 }
