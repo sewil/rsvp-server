@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using log4net;
+using MySqlConnector;
 using WvsBeta.Common;
 
 namespace WvsBeta.Center
@@ -83,6 +85,8 @@ namespace WvsBeta.Center
                     TimeSpan.FromMinutes(1)
                 );
 
+                MasterThread.RepeatingAction.Start("VotingCheck", VoteCheck, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(5));
+
                 Pinger.Init(x => Program.MainForm.LogAppend(x), x=> Program.MainForm.LogAppend(x));
             }
             catch (Exception ex)
@@ -94,6 +98,39 @@ namespace WvsBeta.Center
             }
 
             Console.WriteLine("Initialized");
+        }
+
+        public void VoteCheck()
+        {
+            var ids = new List<(int id, int userid)>();
+            using (var data = CenterServer.Instance.CharacterDatabase.RunQuery("SELECT ID, userid FROM gtop_votes WHERE handled = 0") as MySqlDataReader)
+            {
+                while (data != null && data.Read())
+                {
+                    int id = data.GetInt32("ID");
+                    int userid = data.GetInt32("userid");
+                    ids.Add((id, userid));
+                }
+            }
+
+            CenterServer.Instance.CharacterDatabase.RunTransaction(comm =>
+            {
+                foreach (var (id, userid) in ids)
+                {
+                    comm.Parameters.Clear();
+                    comm.CommandText = "UPDATE gtop_votes SET handled=1 WHERE ID = @id";
+                    comm.Parameters.AddWithValue("@id", id);
+                    comm.ExecuteNonQuery();
+
+                    comm.Parameters.Clear();
+                    comm.CommandText = "INSERT INTO user_point_transactions (`userid`, `amount`, `date`, `note`, `pointtype`) VALUES (@userid, @amount, NOW(), @note, @pointtype);";
+                    comm.Parameters.AddWithValue("@userid", userid);
+                    comm.Parameters.AddWithValue("@amount", 5000);
+                    comm.Parameters.AddWithValue("@note", "Cash gained for voting");
+                    comm.Parameters.AddWithValue("@pointtype", "nx");
+                    comm.ExecuteNonQuery();
+                }
+            }, Program.MainForm.LogAppend);
         }
 
         public void UpdateServerList()
