@@ -125,7 +125,7 @@ namespace WvsBeta.Center
                     comm.Parameters.Clear();
                     comm.CommandText = "INSERT INTO user_point_transactions (`userid`, `amount`, `date`, `note`, `pointtype`) VALUES (@userid, @amount, NOW(), @note, @pointtype);";
                     comm.Parameters.AddWithValue("@userid", userid);
-                    comm.Parameters.AddWithValue("@amount", 5000);
+                    comm.Parameters.AddWithValue("@amount", 1000);
                     comm.Parameters.AddWithValue("@note", "Cash gained for voting");
                     comm.Parameters.AddWithValue("@pointtype", "nx");
                     comm.ExecuteNonQuery();
