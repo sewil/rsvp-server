@@ -3,7 +3,7 @@ namespace WvsBeta.Launcher
     internal static class Program
     {
         public static readonly string InstallationPath = Environment.CurrentDirectory;
-        public static string DataSvr => Path.Join(InstallationPath, "..", "DataSvr");
+        public static string DataSvr => Path.GetFullPath(Path.Join(InstallationPath, "..", "DataSvr"));
 
         /// <summary>
         ///  The main entry point for the application.

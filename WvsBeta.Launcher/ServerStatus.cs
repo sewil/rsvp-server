@@ -173,12 +173,25 @@ namespace WvsBeta.Launcher
             }
         }
 
+        private bool stopping = false;
         public void WaitForExit()
         {
             if (!Started || Process == null) return;
-            Process.WaitForExit();
-            Process?.Close();
-            Process = null;
+            stopping = true;
+            try
+            {
+                if (!Process.WaitForExit(TimeSpan.FromSeconds(10)))
+                {
+                    MessageBox.Show("Process did not exit in time?");
+                }
+
+            }
+            finally
+            {
+                stopping = false;
+                Process?.Close();
+                Process = null;
+            }
         }
 
         private void HookProcess(Process process)
@@ -198,13 +211,27 @@ namespace WvsBeta.Launcher
 
         private void Process_Exited(object? sender, EventArgs e)
         {
-            Process.Exited -= Process_Exited;
-            Process?.Close();
+            // Don't do extra steps if we are stopping this process
+            if (stopping) return;
+
+            if (Process != null)
+            {
+                Process.Exited -= Process_Exited;
+                Process.Close();
+            }
+
             Process = null;
-            Invoke((MethodInvoker)delegate
+            if (InvokeRequired)
+            {
+                Invoke((MethodInvoker)delegate
+                {
+                    UpdateButtonStates();
+                });
+            }
+            else
             {
                 UpdateButtonStates();
-            });
+            }
         }
 
         private bool _wasStarted = false;
@@ -215,11 +242,11 @@ namespace WvsBeta.Launcher
             var startButtonEnabled = !StartingDisabled;
             if (startButtonEnabled && started && !ProcessCanThrowExit) startButtonEnabled = false;
             btnStart.Enabled = startButtonEnabled;
-           
+
 
             btnStart.Text = started ? "Restart" : "Start";
             propertyGrid1.Enabled = !started;
-            btnReinstall.Enabled = Reinstallable && !started && !StartingDisabled;
+            btnReinstall.Enabled = Reinstallable && !started;
             btnReloadConfig.Enabled = !started;
 
             if (started && !_wasStarted) OnStarted?.Invoke(null, null);
