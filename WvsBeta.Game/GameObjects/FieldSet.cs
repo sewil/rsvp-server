@@ -620,7 +620,9 @@ namespace WvsBeta.Game
                             return;
                         }
 
-                        var newReactorState = crsrai.State ?? (byte)(reactor.State + 1);
+                        byte newReactorState;
+                        if (crsrai.State == 0xFF) newReactorState = (byte)(reactor.State + 1);
+                        else newReactorState = crsrai.State ?? (byte)(reactor.State + 1);
 
                         map.SetReactorState(crsrai.ReactorName, newReactorState);
 
