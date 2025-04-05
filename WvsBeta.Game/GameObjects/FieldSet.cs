@@ -702,8 +702,17 @@ namespace WvsBeta.Game
 
         public void BroadcastMsg(MessagePacket.MessageTypes type, string msg, int npcTemplateID)
         {
-            // NOTE: npcTemplateID is not used
-            MessagePacket.SendTextMaps(type, msg, MapsAffected.Values.ToArray());
+            if (type == MessagePacket.MessageTypes.ScriptMessage)
+            {
+                foreach (var chr in Characters)
+                {
+                    NpcPacket.SendNPCChatTextSimple(chr, npcTemplateID, msg, NpcChatSimpleTypes.OK);
+                }
+            }
+            else
+            {
+                MessagePacket.SendTextMaps(type, msg, MapsAffected.Values.ToArray());
+            }
         }
 
         public enum EnterError
