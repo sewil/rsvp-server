@@ -111,10 +111,13 @@ namespace WvsBeta.SharedDataProvider.Templates
                 // Not in this version (v.12)
                 ResetMobs = 7,
 
+                // [mapidx]
+                // Not in this version (v.12)
+                SpawnNPC = 8,
+
                 // [mapidx] [objectname] [state]
                 // Not in this version (v.12)
-                SetFieldObjectState = 8,
-
+                SetFieldObjectState = 9,
             }
 
             public object[] Args { get; set; }
@@ -138,6 +141,18 @@ namespace WvsBeta.SharedDataProvider.Templates
         {
             public string VariableName => (string)Args[0];
             public string Value => (string)Args[1];
+        }
+
+        public class SpawnNPCReactorActionInfo : ReactorActionInfo
+        {
+            public int MapIndex => (int)Args[0];
+        }
+
+        public class SetFieldObjectStateReactorActionInfo : ReactorActionInfo
+        {
+            public int MapIndex => (int)Args[0];
+            public string ObjectName => (string)Args[1];
+            public byte? State => Args.Length >= 3 ? (byte?)(int)Args[2] : null;
         }
 
         public class ChangeMusicReactorActionInfo : ReactorActionInfo

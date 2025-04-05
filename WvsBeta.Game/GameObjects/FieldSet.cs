@@ -245,6 +245,8 @@ namespace WvsBeta.Game
                             FieldSetData.ReactorActionInfo.Types.ChangeMusic => new FieldSetData.ChangeMusicReactorActionInfo(),
                             FieldSetData.ReactorActionInfo.Types.ChangeReactorState => new FieldSetData.ChangeReactorStateReactorActionInfo(),
                             FieldSetData.ReactorActionInfo.Types.SetFieldsetVariable => new FieldSetData.SetFieldsetVariableReactorActionInfo(),
+                            FieldSetData.ReactorActionInfo.Types.SpawnNPC => new FieldSetData.SpawnNPCReactorActionInfo(),
+                            FieldSetData.ReactorActionInfo.Types.SetFieldObjectState => new FieldSetData.SetFieldObjectStateReactorActionInfo(),
                             _ => throw new NotImplementedException(),
                         };
 
@@ -651,6 +653,16 @@ namespace WvsBeta.Game
                             SetVar(sfvrai.VariableName, sfvrai.Value);
                         }
 
+                        break;
+                    }
+
+                case FieldSetData.SpawnNPCReactorActionInfo:
+                    {
+                        break;
+                    }
+
+                case FieldSetData.SetFieldObjectStateReactorActionInfo sfosrai:
+                    {
                         break;
                     }
             }
