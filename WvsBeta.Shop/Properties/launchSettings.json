@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "WvsBeta.Shop": {
+      "commandName": "Project",
+      "commandLineArgs": "Shop0"
+    }
+  }
+}
