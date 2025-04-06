@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
+  <trustInfo xmlns="urn:schemas-microsoft-com:asm.v3">
+    <security>
+      <requestedPrivileges>
+        <requestedExecutionLevel level="asInvoker" uiAccess="false"/>
+		<!-- This fixes the patcher not popping up, because Patcher.exe is by default a process with admin access requirements.
+			This file makes Windows think it doesn't need that. -->
+      </requestedPrivileges>
+    </security>
+  </trustInfo>
+</assembly>
