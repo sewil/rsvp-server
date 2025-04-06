@@ -2827,7 +2827,7 @@ namespace WvsBeta.Game
                 case "reactors":
                     {
                         _character.Field.Reactors.ForEach(r =>
-                            SendNotice($"Reactor {r.Key}: name {r.Value.Template.Name}, state {r.Value.State}, page {r.Value.PageID}, piece {r.Value.PieceID}")
+                            SendNotice($"Reactor {r.Key} ({r.Value.Template.ID}): name {r.Value.Name}, state {r.Value.State}, page {r.Value.PageID}, piece {r.Value.PieceID}")
                         );
                         return true;
                     }

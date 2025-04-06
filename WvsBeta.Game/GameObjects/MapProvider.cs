@@ -346,6 +346,7 @@ namespace WvsBeta.Game.GameObjects
                 var l0 = objInLayer.GetString("l0");
                 var l1 = objInLayer.GetString("l1");
                 var l2 = objInLayer.GetString("l2");
+                var name = objInLayer.GetString("name") ?? l2;
                 var reactorPath = $"Reactor/Reactor.img/{l0}/{l1}/{l2}";
                 var reactorNode = FileSystem.GetProperty(reactorPath);
 
@@ -363,7 +364,8 @@ namespace WvsBeta.Game.GameObjects
                     objInLayer.GetInt16("y") ?? 0,
                     objInLayer.GetUInt8("z") ?? 0,
                     objInLayer.GetUInt8("zM") ?? 0,
-                    l2
+                    l2,
+                    name
                 );
 
                 reactor.PieceID = objIdx.Value;

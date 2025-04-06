@@ -13,7 +13,7 @@ namespace WvsBeta.SharedDataProvider.Templates
         public string L0 { get; set; }
         public string L1 { get; set; }
         public string L2 { get; set; }
-        public string Name => L2;
+        public string ID => L2;
 
         public int ReqHitCount { get; set; }
 

@@ -44,12 +44,12 @@ namespace WvsBeta.SharedDataProvider.Providers
                             ReqHitCount = info?.GetInt32("hitCount") ?? 0,
                         };
 
-                        if (ret.ContainsKey(reactor.Name))
+                        if (ret.ContainsKey(reactor.ID))
                         {
-                            throw new Exception($"Already loaded a reactor with the name {reactor.Name}");
+                            throw new Exception($"Already loaded a reactor with the ID {reactor.ID}");
                         }
 
-                        ret[reactor.Name] = reactor;
+                        ret[reactor.ID] = reactor;
 
 
                         reactor.States = SelectOverIndexed(l2Prop, (currentState, stateProp) =>

@@ -19,6 +19,7 @@ namespace WvsBeta.Game
         public short Y { get; set; }
         public readonly byte Z;
         public readonly byte ZM;
+        public string Name { get; }
 
         // Note: reactors stay spawned if they have a RegenInterval
         private bool spawned;
@@ -53,7 +54,7 @@ namespace WvsBeta.Game
 
         private string RepeatingTaskName => this.ToString();
 
-        public Reactor(Map pField, short pID, byte pState, short pX, short pY, byte pZ, byte pZM, string l2)
+        public Reactor(Map pField, short pID, byte pState, short pX, short pY, byte pZ, byte pZM, string l2, string name)
         {
             Field = pField;
             ID = pID;
@@ -63,6 +64,7 @@ namespace WvsBeta.Game
             Z = pZ;
             ZM = pZM;
             Template = DataProvider.Reactors[l2];
+            Name = name ?? Template.ID;
         }
 
         public override string ToString() => $"Reactor {Template} map {Field.ID} reactorid {ID}";
@@ -232,8 +234,8 @@ namespace WvsBeta.Game
                 }
             }
 
-            Trace.WriteLineIf(Server.Instance.Initialized, $"Reactor {Template.Name} changed to state {State}");
-            Field.CheckReactorAction(Template.Name, State, StateEnd);
+            Trace.WriteLineIf(Server.Instance.Initialized, $"Reactor {Name} changed to state {State}");
+            Field.CheckReactorAction(Name, State, StateEnd);
         }
 
         public void DoAction(ReactorData.ActionData action, int delay, int dropIdx)
@@ -429,7 +431,7 @@ namespace WvsBeta.Game
                     }
 
                 default:
-                    _log.Error($"Unhandled action {action} for reactor {Template.Name} ({this})");
+                    _log.Error($"Unhandled action {action} for reactor {Name} ({this})");
                     break;
             }
         }

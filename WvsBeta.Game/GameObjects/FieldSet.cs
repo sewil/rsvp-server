@@ -261,7 +261,7 @@ namespace WvsBeta.Game
                             if (kvp.Key == "info") continue;
                             var eventState = (int)kvp.Value;
 
-                            if (!map.Reactors.Any(x => x.Value.Template.Name == reactorName))
+                            if (!map.Reactors.Any(x => x.Value.Name == reactorName))
                             {
                                 _log.Error($"Did not find reactor {reactorName} in map {map} for fieldset {Name}");
                             }

@@ -1643,7 +1643,7 @@ namespace WvsBeta.Game
             r.HitBy(chr, delay, option);
         }
 
-        public Reactor GetReactor(string name) => Reactors.Values.FirstOrDefault(x => x.Template.Name == name);
+        public Reactor GetReactor(string name) => Reactors.Values.FirstOrDefault(x => x.Name == name);
 
         public void ResetReactor(bool shuffle)
         {
