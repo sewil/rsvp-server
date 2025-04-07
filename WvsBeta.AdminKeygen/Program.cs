@@ -48,7 +48,7 @@ namespace WvsBeta.AdminKeygen
             return password;
         }
 
-        static void SignServerConfig(string serverConfigPath, string privateKeyPath)
+        static void SignServerConfig(string serverConfigPath, string privateKeyPath, string signedPath)
         {
             const uint magic = 0x31333337;
 
@@ -61,7 +61,10 @@ namespace WvsBeta.AdminKeygen
 
             var sign = rsa.SignData(serverConfigContents, SHA256.Create());
 
-            var signedPath = serverConfigPath + ".signed";
+            if (signedPath == null)
+            {
+                signedPath = serverConfigPath + ".signed";
+            }
             File.WriteAllBytes(signedPath, serverConfigContents);
             File.AppendAllBytes(signedPath, sign);
             File.AppendAllBytes(signedPath, BitConverter.GetBytes((uint)sign.Length));
@@ -129,13 +132,15 @@ Usage:
                     GenerateKeys();
                     return;
                 case "sign":
-                    if (args.Length != 3)
+                    if (args.Length < 3)
                     {
                         Console.WriteLine("Missing path to ServerConfig.img, and path to Server private key.");
                         return;
                     }
+                    string signedPath = null;
+                    if (args.Length > 3) signedPath = args[3];
 
-                    SignServerConfig(args[1], args[2]);
+                    SignServerConfig(args[1], args[2], signedPath);
                     return;
                 default:
                     Console.WriteLine("Not sure what this is: {0}", args[0]);
