@@ -431,8 +431,16 @@ namespace WvsBeta.Game
                         var newName = packet.ReadString();
                         var succeeded = packet.ReadBool();
 
-                        var message = succeeded ? $"Successfully renamed character to {newName}" : $"Unable to rename character to {newName}, check logs of Center";
-                        MessagePacket.SendTextPlayer(MessagePacket.MessageTypes.Notice, message, chr);
+                        if (chr.NpcSession != null && ((IScriptV2)chr.NpcSession).WaitingForResponse)
+                        {
+                            var npcSession = (IScriptV2)chr.NpcSession;
+                            npcSession.ProvideClientResponse(succeeded);
+                        }
+                        else
+                        {
+                            var message = succeeded ? $"Successfully renamed character to {newName}" : $"Unable to rename character to {newName}, check logs of Center";
+                            MessagePacket.SendTextPlayer(MessagePacket.MessageTypes.Notice, message, chr);
+                        }
 
                         var renamedChar = Server.Instance.GetCharacter(charid);
                         if (renamedChar != null)

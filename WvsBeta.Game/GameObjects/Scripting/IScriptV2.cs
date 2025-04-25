@@ -753,6 +753,11 @@ namespace WvsBeta.Game
                 MessagePacket.MessageMode.ToChannel);
         }
 
+        protected bool RenameCharacter(string newName)
+        {
+            Server.Instance.CenterConnection.RenamePlayer(chr.Player.SessionHash, chr.ID, newName);
+            return RequestClientResponse<bool>();
+        }
 
         protected void QuestEndEffect()
         {

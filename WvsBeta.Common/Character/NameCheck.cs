@@ -29,7 +29,7 @@ namespace WvsBeta.Common.Character
                 }))
                 return Result.InvalidCharacter;
 
-            if (_forbiddenName.Exists(pName.Contains)) 
+            if (_forbiddenName.Exists(pName.ToLower().Contains)) 
                 return Result.Forbidden;
 
             return Result.OK;
@@ -39,6 +39,7 @@ namespace WvsBeta.Common.Character
         public static void LoadForbiddenName(WzFileSystem fileSystem)
         {
             _forbiddenName = fileSystem.GetProperty("Etc", "ForbiddenName.img").Children.OfType<string>()
+                .Select(i => i.ToLower())
                 .ToList();
         }
     }
