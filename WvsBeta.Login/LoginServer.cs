@@ -30,6 +30,7 @@ namespace WvsBeta.Login
         public bool InMigration { get; set; }
         public Dictionary<short, short> PatchNextVersion { get; } = new Dictionary<short, short>();
         public int DataChecksum { get; private set; }
+        public int WzMssChecksum { get; private set; }
         public short CurrentPatchVersion { get; private set; }
         public bool AdminsRequirePublicKeyAuth { get; private set; }
 
@@ -302,6 +303,7 @@ namespace WvsBeta.Login
             PatchNextVersion.Clear();
             CurrentPatchVersion = 0;
             DataChecksum = reader["dataChecksum"]?.GetInt() ?? 0;
+            WzMssChecksum = reader["wzmssChecksum"]?.GetInt() ?? 0;
 
             var versionAndChecksumNode = reader["versionUpdates"];
             if (versionAndChecksumNode != null)
