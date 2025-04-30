@@ -1259,44 +1259,6 @@ namespace WvsBeta.Game
             terrestrialBranch = ChineseCalendar.GetTerrestrialBranch(sexagenaryYear);
             return Zodiacs[terrestrialBranch - 1];
         }
-
-        protected bool isEventDate(string eventName)
-        {
-            return isEventDate(eventName, out var _, out var __);
-        }
-        protected bool isEventDate(string eventName, out DateTime startDate, out DateTime endDate)
-        {
-            var now = DateTime.UtcNow;
-
-            if (eventName == "newyear")
-            {
-                int newYear = now.Month == 12 ? now.Year + 1 : now.Year;
-                startDate = DateTime.Parse(newYear - 1 + "-12-31");
-                endDate = DateTime.Parse(newYear + "-01-02");
-            }
-            else if (eventName == "pride")
-            {
-                startDate = DateTime.Parse(now.Year + "-06-01");
-                endDate = DateTime.Parse(now.Year + "-07-01");
-            }
-            else if (eventName == "summer")
-            {
-                startDate = DateTime.Parse(now.Year + "-08-12");
-                endDate = DateTime.Parse(now.Year + "-09-01");
-            }
-            else if (eventName == "lunarnewyear")
-            {
-                startDate = ChineseCalendar.ToDateTime(now.Year, 1, 1, 0, 0, 0, 0);
-                endDate = startDate.AddDays(16);
-            }
-            else
-            {
-                startDate = DateTime.UnixEpoch;
-                endDate = DateTime.UnixEpoch;
-                return false;
-            }
-            return startDate <= now && now < endDate;
-        }
         #endregion
 
         #region Logging
