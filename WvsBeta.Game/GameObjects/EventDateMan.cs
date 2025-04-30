@@ -14,7 +14,8 @@ namespace WvsBeta.Game.GameObjects
     {
         private static ILog _log = LogManager.GetLogger(typeof(EventDateMan));
         private static Dictionary<string, (int startDate, int endDate)> _events = new Dictionary<string, (int startDate, int endDate)>();
-        
+        public static HashSet<string> ForceActive = new HashSet<string>();
+
         // Format: YYYYMMDDHH
         public static int CurrentYYYYMMDDHH { get; private set; }
         public static int CurrentYYYY { get; private set; }
@@ -111,6 +112,7 @@ namespace WvsBeta.Game.GameObjects
 
         public static bool IsEventActive(string eventName)
         {
+            if (ForceActive.Contains(eventName)) return true;
             var tuple = GetEventData(eventName);
             if (tuple == null) return false;
             return CurrentYYYYMMDDHH >= tuple.Value.startDate && tuple.Value.endDate > CurrentYYYYMMDDHH;

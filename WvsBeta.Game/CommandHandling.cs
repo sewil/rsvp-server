@@ -1206,7 +1206,26 @@ namespace WvsBeta.Game
                         NpcPacket.StartScript(_character, "event");
                         return true;
                     }
-
+                case "toggleevent":
+                case "eventtoggle":
+                    {
+                        string eventName = Args[0].Value;
+                        if (!EventDateMan.GetEventNames().Contains(eventName))
+                        {
+                            SendRed("Unknown event!");
+                        }
+                        else if (EventDateMan.ForceActive.Contains(eventName))
+                        {
+                            EventDateMan.ForceActive.Remove(eventName);
+                            SendRed("Event disabled");
+                        }
+                        else
+                        {
+                            EventDateMan.ForceActive.Add(eventName);
+                            SendRed("Event enabled");
+                        }
+                        return true;
+                    }
                 #endregion
 
                 #region discord
@@ -1806,12 +1825,13 @@ namespace WvsBeta.Game
                                 var percentText = (percent * 100.0).ToString("0.########") + "%";
                                 percentText = $"1 of {(1 / percent):0.##} drops";
                                 var premiumText = dt.Premium ? " (premium)" : "";
+                                var limitedName = !string.IsNullOrWhiteSpace(dt.LimitedName) ? $" (limitedname {dt.LimitedName})" : "";
                                 if (dt.Mesos > 0)
-                                    return $"Mesos {IScriptV2.number(dt.Mesos)} @ {percentText}" + premiumText;
+                                    return $"Mesos {IScriptV2.number(dt.Mesos)} @ {percentText}" + premiumText + limitedName;
                                 else
                                 {
                                     var minmax = dt.Min == 0 && dt.Max == 0 ? "" : $" ({dt.Min} - {dt.Max})";
-                                    return $"{IScriptV2.itemIconAndName(dt.ItemID)} ({dt.ItemID}) {minmax} @ {percentText}" + premiumText;
+                                    return $"{IScriptV2.itemIconAndName(dt.ItemID)} ({dt.ItemID}) {minmax} @ {percentText}" + premiumText + limitedName;
                                 }
                             }
 
@@ -1876,7 +1896,7 @@ namespace WvsBeta.Game
                             percentText = $"1 of {(1 / percent):0.##} drops";
                             var premiumText = dt.Premium ? " (premium)" : "";
                             var mobLevel = (dt.MobMinLevel > 0 || dt.MobMaxLevel < int.MaxValue) ? $" (mob lv. {(dt.MobMinLevel > 0 ? dt.MobMinLevel : "")}-{(dt.MobMaxLevel < int.MaxValue ? dt.MobMaxLevel : "")})" : "";
-                            var limitedName = !string.IsNullOrWhiteSpace(dt.LimitedName) ? $" (limited to {dt.LimitedName})" : "";
+                            var limitedName = !string.IsNullOrWhiteSpace(dt.LimitedName) ? $" (limitedname {dt.LimitedName})" : "";
                             var expire = dt.DateExpire < DateTime.MaxValue ? $" (expires on {dt.DateExpire})" : "";
                             if (dt.Mesos > 0)
                             {
