@@ -13,14 +13,14 @@ rm -f Server
 rm -f Skill
 rm -f String
 
-ln -s Character ../../rsvp-data/Character
-ln -s Etc ../../rsvp-data/Etc
-ln -s Item ../../rsvp-data/Item
-ln -s Map ../../rsvp-data/Map
-ln -s Mob ../../rsvp-data/Mob
-ln -s Npc ../../rsvp-data/Npc
-ln -s Reactor ../../rsvp-data/Reactor
-ln -s scripts ../../rsvp-scripts
-ln -s Server ../../rsvp-data/Server
-ln -s Skill ../../rsvp-data/Skill
-ln -s String ../../rsvp-data/String
+ln -s ../../rsvp-data/Character Character
+ln -s ../../rsvp-data/Etc Etc
+ln -s ../../rsvp-data/Item Item
+ln -s ../../rsvp-data/Map Map 
+ln -s ../../rsvp-data/Mob Mob
+ln -s ../../rsvp-data/Npc Npc
+ln -s ../../rsvp-data/Reactor Reactor
+ln -s ../../rsvp-scripts scripts
+ln -s ../../rsvp-data/Server Server
+ln -s ../../rsvp-data/Skill Skill
+ln -s ../../rsvp-data/String String

@@ -23,6 +23,14 @@ git clone https://github.com/diamondo25/rsvp-server.git
 git clone https://github.com/diamondo25/rsvp-data.git
 ```
 
+#### Link sources
+```
+cd rsvp-server/DataSvr
+chmod +x link.sh
+./link.sh
+
+```
+
 
 ### Install redis
 ```
