@@ -38,11 +38,20 @@ sudo apt-get install -y redis-server
 ```
 
 #### Configure redis
-
+You should figure out how to set a password yourself, and then set it in the config files.
 
 ### Install mariadb
 ```
 sudo apt-get isntall -y mariadb-server
+```
+
+#### Prepare database
+```
+sudo mariadb-admin create rsvp
+
+# yea idk figure out how to
+# - create the user rsvp for localhost
+# - import the schema and then evolutions from WvsBeta.Database\evolutions\prepared\
 ```
 
 ### Build Server
