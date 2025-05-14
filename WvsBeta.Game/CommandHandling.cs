@@ -1398,6 +1398,10 @@ namespace WvsBeta.Game
                         {
                             query = DataProvider.NPCs.Select(i => (i.Key, i.Value.Name));
                         }
+                        else if (Args[0] == "skill")
+                        {
+                            query = SkillNamesProvider.SkillNames.Select(i => (i.Key, i.Value));
+                        }
                         else
                         {
                             SendRed("Unknown lookup type!");

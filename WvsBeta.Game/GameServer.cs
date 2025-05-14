@@ -376,6 +376,7 @@ namespace WvsBeta.Game
             MapProvider.Load();
             QuestsProvider.Load();
             QuestNamesProvider.Load();
+            SkillNamesProvider.Load();
             CommunicatorProvider.Load();
             MapProvider.FinishLoading();
             QuestsProvider.FinishLoading();
