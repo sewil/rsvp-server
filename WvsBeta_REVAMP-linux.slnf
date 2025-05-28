@@ -1,0 +1,22 @@
+{
+  "solution": {
+    "path": "WvsBeta_REVAMP.sln",
+    "projects": [
+      "WvsBeta.AdminKeygen\\WvsBeta.AdminKeygen.csproj",
+      "WvsBeta.Center\\WvsBeta.Center.csproj",
+      "WvsBeta.Common\\WvsBeta.Common.csproj",
+      "WvsBeta.Database\\WvsBeta.Database.csproj",
+      "WvsBeta.Game\\WvsBeta.Game.csproj",
+      "WvsBeta.Logger\\WvsBeta.Logger.csproj",
+      "WvsBeta.Login\\WvsBeta.Login.csproj",
+      "WvsBeta.MasterThread\\WvsBeta.MasterThread.csproj",
+      "WvsBeta.PatchCreator\\WvsBeta.PatchCreator.csproj",
+      "WvsBeta.SharedDataProvider\\WvsBeta.SharedDataProvider.csproj",
+      "WvsBeta.Shop\\WvsBeta.Shop.csproj",
+      "WvsBeta.WzTools.Extra\\WvsBeta.WzTools.Extra.csproj",
+      "WzTools\\WvsBeta.WzTools.csproj",
+      "log4net.ElasticSearch\\src\\log4net.ElasticSearch\\log4net.ElasticSearch.csproj",
+      "logging-log4net\\src\\log4net\\log4net.csproj"
+    ]
+  }
+}

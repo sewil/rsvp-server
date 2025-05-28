@@ -74,11 +74,14 @@ namespace WvsBeta.Common.sideR
 
             // Try to connect
 
-            var authResponse = Write("AUTH", Password);
-            if (!authResponse.Contains("no password is set") && !authResponse.Contains("OK"))
+            if (!string.IsNullOrEmpty(Password))
             {
-                _log.Error($"Unable to auth: {authResponse}");
-                throw new Exception($"Unable to authenticate to Redis, error {authResponse}");
+                var authResponse = Write("AUTH", Password);
+                if (!authResponse.Contains("no password is set") && !authResponse.Contains("OK"))
+                {
+                    _log.Error($"Unable to auth: {authResponse}");
+                    throw new Exception($"Unable to authenticate to Redis, error {authResponse}");
+                }
             }
 
             if (!SET("TEST_KEY", "test1234"))
@@ -91,7 +94,7 @@ namespace WvsBeta.Common.sideR
                 if (tk != "test1234")
                     throw new Exception($"Unable to validate test key! {tk}");
             }
-            
+
             _log.Info("Connected!");
             connecting = false;
         }
@@ -105,7 +108,7 @@ namespace WvsBeta.Common.sideR
             {
                 _log.Debug("IN: " + line);
             }
-            
+
             return line;
         }
 
@@ -143,7 +146,7 @@ namespace WvsBeta.Common.sideR
 
         private string Write(params string[] elements)
         {
-            ReSend:
+        ReSend:
             if (!connecting) EnsureConnection();
 
             try
@@ -190,7 +193,7 @@ namespace WvsBeta.Common.sideR
 
 
             var buf = new Span<char>(new char[bulkStringLength]);
-           
+
             if (_sr.Read(buf) != buf.Length)
             {
                 throw new Exception($"Unable to read {bulkStringLength} bytes");
@@ -207,7 +210,7 @@ namespace WvsBeta.Common.sideR
         {
             var retried = false;
 
-            Retry:
+        Retry:
 
             var firstLine = Write("GET", key);
             if (firstLine[0] != '$')
@@ -219,7 +222,7 @@ namespace WvsBeta.Common.sideR
                     retried = true;
                     goto Retry;
                 }
-            
+
                 _log.Error($"Unexpected response for GET {key} request: {firstLine}. Erroring out...");
                 throw new Exception($"Unexpected response for GET {key} request: {firstLine}");
 
@@ -242,7 +245,7 @@ namespace WvsBeta.Common.sideR
                     retried = true;
                     goto Retry;
                 }
-                
+
                 _log.Error("Exception while getting BULK response. Passing to caller...", ex);
                 throw;
             }
@@ -255,10 +258,10 @@ namespace WvsBeta.Common.sideR
         {
             var retried = false;
 
-            Retry:
+        Retry:
             string firstLine;
             if (expireTime != null)
-                firstLine = Write("SETEX", key, ((long) expireTime.Value.TotalSeconds).ToString(), value);
+                firstLine = Write("SETEX", key, ((long)expireTime.Value.TotalSeconds).ToString(), value);
             else
                 firstLine = Write("SET", key, value);
 
@@ -276,9 +279,9 @@ namespace WvsBeta.Common.sideR
                 retried = true;
                 goto Retry;
             }
-            
+
             _log.Error($"Unable to set Redis key {key} with value {value}: {firstLine}. Erroring out...");
-            
+
 
             return false;
         }
@@ -288,7 +291,7 @@ namespace WvsBeta.Common.sideR
             lookupFailed = false;
             var retried = false;
 
-            Retry:
+        Retry:
             var firstLine = Write("EXISTS", key);
 
             if (firstLine == ":1")
@@ -303,7 +306,7 @@ namespace WvsBeta.Common.sideR
                 return false;
             }
 
-            
+
             if (!retried && !connecting)
             {
                 _log.Error($"Unable to check if key {key} exists: {firstLine}. Reconnecting and retrying...");
@@ -311,7 +314,7 @@ namespace WvsBeta.Common.sideR
                 retried = true;
                 goto Retry;
             }
-            
+
             _log.Error($"Unable to check if key {key} exists: {firstLine}. Erroring out...");
             lookupFailed = true;
 
@@ -321,7 +324,7 @@ namespace WvsBeta.Common.sideR
         public bool DEL(string key)
         {
             var retried = false;
-            Retry:
+        Retry:
 
             var firstLine = Write("DEL", key);
 
@@ -337,7 +340,7 @@ namespace WvsBeta.Common.sideR
                 return false;
             }
 
-            
+
             if (!retried && !connecting)
             {
                 _log.Error($"Unable to delete key {key}: {firstLine}. Reconnecting and retrying...");
@@ -345,7 +348,7 @@ namespace WvsBeta.Common.sideR
                 retried = true;
                 goto Retry;
             }
-            
+
             _log.Error($"Unable to delete key {key}: {firstLine}. Erroring out...");
 
             return false;
@@ -364,7 +367,7 @@ namespace WvsBeta.Common.sideR
         public bool PING()
         {
             var retried = false;
-            Retry:
+        Retry:
             const string pong = "+PONG";
             var response = Write("PING");
             if (response != pong)
@@ -377,7 +380,7 @@ namespace WvsBeta.Common.sideR
                     goto Retry;
                 }
 
-                
+
                 _log.Error($"PING failed with {response}. Returning false...");
                 return false;
             }
