@@ -362,29 +362,13 @@ namespace WvsBeta.Login
             {
                 hackDisconnect("Too many files in directory: " + checksums.Count);
             }
-            else
+            else if (Server.Instance.DataChecksum != 0 && (!checksums.ContainsKey("Data.wz") || checksums["Data.wz"] != Server.Instance.DataChecksum))
             {
-                bool dced = false;
-                if (Server.Instance.DataChecksum == 0 && checksums.ContainsKey("Data.wz"))
-                {
-                    Program.MainForm.LogAppend("No data checksum set! User {0} sent {1:X8}", Player.UserID,
-                        checksums["Data.wz"]);
-                }
-                else if (Server.Instance.DataChecksum != 0 && (!checksums.ContainsKey("Data.wz") || checksums["Data.wz"] != Server.Instance.DataChecksum))
-                {
-                    dced = true;
-                    hackDisconnect($"Data.wz checksum invalid: 0x{checksums["Data.wz"]:X8} != 0x{Server.Instance.DataChecksum:X8}");
-                }
-
-                if (Server.Instance.WzMssChecksum == 0 && checksums.ContainsKey("WzMss.dll"))
-                {
-                    Program.MainForm.LogAppend("No WzMss checksum set! User {0} sent {1:X8}", Player.UserID,
-                        checksums["WzMss.dll"]);
-                }
-                else if (!dced && Server.Instance.WzMssChecksum != 0 && (!checksums.ContainsKey("WzMss.dll") || checksums["WzMss.dll"] != Server.Instance.WzMssChecksum))
-                {
-                    hackDisconnect($"WzMss.dll checksum invalid: 0x{checksums["WzMss.dll"]:X8} != 0x{Server.Instance.WzMssChecksum:X8}");
-                }
+                hackDisconnect($"Data.wz checksum invalid: 0x{checksums["Data.wz"]:X8} != 0x{Server.Instance.DataChecksum:X8}");
+            }
+            else if (Server.Instance.WzMssChecksum != 0 && (!checksums.ContainsKey("WzMss.dll") || checksums["WzMss.dll"] != Server.Instance.WzMssChecksum))
+            {
+                hackDisconnect($"WzMss.dll checksum invalid: 0x{checksums["WzMss.dll"]:X8} != 0x{Server.Instance.WzMssChecksum:X8}");
             }
 
             checksums.ForEach(c => Common.Tracking.ClientChecksum.LogFileChecksum(machineID, IP, c.Key, "" + c.Value));
