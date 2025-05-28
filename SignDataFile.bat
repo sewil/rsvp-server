@@ -1,1 +1,1 @@
-BinSvr\WvsBeta.AdminKeygen.exe sign ..\rsvp-data\Data.wz DataSvr\server_private.key.xml %*
+BinSvr\WvsBeta.AdminKeygen.exe sign ..\rsvp-data\Data.wz DataSvr\server_private.key.xml ..\rsvp-client\Data.wz
