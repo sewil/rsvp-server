@@ -1,4 +1,5 @@
 @echo off
+rd /s /q bin\Debug\patches
 echo f | xcopy /f /y patch.base bin\Debug\patches\patch.base
 echo f | xcopy /f /y Patcher.exe bin\Debug\patches\NewPatcher.dat
 cd bin\Debug
