@@ -77,5 +77,12 @@ events = {
 		end = 2023-01-29T00:00:00Z
 		header = The 10x drop/meso and 100x exp event is active NOW! Who will end up on rank 1??? Have fun while it lasts~
 	}
-
+	9 = {
+		name = Independence Day
+		DROP_Rate = 2
+		MESO_Rate = 2
+		start = 2025-07-04T00:00:00-04:00
+		end = 2025-07-05T00:00:00-04:00
+		header = Happy Independence Day! Enjoy the 2x drop/meso event until 23:59 Eastern Time!
+	}
 }
