@@ -1820,7 +1820,6 @@ namespace WvsBeta.Game
                         if (Args.Count == 2)
                         {
                             var type = Args[0];
-                            var id = Args[1].GetInt32();
                             var messageLines = new List<string>();
 
                             string formatDrop(DropData dt)
@@ -1841,7 +1840,7 @@ namespace WvsBeta.Game
 
                             if (type == "mob")
                             {
-                                if (DataProvider.Drops.TryGetValue(id, out var drops))
+                                if (int.TryParse(Args[1], out int id) && DataProvider.Drops.TryGetValue(id, out var drops))
                                 {
                                     messageLines.Add($"Drops for {IScriptV2.mobName(id)}");
                                     foreach (var dt in drops.OrderBy(x => x.Chance))
@@ -1858,19 +1857,37 @@ namespace WvsBeta.Game
                             else if (type == "item")
                             {
                                 var found = false;
-
-                                foreach (var kvp in DataProvider.Drops)
+                                if (int.TryParse(Args[1], out int id))
                                 {
-                                    foreach (var dt in kvp.Value.Where(x => x.Mesos == 0 && x.ItemID == id).OrderBy(x => x.Chance))
+                                    foreach (var kvp in DataProvider.Drops)
                                     {
-                                        found = true;
-                                        messageLines.Add($"{IScriptV2.mobName(kvp.Key)} ({kvp.Key}): {formatDrop(dt)}");
+                                        foreach (var dt in kvp.Value.Where(x => x.Mesos == 0 && x.ItemID == id).OrderBy(x => x.Chance))
+                                        {
+                                            found = true;
+                                            messageLines.Add($"{IScriptV2.mobName(kvp.Key)} ({kvp.Key}): {formatDrop(dt)}");
+                                        }
                                     }
                                 }
 
                                 if (!found)
                                 {
                                     SendNotice("Unknown item or item not dropped!");
+                                    return true;
+                                }
+                            }
+                            else if (type == "reactor")
+                            {
+                                if (DataProvider.Reactors.TryGetValue(Args[1], out var reactor))
+                                {
+                                    messageLines.Add($"Drops for {reactor.ID}");
+                                    foreach (var dt in reactor.RewardInfo.OrderBy(x => x.Chance))
+                                    {
+                                        messageLines.Add(formatDrop(dt));
+                                    }
+                                }
+                                else
+                                {
+                                    SendNotice("Unknown reactor!");
                                     return true;
                                 }
                             }
@@ -1883,7 +1900,7 @@ namespace WvsBeta.Game
                         }
 
 
-                        SendNotice($"Command syntax: !{Args.Command} (mob|item) {{id}}");
+                        SendNotice($"Command syntax: !{Args.Command} (mob|item|reactor) {{id|name}}");
                         return true;
                     }
 
