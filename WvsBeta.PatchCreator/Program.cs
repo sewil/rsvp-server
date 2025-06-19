@@ -145,7 +145,7 @@ namespace WvsBeta.PatchCreator
                     if (!Directory.Exists(mapleDir))
                         Directory.CreateDirectory(mapleDir);
 
-                    var noticeFile = Path.Combine(mapleDir, $"{currentMapleInstall.FullVersionNumber:D5}.txt");
+                    var noticeFile = Path.Combine(Environment.CurrentDirectory, currentMapleInstall.folderName, $"{currentMapleInstall.FullVersionNumber:D5}.txt");
                     var noticeText = Encoding.ASCII.GetBytes("Please make " + noticeFile);
                     if (File.Exists(noticeFile))
                     {
