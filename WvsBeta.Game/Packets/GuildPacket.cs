@@ -89,6 +89,15 @@ namespace WvsBeta.Game.Packets
             return true;
         }
 
+        public static bool DemoteGuildMaster(this Guild guild, int byCharacterID)
+        {
+            var oldMaster = guild.GetCharacter(guild.GuildMaster);
+            var newMaster = guild.GetCharacter(byCharacterID);
+            if (oldMaster == null || newMaster == null) return false;
+            guild.RequestDemoteGuildMaster(Server.Instance.CenterConnection, oldMaster, newMaster);
+            return true;
+        }
+
         private static void EncodeCharacterGuildInfo(Packet pw, Guild guild, Character chr = null)
         {
             pw.WriteBool(chr?.IsGM ?? false); // rainbow

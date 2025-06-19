@@ -118,6 +118,15 @@ namespace WvsBeta.Common
             centerConnection?.SendPacket(pw);
         }
 
+        public void RequestDemoteGuildMaster(AbstractConnection centerConnection, GuildCharacter oldMaster, GuildCharacter newMaster)
+        {
+            var pw = new Packet(ISClientMessages.GuildDemoteGuildMaster);
+            pw.WriteInt(ID);
+            oldMaster.Encode(pw);
+            newMaster.Encode(pw);
+            centerConnection?.SendPacket(pw);
+        }
+
         public bool HasGuildMark => Logo != null && (Logo.Background != 0 || Logo.BackgroundColor != 0 || Logo.Foreground != 0 || Logo.ForegroundColor != 0);
 
         public override string ToString() => Name + " (" + ID + ")";

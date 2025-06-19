@@ -905,6 +905,20 @@ namespace WvsBeta.Game
             return true;
         }
 
+        protected bool DemoteGuildMaster(int price)
+        {
+            // We do not remove mesos directly, only after the user has actually applied a change
+            if (Mesos < price)
+            {
+                Error("Unable to demote guild master, not enough mesos.");
+                return false;
+            }
+
+            chr.Guild.DemoteGuildMaster(chr.ID);
+            Exchange(-price);
+            return true;
+        }
+
         #endregion
 
         /// <summary>

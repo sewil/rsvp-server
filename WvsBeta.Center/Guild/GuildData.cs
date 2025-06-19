@@ -2,6 +2,7 @@
 using System.Linq;
 using MySqlConnector;
 using WvsBeta.Common;
+using static WvsBeta.Common.GuildCharacter;
 
 namespace WvsBeta.Center.Guild
 {
@@ -151,6 +152,29 @@ namespace WvsBeta.Center.Guild
                 "@characterId", characterId,
                 "@guildRank", (int)rank
             ) == 1;
+        }
+
+        public static bool DemoteGuildMaster(int guildId, int oldMasterId, int newMasterId)
+        {
+            int records = 0;
+            CenterServer.Instance.CharacterDatabase.RunTransaction(comm =>
+            {
+                comm.CommandText = "UPDATE characters SET guild_rank = 2 WHERE id = @oldMasterId";
+                comm.Parameters.AddWithValue("@oldMasterId", oldMasterId);
+                records = comm.ExecuteNonQuery();
+                comm.Parameters.Clear();
+
+                comm.CommandText = "UPDATE characters SET guild_rank = 3 WHERE id = @newMasterId";
+                comm.Parameters.AddWithValue("@newMasterId", newMasterId);
+                records += comm.ExecuteNonQuery();
+                comm.Parameters.Clear();
+
+                comm.CommandText = "UPDATE guilds SET guildmaster_id = characterId WHERE id = @guildId";
+                comm.Parameters.AddWithValue("@guildId", guildId);
+                records += comm.ExecuteNonQuery();
+                comm.Parameters.Clear();
+            }, Program.MainForm.LogAppend);
+            return records > 0;
         }
     }
 }
