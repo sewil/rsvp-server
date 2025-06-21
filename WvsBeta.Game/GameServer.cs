@@ -27,7 +27,6 @@ namespace WvsBeta.Game
         public static bool Tespia { get; private set; }
         public static Server Instance { get; private set; }
 
-        public Rand32 Randomizer { get; set; } = new Rand32();
         public double RateMobEXP = 1.0d;
         public double RateMesoAmount = 1.0d;
         public double RateDropChance = 1.0d;

@@ -766,12 +766,11 @@ namespace WvsBeta.Game
             pack.WriteBool(true); // Is connecting
 
             {
-                var rnd = Server.Instance.Randomizer;
                 // Seeds are initialized by global randomizer
-                var seed1 = rnd.Random();
-                var seed2 = rnd.Random();
-                var seed3 = rnd.Random();
-                var seed4 = rnd.Random();
+                var seed1 = Rand32.Next();
+                var seed2 = Rand32.Next();
+                var seed3 = Rand32.Next();
+                var seed4 = Rand32.Next();
 
                 chr.CalcDamageRandomizer.SetSeed(seed1, seed2, seed3);
                 chr.RndActionRandomizer.SetSeed(seed2, seed3, seed4);

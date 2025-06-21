@@ -20,6 +20,9 @@
     <DefineConstants>$(DefineConstants);WITH_DISCORD</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <None Update="RdRand.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="MemoryRegions.tsv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
