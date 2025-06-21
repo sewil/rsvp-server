@@ -310,16 +310,14 @@ namespace WvsBeta.Game
 
 
                 apgain += Constants.ApPerLevel;
-                hpgain += RNG.Range.generate(
+                hpgain += (short)Rand32.NextBetween(
                     Constants.HpMpFormulaArguments[job, 0, (int)Constants.HpMpFormulaFields.HPMin],
-                    Constants.HpMpFormulaArguments[job, 0, (int)Constants.HpMpFormulaFields.HPMax],
-                    true
+                    Constants.HpMpFormulaArguments[job, 0, (int)Constants.HpMpFormulaFields.HPMax]
                 );
 
-                mpgain += RNG.Range.generate(
+                mpgain += (short)Rand32.NextBetween(
                     Constants.HpMpFormulaArguments[job, 0, (int)Constants.HpMpFormulaFields.MPMin],
-                    Constants.HpMpFormulaArguments[job, 0, (int)Constants.HpMpFormulaFields.MPMax],
-                    true
+                    Constants.HpMpFormulaArguments[job, 0, (int)Constants.HpMpFormulaFields.MPMax]
                 );
 
                 // Additional buffing through INT stats
