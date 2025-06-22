@@ -49,7 +49,7 @@ namespace WvsBeta.Game
             _log = LogManager.GetLogger(GetType());
             this.chr = chr;
             this.NpcID = npcID;
-            this._transferID = "" + chr.ID + "-" + ScriptName + "-" + RNG.Range.generate(0, Int64.MaxValue);
+            this._transferID = "" + chr.ID + "-" + ScriptName + "-" + Rand32.NextBetween();
         }
 
         public void StartScript()

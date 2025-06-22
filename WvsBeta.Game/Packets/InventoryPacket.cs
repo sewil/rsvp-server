@@ -6,6 +6,7 @@ using System.Reflection.Metadata;
 using System.Runtime.InteropServices;
 using log4net;
 using WvsBeta.Common;
+using WvsBeta.Common.Crypto;
 using WvsBeta.Common.Sessions;
 using WvsBeta.Common.Tracking;
 using WvsBeta.Game.GameObjects;
@@ -753,6 +754,7 @@ namespace WvsBeta.Game
                 return;
             }
 
+            Rand32.Reseed();
             var successRoll = Rand32.Next() % 101;
             var curseRoll = Rand32.Next() % 101;
 

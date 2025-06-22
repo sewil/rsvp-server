@@ -1196,6 +1196,7 @@ namespace WvsBeta.Game
             // if (FieldType == MonsterCarnival) Field.GetMCRewardRate()
 
             var User = Server.Instance.GetCharacter(OwnerID);
+            Rand32.Reseed();
 
             var Rewards = Reward.ShuffleSort(Reward.GetRewards(
                 User,
