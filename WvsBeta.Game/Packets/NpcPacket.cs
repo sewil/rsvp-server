@@ -519,7 +519,7 @@ namespace WvsBeta.Game
             if (!DataProvider.NPCs.TryGetValue(chr.ShopNPCID, out var npcData)) return;
 
             var shopInfo = npcData.Shop;
-            var transferId = "" + chr.ID + "-" + chr.ShopNPCID + "-" + RNG.Range.generate(0, Int64.MaxValue);
+            var transferId = "" + chr.ID + "-" + chr.ShopNPCID + "-" + Rand32.NextBetween();
 
             var type = packet.ReadByte<ShopReq>();
             switch (type)

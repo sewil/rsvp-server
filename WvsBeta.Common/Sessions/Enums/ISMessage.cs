@@ -59,6 +59,7 @@
         GuildRankUpdate,
         GuildRename,
         GuildChangeLogo,
+        GuildDemoteGuildMaster,
 
         AdminMessage,
         

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "WvsBeta.PatchCreator": {
+      "commandName": "Project",
+      "commandLineArgs": "make-patches"
+    }
+  }
+}

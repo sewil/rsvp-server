@@ -49,7 +49,7 @@ namespace WvsBeta.Game
             _log = LogManager.GetLogger(GetType());
             this.chr = chr;
             this.NpcID = npcID;
-            this._transferID = "" + chr.ID + "-" + ScriptName + "-" + RNG.Range.generate(0, Int64.MaxValue);
+            this._transferID = "" + chr.ID + "-" + ScriptName + "-" + Rand32.NextBetween();
         }
 
         public void StartScript()
@@ -901,6 +901,20 @@ namespace WvsBeta.Game
                 Foreground = 0,
                 ForegroundColor = 0,
             });
+            Exchange(-price);
+            return true;
+        }
+
+        protected bool DemoteGuildMaster(int price)
+        {
+            // We do not remove mesos directly, only after the user has actually applied a change
+            if (Mesos < price)
+            {
+                Error("Unable to demote guild master, not enough mesos.");
+                return false;
+            }
+
+            chr.Guild.DemoteGuildMaster(chr.ID);
             Exchange(-price);
             return true;
         }

@@ -70,10 +70,9 @@ namespace WvsBeta.Game
                         }
                         short hpGain = 0;
 
-                        hpGain += RNG.Range.generate(
+                        hpGain += (short)Rand32.NextBetween(
                             Constants.HpMpFormulaArguments[jobTrack, 1, (int)Constants.HpMpFormulaFields.HPMin],
-                            Constants.HpMpFormulaArguments[jobTrack, 1, (int)Constants.HpMpFormulaFields.HPMax],
-                            true
+                            Constants.HpMpFormulaArguments[jobTrack, 1, (int)Constants.HpMpFormulaFields.HPMax]
                         );
 
                         var improvedMaxHpIncreaseLvl = chr.Skills.GetSkillLevel(Constants.Swordman.Skills.ImprovedMaxHpIncrease);
@@ -94,10 +93,9 @@ namespace WvsBeta.Game
                         short mpGain = 0;
                         var intt = chr.PrimaryStats.GetIntAddition(true);
 
-                        mpGain += RNG.Range.generate(
+                        mpGain += (short)Rand32.NextBetween(
                             Constants.HpMpFormulaArguments[jobTrack, 1, (int)Constants.HpMpFormulaFields.MPMin],
-                            Constants.HpMpFormulaArguments[jobTrack, 1, (int)Constants.HpMpFormulaFields.MPMax],
-                            true
+                            Constants.HpMpFormulaArguments[jobTrack, 1, (int)Constants.HpMpFormulaFields.MPMax]
                         );
 
                         // Additional buffing through INT stats

@@ -37,7 +37,7 @@ namespace WvsBeta.Game
             if (transferID != null)
                 _transferID = transferID;
             else
-                _transferID = "" + Character.ID + "-exchange-" + RNG.Range.generate(0, Int64.MaxValue);
+                _transferID = "" + Character.ID + "-exchange-" + Rand32.NextBetween();
         }
 
         public Exchange SetVariation(ItemVariation variation)

@@ -1,4 +1,5 @@
 ﻿using System;
+using WvsBeta.Common.Crypto;
 
 namespace WvsBeta.Common
 {
@@ -9,6 +10,10 @@ namespace WvsBeta.Common
         
         public static uint Next() => GlobalRnd.Random();
         public static int NextBetween(int min = 0, int max = int.MaxValue) => GlobalRnd.ValueBetween(min, max);
+        /// <summary>
+        /// Introduce more entropy.
+        /// </summary>
+        public static void Reseed() => GlobalRnd.ResetSeed();
         #endregion
 
         #region Public Members
@@ -21,8 +26,7 @@ namespace WvsBeta.Common
 
         public Rand32()
         {
-            uint Seed = (uint)(1170746341 * Environment.TickCount - 755606699);
-            SetSeed(Seed, Seed, Seed);
+            ResetSeed();
         }
 
         public void SetSeed(uint Seed1, uint Seed2, uint Seed3)
@@ -33,6 +37,26 @@ namespace WvsBeta.Common
             this.PastSeed2 = Seed2 | 0x1000;
             this.Seed3 = Seed3 | 0x10;
             this.PastSeed3 = Seed3 | 0x10;
+        }
+
+        public void ResetSeed()
+        {
+            uint seed;
+            if (RdRand_Interop.IsRdRandSupported)
+            {
+                /*
+                 * True random number
+                 * https://www.intel.com/content/www/us/en/developer/articles/guide/intel-digital-random-number-generator-drng-software-implementation-guide.html
+                 * https://en.wikipedia.org/wiki/RDRAND#Overview
+                 */
+                byte[] bytes = RdRand_Interop.GetRandom(4);
+                seed = (uint)(bytes[3] << 24 | bytes[2] << 16 | bytes[1] << 8 | bytes[0]);
+            }
+            else
+            {
+                seed = (uint)(1170746341 * Environment.TickCount - 755606699);
+            }
+            SetSeed(seed, seed, seed);
         }
 
         public uint Random()

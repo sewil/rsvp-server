@@ -1101,6 +1101,37 @@ namespace WvsBeta.Center
                     break;
                 }
 
+                case ISClientMessages.GuildDemoteGuildMaster:
+                {
+                    var guildId = packet.ReadInt();
+                    var oldMaster = new GuildCharacter(packet);
+                    var newMaster = new GuildCharacter(packet);
+
+                    oldMaster.Rank = GuildCharacter.Ranks.JrMaster;
+                    newMaster.Rank = GuildCharacter.Ranks.Master;
+                    if (!GuildData.DemoteGuildMaster(guildId, oldMaster.CharacterID, newMaster.CharacterID))
+                    {
+                        guildLog.Error("Demoting guild master failed. (No records update)");
+                        return;
+                    }
+
+                    guildLog.Info($"{oldMaster.CharacterName}'s rank has been changed to {GuildCharacter.Ranks.JrMaster}");
+                    guildLog.Info($"{newMaster.CharacterName}'s rank has been changed to {GuildCharacter.Ranks.Master}");
+
+                    {
+                        var pw = new Packet(ISServerMessages.GuildUpdatePlayer);
+                        pw.WriteInt(guildId);
+                        oldMaster.Encode(pw);
+                        BroadcastGuildPacket(pw);
+                    }
+                    {
+                        var pw = new Packet(ISServerMessages.GuildUpdatePlayer);
+                        pw.WriteInt(guildId);
+                        newMaster.Encode(pw);
+                        BroadcastGuildPacket(pw);
+                    }
+                    break;
+                }
                 #endregion
             }
         }
