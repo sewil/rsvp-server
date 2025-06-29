@@ -81,8 +81,8 @@ events = {
 		name = Independence Day
 		DROP_Rate = 2
 		MESO_Rate = 2
-		start = 2025-07-04T00:00:00-04:00
-		end = 2025-07-05T00:00:00-04:00
-		header = Happy Independence Day! Enjoy the 2x drop/meso event until 23:59 Eastern Time!
+		start = 2025-07-04T00:00:00Z
+		end = 2025-07-07T00:00:00Z
+		header = Happy Independence Day! Enjoy the 2x drop/meso event until Sunday, 23:59 UTC!
 	}
 }
