@@ -2970,6 +2970,7 @@ namespace WvsBeta.Game
                                 null,
                                 MessagePacket.MessageMode.ToChannel
                             );
+                            Server.Instance.AnnouncementsDiscordReporter.Enqueue(txt);
                         }
 
                         return true;

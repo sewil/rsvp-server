@@ -12,7 +12,7 @@ namespace WvsBeta.Common
         private static ILog _log = LogManager.GetLogger(typeof(DiscordReporter));
 
         public string WebhookURL { get; private set; }
-        public static string Username { get; set; }
+        public string Username { get; private set; }
         public static bool Disabled { get; set; }
         private readonly ConcurrentQueue<string> _messagesToPost = new ConcurrentQueue<string>();
         private Thread _thread = null;
@@ -22,6 +22,8 @@ namespace WvsBeta.Common
         public static string MuteBanURL = "";
         public static string ReportsURL = "";
         public static string PlayerLogURL = "";
+        public static string SuperMegaphoneURL = "";
+        public static string AnnouncementsURL = "";
 
         private string ActualUsername
         {
@@ -37,10 +39,11 @@ namespace WvsBeta.Common
 
         public string Name { get; set; }
 
-        public DiscordReporter(string webhookUrl, string name)
+        public DiscordReporter(string webhookUrl, string name, string username)
         {
             WebhookURL = webhookUrl;
             Name = name;
+            Username = username;
             Start();
         }
 
@@ -57,6 +60,8 @@ namespace WvsBeta.Common
             MuteBanURL = node["muteBanURL"]?.GetString() ?? "";
             ReportsURL = node["reportsURL"]?.GetString() ?? "";
             PlayerLogURL = node["playerLogURL"]?.GetString() ?? "";
+            SuperMegaphoneURL = node["superMegaphoneURL"]?.GetString() ?? "";
+            AnnouncementsURL = node["announcementsURL"]?.GetString() ?? "";
         }
 
         public void Enqueue(string message)

@@ -84,6 +84,8 @@ namespace WvsBeta.Game
         public DiscordReporter PlayerLogDiscordReporter { get; private set; }
         public DiscordReporter MutebanDiscordReporter { get; private set; }
         public DiscordReporter ReportingDiscordReporter { get; private set; }
+        public DiscordReporter SuperMegaphoneDiscordReporter { get; private set; }
+        public DiscordReporter AnnouncementsDiscordReporter { get; private set; }
 
         private IDictionary<string, object> _availableNPCScripts { get; } = new ConcurrentDictionary<string, object>();
 
@@ -353,12 +355,13 @@ namespace WvsBeta.Game
 
             ContinentMan.Init();
 
-            DiscordReporter.Username = Program.IMGFilename;
-            BanDiscordReporter = new DiscordReporter(DiscordReporter.BanLogURL, "Ban");
-            ServerTraceDiscordReporter = new DiscordReporter(DiscordReporter.ServerTraceURL, "ServerTrace");
-            MutebanDiscordReporter = new DiscordReporter(DiscordReporter.MuteBanURL, "MuteBan");
-            ReportingDiscordReporter = new DiscordReporter(DiscordReporter.ReportsURL, "Reports");
-            PlayerLogDiscordReporter = new DiscordReporter(DiscordReporter.PlayerLogURL, "PlayerLog");
+            BanDiscordReporter = new DiscordReporter(DiscordReporter.BanLogURL, "Ban", Program.IMGFilename);
+            ServerTraceDiscordReporter = new DiscordReporter(DiscordReporter.ServerTraceURL, "ServerTrace", Program.IMGFilename);
+            MutebanDiscordReporter = new DiscordReporter(DiscordReporter.MuteBanURL, "MuteBan", Program.IMGFilename);
+            ReportingDiscordReporter = new DiscordReporter(DiscordReporter.ReportsURL, "Reports", Program.IMGFilename);
+            PlayerLogDiscordReporter = new DiscordReporter(DiscordReporter.PlayerLogURL, "PlayerLog", Program.IMGFilename);
+            SuperMegaphoneDiscordReporter = new DiscordReporter(DiscordReporter.SuperMegaphoneURL, "SuperMegaphone", "Super Megaphone");
+            AnnouncementsDiscordReporter = new DiscordReporter(DiscordReporter.AnnouncementsURL, "Announcements", "Announcements");
 
             if (!LazyLoadScripts)
             {

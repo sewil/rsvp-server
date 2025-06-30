@@ -102,7 +102,7 @@ namespace WvsBeta.Shop
 
             ConnectToCenter();
             
-            ServerTraceDiscordReporter = new DiscordReporter(DiscordReporter.ServerTraceURL, "ServerTrace");
+            ServerTraceDiscordReporter = new DiscordReporter(DiscordReporter.ServerTraceURL, "ServerTrace", Name);
             ServerTraceDiscordReporter.Enqueue($"Server {Name} booted up!");
         }
 

@@ -183,8 +183,7 @@ namespace WvsBeta.Login
                 }
             }
 
-            DiscordReporter.Username = Name;
-            ServerTraceDiscordReporter = new DiscordReporter(DiscordReporter.ServerTraceURL, "ServerTrace");
+            ServerTraceDiscordReporter = new DiscordReporter(DiscordReporter.ServerTraceURL, "ServerTrace", Name);
 
             ServerTraceDiscordReporter.Enqueue($"Server {Name} booted up!");
         }

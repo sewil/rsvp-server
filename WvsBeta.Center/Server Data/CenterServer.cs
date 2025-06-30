@@ -186,8 +186,7 @@ namespace WvsBeta.Center
             
             MasterThread.RepeatingAction.Start("WorldServer event checker", World.CheckForEvents, 0, 2000);
 
-            DiscordReporter.Username = Name;
-            ServerTraceDiscordReporter = new DiscordReporter(DiscordReporter.ServerTraceURL, "ServerTrace");
+            ServerTraceDiscordReporter = new DiscordReporter(DiscordReporter.ServerTraceURL, "ServerTrace", Name);
             ServerTraceDiscordReporter.Enqueue($"Server {Name} started!");
         }
 
