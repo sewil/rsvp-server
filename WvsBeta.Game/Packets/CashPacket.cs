@@ -133,10 +133,12 @@ namespace WvsBeta.Game
                                     break;
 
                                 case Constants.Items.ItemSuperMegaphone:
+                                    string message = chr.Name + " : " + text;
                                     Server.Instance.CenterConnection.PlayerSuperMegaphone(
-                                        chr.Name + " : " + text,
+                                        message,
                                         packet.ReadBool()
                                     );
+                                    Server.Instance.SuperMegaphoneDiscordReporter.Enqueue(message);
                                     used = true;
                                     break;
                             }
