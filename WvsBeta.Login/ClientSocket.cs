@@ -1145,7 +1145,7 @@ login_count = login_count + 1
             var userId = 0;
 
             using (var data = Server.Instance.UsersDatabase.RunQuery(
-                "SELECT * FROM users WHERE username = @username",
+                "SELECT * FROM users WHERE username = @username AND verified = 1",
                 "@username", username
             ) as MySqlDataReader)
             {
