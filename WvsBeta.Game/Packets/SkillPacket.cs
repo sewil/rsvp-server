@@ -233,13 +233,17 @@ namespace WvsBeta.Game
                         var heal = (short)bigHeal;
                         chr.ModifyHP((short)Math.Min(heal, (chr.PrimaryStats.GetMaxHP() - chr.PrimaryStats.HP)));
 
+                        int recoveredHP = 0;
                         handlePartyEffectsWithPlayers(members, Delay, victim =>
                         {
                             int oldHP = victim.PrimaryStats.HP;
                             victim.ModifyHP((short)Math.Min(heal, (victim.PrimaryStats.GetMaxHP() - victim.PrimaryStats.HP)));
-                            chr.AddEXP(20 * ((victim.PrimaryStats.HP - oldHP) / (8 * victim.Level + 190)), true);
+                            recoveredHP += victim.PrimaryStats.HP - oldHP;
                         });
-
+                        if (recoveredHP > 0)
+                        {
+                            chr.AddEXP(recoveredHP / 25.25, true);
+                        }
                         break;
                     }
                 case Constants.Priest.Skills.Dispel:
