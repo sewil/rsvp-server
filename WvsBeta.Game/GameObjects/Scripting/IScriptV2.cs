@@ -17,7 +17,7 @@ namespace WvsBeta.Game
 {
     public abstract class IScriptV2 : IDisposable
     {
-        private ILog _log = LogManager.GetLogger(typeof(IScriptV2));
+        protected ILog _log = LogManager.GetLogger(typeof(IScriptV2));
 
         public const string Newline = "\r\n";
 
@@ -1323,6 +1323,7 @@ namespace WvsBeta.Game
                 _log.Info(msg);
             });
         }
+
         protected void Debug(string msg)
         {
             if (!_log.IsDebugEnabled) return;

@@ -876,5 +876,13 @@ namespace WvsBeta.Game
         {
             Characters.Where(x => x != except).ForEach(x => x.SendPacket(packet));
         }
+
+        public struct CafePointsLogRecord
+        {
+            public string cafeName { get; set; }
+            public int cafePoints { get; set; }
+            public long cafeTimeRemaining { get; set; }
+            public int partyID { get; set; }
+        }
     }
 }

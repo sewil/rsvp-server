@@ -1,14 +1,17 @@
-﻿using System;
+﻿using log4net;
+using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Text;
 using WvsBeta.Common.Sessions;
 using WzTools.Objects;
+using static WvsBeta.Game.FieldSet;
 
 namespace WvsBeta.Game.GameObjects
 {
     internal class Map_Elimination : Map
     {
+        private ILog _log = LogManager.GetLogger(typeof(Map_Elimination));
         public const int ReviveCoupon = 4030017; // Premium Road Ticket
 
         public Map_Elimination(int id) : base(id)
@@ -38,6 +41,20 @@ namespace WvsBeta.Game.GameObjects
 
             // Update points in the users quest data
             chr.Quests.SetQuestData(1001304, ((uint)TotalPoints).ToString());
+
+            if (ParentFieldSet != null)
+            {
+                chr.WrappedLogging(() =>
+                {
+                    _log.Info(new CafePointsLogRecord
+                    {
+                        cafeName = ParentFieldSet.Name,
+                        partyID = chr.PartyID,
+                        cafePoints = (int)TotalPoints,
+                        cafeTimeRemaining = ParentFieldSet.TimeRemaining,
+                    });
+                });
+            }
         }
 
         public override void AddPlayer(Character chr)
