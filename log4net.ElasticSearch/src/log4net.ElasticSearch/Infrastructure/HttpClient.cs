@@ -114,7 +114,8 @@ namespace log4net.ElasticSearch.Infrastructure
                         if (httpResponse.StatusCode != HttpStatusCode.Created &&
                             httpResponse.StatusCode != HttpStatusCode.OK)
                         {
-                            Console.WriteLine($"Failed to post to {uri}.");
+                            Console.WriteLine($"Failed to post to {uri}. ({httpResponse.StatusCode})");
+                            Console.WriteLine("{0}", text);
                         }
                         else if (text.Contains("error\":"))
                         {
@@ -145,7 +146,8 @@ namespace log4net.ElasticSearch.Infrastructure
                             if (errorResponse.StatusCode != HttpStatusCode.Created &&
                                 errorResponse.StatusCode != HttpStatusCode.OK)
                             {
-                                Console.WriteLine($"Failed to post to {uri}.");
+                                Console.WriteLine($"Failed to post to {uri}. ({errorResponse.StatusCode})");
+                                Console.WriteLine("{0}", text);
                             }
                             else if (text.Contains("error\":"))
                             {
