@@ -129,6 +129,9 @@ namespace WvsBeta.Game
 
             using var peStream = new MemoryStream();
             using var pdbStream = new MemoryStream();
+
+            var emitOptions = new EmitOptions(debugInformationFormat: DebugInformationFormat.PortablePdb);
+
             EmitResult result;
             lock (compiler)
             {
@@ -141,7 +144,7 @@ namespace WvsBeta.Game
                         optimizationLevel: optimizationLevel
                     ))
                     .WithAssemblyName(Path.GetFileName(path) + "_" + MasterThread.CurrentTime)
-                    .Emit(peStream, pdbStream: pdbStream);
+                    .Emit(peStream, pdbStream: pdbStream, options: emitOptions);
             }
 
             if (!result.Success)
