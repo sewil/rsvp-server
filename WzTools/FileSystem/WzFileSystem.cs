@@ -18,6 +18,14 @@ using System.Linq;
             return GetNode(Path.Combine(RealPath, path)) as WzProperty;
         }
 
+        public bool PathExists(string path)
+        {
+            var paths = path.Substring(0, path.IndexOf(".img", StringComparison.Ordinal) + 4).Split('/').ToList();
+            paths.Insert(0, RealPath);
+            bool fileExists = File.Exists(Path.Combine(paths.ToArray()));
+            return fileExists && GetProperty(path) != null;
+        }
+
         public WzProperty GetProperty(params string[] path)
             => GetProperty(string.Join('/', path));
         
