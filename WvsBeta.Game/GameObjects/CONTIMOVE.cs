@@ -27,8 +27,8 @@ namespace WvsBeta.Game
         public int EventEndMin { get; set; }
         public Pos MobSpawnPoint { get; set; }
         public string ReactorName { get; set; }
-        public int StateOnStart { get; set; }
-        public int StateOnEnd { get; set; }
+        public byte StateOnStart { get; set; }
+        public byte StateOnEnd { get; set; }
         public long NextBoardingTime { get; set; }
         public int TermTime { get; set; }
 

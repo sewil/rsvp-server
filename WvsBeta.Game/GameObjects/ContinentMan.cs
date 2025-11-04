@@ -109,9 +109,10 @@ namespace WvsBeta.Game
             field.SendPacket(packet);
         }
 
-        public void SetReactorState(int fieldId, string sName, int state)
+        public void SetReactorState(int fieldId, string sName, byte state)
         {
-            // TODO: Implement
+            if (!MapProvider.Maps.TryGetValue(fieldId, out var field)) return;
+            field.GetReactor(sName).SetState(state);
         }
 
         public void Update(long tCur)

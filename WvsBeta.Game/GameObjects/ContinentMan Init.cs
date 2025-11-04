@@ -92,6 +92,42 @@ namespace WvsBeta.Game
                         TermTime = 10,
                         DelayTime = 0,
                     },
+
+                    new CONTIMOVE
+                    {
+                        Name = "Helios Tower to Korean Folk Town",
+                        FieldIdStartShipMove = 222020200,
+                        FieldIdWait = 222020210,
+                        FieldIdMove = 222020211,
+                        FieldIdEnd = 222020100,
+                        FieldIdEndShipMove = 222020100,
+                        ReactorName = "elevator",
+                        StateOnStart = 1,
+                        StateOnEnd = 0,
+                        // Timing
+                        WaitMin = 2,
+                        RequiredMin = 2,
+                        TermTime = 8,
+                        DelayTime = 0,
+                    },
+
+                    new CONTIMOVE
+                    {
+                        Name = "Korean Folk Town to Helios Tower",
+                        FieldIdStartShipMove = 222020100,
+                        FieldIdWait = 222020110,
+                        FieldIdMove = 222020111,
+                        FieldIdEnd = 222020200,
+                        FieldIdEndShipMove = 222020200,
+                        ReactorName = "elevator",
+                        StateOnStart = 1,
+                        StateOnEnd = 0,
+                        // Timing
+                        WaitMin = 2,
+                        RequiredMin = 2,
+                        TermTime = 8,
+                        DelayTime = 4,
+                    }
                 }
             };
 
