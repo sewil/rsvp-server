@@ -49,6 +49,7 @@ namespace WvsBeta.Game
         public bool DisableCreditsUsage { get; set; } = false;
         public int ProtectItem { get; set; }
         public bool HideRewardInfo { get; set; }
+        public int ClaimantID { get; set; }
 
         public bool EverlastingDrops
         {
@@ -849,6 +850,7 @@ namespace WvsBeta.Game
                 Characters.Remove(chr);
                 PetsPacket.SendRemovePet(chr, PetsPacket.DespawnReason.OrderByUser);
                 OnExit?.Invoke(chr, this);
+                if (ClaimantID == chr.ID) ClaimantID = 0;
             }
 
             if (chr.MapChair != -1)

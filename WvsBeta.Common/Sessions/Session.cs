@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
@@ -9,7 +10,7 @@ using Org.BouncyCastle.Crypto.Parameters;
 using System.Threading;
 using Org.BouncyCastle.Crypto.Engines;
 using Org.BouncyCastle.Crypto.Modes;
-using WvsBeta.Common.Crypto.Cryptography.Engines;
+using Org.BouncyCastle.Security;
 
 namespace WvsBeta.Common.Sessions
 {
@@ -90,12 +91,13 @@ namespace WvsBeta.Common.Sessions
         #endregion
 
         #region MapleCFG Encryption
-        private static readonly bool shandaEnabled = false;
-        private static readonly bool blockCipherEnabled = true;
-        private static readonly bool customShandaEnabled = false;
+        private static readonly bool shandaEnabled = true;
+        private static readonly bool aesEnabled = true;
+        //private static readonly bool blockCipherEnabled = true;
+        //private static readonly bool customShandaEnabled = false;
         private IBufferedCipher _encryptCipher;
         private IBufferedCipher _decryptCipher;
-        private ShaniquaCrypto _jankyShanda;
+        //private ShaniquaCrypto _jankyShanda;
         #endregion
 
 
@@ -111,7 +113,7 @@ namespace WvsBeta.Common.Sessions
             _receivingFromServer = false;
 
             _socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, 5000);
-            _socket.NoDelay = true;
+            // _socket.NoDelay = true;
 
             var remoteIpEndPoint = _socket.RemoteEndPoint as IPEndPoint;
             SetIPEndPoint(remoteIpEndPoint);
@@ -151,19 +153,29 @@ namespace WvsBeta.Common.Sessions
             }
             catch (Exception ex)
             {
-                ////Console.WriteLine(TypeName + " [ERROR] Could not connect to server: {0}", ex.Message);
+                //Console.WriteLine(TypeName + " [ERROR] Could not connect to server: {0}", ex.Message);
                 return;
             }
             if (PreventConnectFromSucceeding)
             {
-                try { _socket.Shutdown(SocketShutdown.Both); } catch { }
-                try { _socket.Disconnect(false); } catch { }
-                try { _socket.Close(); } catch { }
+                try
+                {
+                    _socket.Shutdown(SocketShutdown.Both);
+                }
+                catch
+                {
+                }
+                try
+                {
+                    _socket.Close();
+                }
+                catch
+                {
+                }
                 return;
             }
-            ////Console.WriteLine(TypeName + " Connected with server!");
+            Console.WriteLine(TypeName + " Connected with server!");
             _socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, 5000);
-            _socket.NoDelay = true;
             Disconnected = false;
             StartReading(2, true);
         }
@@ -171,9 +183,20 @@ namespace WvsBeta.Common.Sessions
         public bool Disconnect()
         {
             if (Disconnected) return false;
-            try { _socket.Shutdown(SocketShutdown.Both); } catch { }
-            try { _socket.Disconnect(false); } catch { }
-            try { _socket.Close(); } catch { }
+            try
+            {
+                _socket.Shutdown(SocketShutdown.Both);
+            }
+            catch
+            {
+            }
+            try
+            {
+                _socket.Close();
+            }
+            catch
+            {
+            }
             Trace.WriteLine(TypeName + " Manual disconnection!");
             OnDisconnectINTERNAL("Forced disconnect");
             return true;
@@ -214,7 +237,7 @@ namespace WvsBeta.Common.Sessions
             }
             catch (Exception ex)
             {
-                Trace.WriteLine(TypeName + " [ERROR] ContinueReading(): " + ex);
+                Trace.WriteLine(TypeName + " [ERROR] ContinueReading(): {0}", ex.ToString());
                 OnDisconnectINTERNAL("BeginReceive exception");
             }
         }
@@ -225,7 +248,7 @@ namespace WvsBeta.Common.Sessions
         /// <param name="pIAR">The result AsyncCallback makes</param>
         private void EndReading(IAsyncResult pIAR)
         {
-            var amountReceived = 0;
+            int amountReceived = 0;
             try
             {
                 amountReceived = _socket.EndReceive(pIAR);
@@ -241,21 +264,15 @@ namespace WvsBeta.Common.Sessions
                 return;
             }
 
-            if (_encryption && _decryptIV == null)
-            {
-                OnDisconnectINTERNAL("Received data before IV was sent to client (speedy boy).");
-                return;
-            }
-
             // Add amount of bytes received to _bufferpos so we know if we got everything.
             _bufferpos += amountReceived;
 
             try
             {
-
                 // Check if we got all data. There is _no_ way we would have received more bytes than needed. Period.
                 if (_bufferpos == _bufferlen)
                 {
+
                     // It seems we have all data we need
                     // Now check if we got a header
                     if (_header)
@@ -263,7 +280,7 @@ namespace WvsBeta.Common.Sessions
                         if (!_encryption && _receivingFromServer)
                         {
                             // Unencrypted packets have a short header with plain length.
-                            var length = (ushort)(_buffer[0] | _buffer[1] << 8);
+                            ushort length = (ushort)(_buffer[0] | _buffer[1] << 8);
                             StartReading(length);
                         }
                         else
@@ -310,7 +327,7 @@ namespace WvsBeta.Common.Sessions
                                 }
                                 catch (Exception ex)
                                 {
-                                    ////Console.WriteLine("Handling Packet Error: {0}", ex.ToString());
+                                    Console.WriteLine("Handling Packet Error: {0}", ex.ToString());
                                 }
                             }, "Packet handling opcode: " + opcode);
                         }
@@ -326,7 +343,6 @@ namespace WvsBeta.Common.Sessions
                             _mapleLocale = packet.ReadByte();
 
                             StartSendAndEncryptLoop();
-                            initCipher();
                             packet.Reset();
 
                             DoAction((date) =>
@@ -337,7 +353,7 @@ namespace WvsBeta.Common.Sessions
                                 }
                                 catch (Exception ex)
                                 {
-                                    ////Console.WriteLine("Handling Packet Error: {0}", ex.ToString());
+                                    Trace.WriteLine($"Handling Packet Error: {ex}");
                                 }
                             }, "Handshake handling");
                         }
@@ -387,7 +403,7 @@ namespace WvsBeta.Common.Sessions
         static Random rnd = new Random();
         public void SendHandshake(ushort pVersion, string pPatchLocation, byte pLocale)
         {
-            Trace.WriteLine("Got connection, sending handshake");
+            Trace.WriteLine($"[{this}] Got connection, sending handshake");
 
             _encryptIV = new byte[4];
             _decryptIV = new byte[4];
@@ -398,60 +414,25 @@ namespace WvsBeta.Common.Sessions
             _maplePatchLocation = pPatchLocation;
             _mapleLocale = pLocale;
 
-            initCipher();
             StartSendAndEncryptLoop();
 
-            var packet = new Packet();
+            Packet packet = new Packet();
             packet.WriteUShort(pVersion);
             packet.WriteString(pPatchLocation);
             packet.WriteBytes(_decryptIV);
             packet.WriteBytes(_encryptIV);
             packet.WriteByte(pLocale);
             SendData(packet.ToArray());
-            
-            StartReading(4, true);
-        }
-
-        internal IBufferedCipher GetCipher(bool cipher = true)
-        {
-            if (cipher || UseIvanPacket) //if using ivan packet, this is an inter-server socket, and just default to nop crypto
-                return new CtsBlockCipher(new CbcBlockCipher(new RC6Engine()));
-            return new BufferedBlockCipher(new NopEngine());
-        }
-
-        private void initCipher()
-        {
-            if (blockCipherEnabled)
-            {
-                _encryptCipher = GetCipher(false);
-                _encryptCipher.Init(true, new ParametersWithIV(_keyParameter, new byte[16]));
-
-                _decryptCipher = GetCipher();
-                _decryptCipher.Init(false, new ParametersWithIV(_keyParameter, new byte[16]));
-            }
-            if (customShandaEnabled)
-                _jankyShanda = new ShaniquaCrypto();
-        }
-
-        private byte[] QuadIv(byte[] iv)
-        {
-            return new byte[16]
-            {
-                iv[0], iv[1], iv[2], iv[3],
-                iv[0], iv[1], iv[2], iv[3],
-                iv[0], iv[1], iv[2], iv[3],
-                iv[0], iv[1], iv[2], iv[3],
-            };
         }
 
         public virtual void OnPacketInbound(Packet pPacket)
         {
-            ////Console.WriteLine(TypeName + " No Handler for 0x{0:X4}", pPacket.ReadUShort());
+            Console.WriteLine(TypeName + " No Handler for 0x{0:X4}", pPacket.ReadUShort());
         }
 
         public virtual void OnHandshakeInbound(Packet pPacket)
         {
-            ////Console.WriteLine(TypeName + " No Handshake Handler.");
+            Console.WriteLine(TypeName + " No Handshake Handler.");
         }
 
         private void OnDisconnectINTERNAL(string reason)
@@ -459,6 +440,7 @@ namespace WvsBeta.Common.Sessions
             if (Disconnected) return;
             Disconnected = true;
             StopSendAndEncryptLoop();
+            Trace.WriteLine($"OnDisconnectINTERNAL: {reason}");
 
             ////Console.WriteLine(TypeName + " Called by:");
             ////Console.WriteLine(Environment.StackTrace);
@@ -497,31 +479,21 @@ namespace WvsBeta.Common.Sessions
             _encryptAndSendThread = new Thread(x =>
             {
                 Trace.WriteLine("Starting encryption loop");
-                try
+                while (!Disconnected)
                 {
-                    while (!Disconnected)
+                    _dataReadyToSend.WaitOne();
+                    while (
+                        !Disconnected &&
+                        _dataToEncrypt.TryDequeue(out var data)
+                    )
                     {
-                        _dataReadyToSend.WaitOne();
-                        while (
-                            !Disconnected &&
-                            _dataToEncrypt.TryDequeue(out var data)
-                        )
-                        {
-                            DoSendData(data);
-                        }
+                        DoSendData(data);
                     }
                 }
-                catch (ObjectDisposedException)
-                {
-                    // lets not handle this one
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Exception in Encrypt and Send thread: {ex}");
-                }
-
                 Trace.WriteLine("Stopped encryption loop");
-            }) {IsBackground = true, Name = sessionName};
+
+            });
+            _encryptAndSendThread.IsBackground = true;
             _encryptAndSendThread.Start();
         }
 
@@ -555,7 +527,7 @@ namespace WvsBeta.Common.Sessions
             }
             catch (Exception ex)
             {
-                Trace.WriteLine(TypeName + " [ERROR] Failed sending: " + ex);
+                Trace.WriteLine(TypeName + " [ERROR] Failed sending: {0}", ex.ToString());
                 OnDisconnectINTERNAL("General Exception");
             }
 
@@ -587,28 +559,6 @@ namespace WvsBeta.Common.Sessions
             0x84, 0x7F, 0x61, 0x1E, 0xCF, 0xC5, 0xD1, 0x56, 0x3D, 0xCA, 0xF4, 0x05, 0xC6, 0xE5, 0x08, 0x49
         };
 
-
-        private static readonly KeyParameter _keyParameter = new KeyParameter(new byte[16]
-        {
-            sShiftKey[0], sShiftKey[1], sShiftKey[2], sShiftKey[3],
-            sShiftKey[4], sShiftKey[5], sShiftKey[6], sShiftKey[7],
-            sShiftKey[8], sShiftKey[9], sShiftKey[10], sShiftKey[11],
-            sShiftKey[12], sShiftKey[13], sShiftKey[14], sShiftKey[15]
-        });
-
-        private void MakeBufferList(int length, Action<(int Offset, int Length)> handler)
-        {
-            int chunkSize = 1456;
-            int offset = 0;
-            do
-            {
-                handler((offset, Math.Min(length - offset, chunkSize)));
-                offset += chunkSize;
-                chunkSize = 1460;
-            } while (offset < length);
-
-        }
-
         /// <summary>
         /// Encrypts the given data, and updates the Encrypt IV
         /// </summary>
@@ -616,41 +566,17 @@ namespace WvsBeta.Common.Sessions
         /// <returns>Encrypted data (with header!)</returns>
         private byte[] Encrypt(byte[] pData, int pLength, byte[] iv)
         {
-            if (blockCipherEnabled)
-            {
-                var qiv = QuadIv(iv);
-                MakeBufferList(pLength, b =>
-                {
-                    var blobLen = b.Length;
-                    if (blobLen > 16)
-                    {
-                        _encryptCipher.Init(true, new ParametersWithIV(null, qiv));
-                        _encryptCipher.DoFinal(pData, b.Offset, blobLen, pData, b.Offset);
-                    }
-                    else
-                    {
-                        for (var i = 0; i < blobLen; i++)
-                        {
-                            pData[b.Offset + i] ^= qiv[i % 16];
-                        }
-                    }
-                });
-
-            }
-
             if (shandaEnabled)
                 EncryptMSCrypto(pData, pLength);
 
-            if (customShandaEnabled)
-                _jankyShanda.Encrypt(pData, pLength, iv);
+            if (aesEnabled)
+                AesCrypt.Instance.Crypt(pData, iv);
 
             //Trace.WriteLine("Encrypted: " + BitConverter.ToString(cfgEncrypted));
 
             NextIV(iv);
             return pData;
         }
-
-
 
         /// <summary>
         /// Decrypts given data, and updates the Decrypt IV
@@ -659,33 +585,11 @@ namespace WvsBeta.Common.Sessions
         /// <returns>Decrypted data</returns>
         private byte[] Decrypt(byte[] pData, int pLength, byte[] iv)
         {
-            if (customShandaEnabled)
-                _jankyShanda.Decrypt(pData, pLength, iv);
+            if (aesEnabled)
+                AesCrypt.Instance.Crypt(pData, iv);
 
             if (shandaEnabled)
                 DecryptMSCrypto(pData, pLength);
-
-            if (blockCipherEnabled)
-            {
-                var qiv = QuadIv(iv);
-                MakeBufferList(pLength, b =>
-                {
-                    var blobLen = b.Length;
-
-                    if (blobLen > 16)
-                    {
-                        _decryptCipher.Init(false, new ParametersWithIV(null, qiv));
-                        _decryptCipher.DoFinal(pData, b.Offset, blobLen, pData, b.Offset);
-                    }
-                    else
-                    {
-                        for (var i = 0; i < blobLen; i++)
-                        {
-                            pData[b.Offset + i] ^= qiv[i % 16];
-                        }
-                    }
-                });
-            }
 
             NextIV(iv);
             return pData;
@@ -797,240 +701,6 @@ namespace WvsBeta.Common.Sessions
             }
         }
 
-        internal class ShaniquaCrypto
-        {
-            #region Encryption
-            public void Encrypt(byte[] Data, int Length, byte[] IV)
-            {
-                if (Data == null)
-                    throw new ArgumentNullException(nameof(Data), "Parameter cannot be null.");
-
-                var Key = KeyGen(IV);
-
-                for (int i = 0; i <= 6; i++)
-                {
-                    if ((i % 3) != 0)
-                    {
-                        if ((i & 1) != 0)
-                            OddEncryptTransform(Data, Length, Key);
-                        else
-                            EvenEncryptTransform(Data, Length, Key);
-                    }
-                    else
-                        By3EncryptTransform(Data, Length, IV, Key);
-                }
-
-                XorBlock(Data, Length, IV);
-            }
-
-            private void EvenEncryptTransform(byte[] Data, int Length, byte Key)
-            {
-                byte Remember = 0;
-                for (int i = Length - 1; i >= 0; i--)
-                {
-                    byte Current = RollLeft(Data[i], -Key % 4);
-                    Current += Key;
-
-                    Current ^= Remember;
-                    Remember = Current;
-
-                    Current ^= 0xEC;
-                    Current = RollRight(Current, ~Key % 3);
-                    Data[i] = Current;
-
-                    Key++;
-                }
-            }
-
-            private void OddEncryptTransform(byte[] Data, int Length, byte Key)
-            {
-                byte Remember = 0;
-                for (int i = 0; i < Length; i++)
-                {
-                    byte Current = RollLeft(Data[i], Key % 3);
-                    Current = (byte)(Key ^ (16 * Current | (Current >> 4)));
-
-                    Current ^= Remember;
-                    Remember = Current;
-
-                    Current = RollRight(Current, Key % 4);
-                    Current = (byte)(~Current & 0xFF);
-                    Current += 0x32;
-                    Data[i] = Current;
-
-                    Key--;
-                }
-            }
-
-            private unsafe void By3EncryptTransform(byte[] Data, int Length, byte[] IV, byte Key)
-            {
-                fixed (byte* pData = Data)
-                {
-                    var Blocks = Length / 4;
-                    var Snowflakes = Length % 4;
-
-                    if (Blocks > 0)
-                    {
-                        if (Snowflakes > 0)
-                        {
-                            for (int i = 0; i < Length; i++)
-                            {
-                                pData[i] = (byte)(Key ^ (16 * pData[i] | (pData[i] >> 4)));
-                            }
-                        }
-
-                        uint* pBlocks = (uint*)(pData + Snowflakes);
-                        var ReversedIV = (uint)(IV[3] | (IV[2] | (IV[1] | (IV[0]))));
-
-                        for (int i = 0; i < Blocks; i++)
-                        {
-                            pBlocks[i] = ReversedIV ^ (16 * (pBlocks[i] & 0xFF0F0F0F) | (pBlocks[i] >> 4) & 0x0F0F0F0F);
-                        }
-                    }
-                    else
-                    {
-                        for (int i = 0; i < Length; i++)
-                        {
-                            pData[i] = (byte)(Key ^ (16 * pData[i] | (pData[i] >> 4)));
-                        }
-                    }
-                }
-            }
-            #endregion
-
-            #region Decryption
-            public void Decrypt(byte[] Data, int Length, byte[] IV)
-            {
-                if (Data == null)
-                    throw new ArgumentNullException(nameof(Data), "Parameter cannot be null.");
-
-                var Key = KeyGen(IV);
-
-                XorBlock(Data, Length, IV);
-
-                for (int i = 0; i <= 6; i++)
-                {
-                    if ((i % 3) != 0)
-                    {
-                        if ((i & 1) != 0)
-                            OddDecryptTransform(Data, Length, Key);
-                        else
-                            EvenDecryptTransform(Data, Length, Key);
-                    }
-                    else
-                        By3DecryptTransform(Data, Length, IV, Key);
-                }
-            }
-
-            private void EvenDecryptTransform(byte[] Data, int Length, byte Key)
-            {
-                byte Remember = 0;
-                for (int i = Length - 1; i >= 0; i--)
-                {
-                    byte Current = RollLeft(Data[i], ~Key % 3);
-                    Current ^= 0xEC;
-
-                    byte Tmp = Current;
-                    Current ^= Remember;
-                    Remember = Tmp;
-
-                    Current -= Key;
-                    Data[i] = RollRight(Current, -Key % 4);
-
-                    Key++;
-                }
-            }
-
-            private void OddDecryptTransform(byte[] Data, int Length, byte Key)
-            {
-                byte Remember = 0;
-                for (int i = 0; i < Length; i++)
-                {
-                    byte Current = Data[i];
-                    Current -= 0x32;
-                    Current = unchecked((byte)(~Current));
-                    Current = RollLeft(Current, Key % 4);
-
-                    byte Tmp = Current;
-                    Current ^= Remember;
-                    Remember = Tmp;
-
-                    Current = (byte)(16 * (Key ^ Current) | ((Key ^ Current) >> 4));
-                    Data[i] = RollRight(Current, Key % 3);
-
-                    Key--;
-                }
-            }
-
-            private unsafe void By3DecryptTransform(byte[] Data, int Length, byte[] IV, byte Key)
-            {
-                fixed (byte* pData = Data)
-                {
-                    var Blocks = Length / 4;
-                    var Snowflakes = Length % 4;
-
-                    if (Blocks > 0)
-                    {
-                        uint* pBlocks = (uint*)(pData + Snowflakes);
-                        var ReversedIV = (uint)(IV[3] | (IV[2] | (IV[1] | (IV[0]))));
-
-                        for (int i = 0; i < Blocks; i++)
-                        {
-                            pBlocks[i] = (16 * ((ReversedIV ^ pBlocks[i]) & 0xFF0F0F0F)) | ((ReversedIV ^ pBlocks[i]) >> 4) & 0x0F0F0F0F;
-                        }
-
-                        if (Snowflakes > 0)
-                        {
-                            for (int i = 0; i < Length; i++)
-                            {
-                                pData[i] = (byte)(16 * (Key ^ pData[i]) | ((Key ^ pData[i]) >> 4));
-                            }
-                        }
-                    }
-                    else
-                    {
-                        for (int i = 0; i < Length; i++)
-                        {
-                            pData[i] = (byte)(16 * (Key ^ pData[i]) | ((Key ^ pData[i]) >> 4));
-                        }
-                    }
-                }
-            }
-            #endregion
-
-            #region Helpers
-            private byte KeyGen(byte[] IV)
-            {
-                var x = (~IV[1] << -IV[2]) ^ (-IV[0] * ~IV[3]);
-                return unchecked((byte)((x & 0xF0F0F0F) * (x & 0x0F0F0F0) / 100));
-            }
-
-            private void XorBlock(byte[] Data, int Length, byte[] IV)
-            {
-                bool Zig = true;
-                var ivLen = IV.Length;
-                for (int i = 0; i < Length; i++)
-                {
-                    if (i % ivLen == 0)
-                        Zig = !Zig;
-                    Data[i] ^= IV[Zig ? ~(i % ivLen) + ivLen : i % ivLen];
-                }
-            }
-
-            private byte RollLeft(byte Value, int Count)
-            {
-                int Overflow = Value << (Count & 7);
-                return unchecked((byte)(Overflow | (Overflow >> 8)));
-            }
-
-            private byte RollRight(byte Value, int Count)
-            {
-                int Overflow = Value << (8 - (Count & 7));
-                return unchecked((byte)(Overflow | (Overflow >> 8)));
-            }
-            #endregion
-        }
-
         /// <summary>
         /// Generates a new IV code for AES and header generation. It will reset the oldIV with the newIV automatically.
         /// </summary>
@@ -1067,7 +737,7 @@ namespace WvsBeta.Common.Sessions
         /// </summary>
         /// <param name="pBuffer">Buffer containing the header</param>
         /// <returns>Length of buffer</returns>
-        private int GetHeaderLength(byte[] pBuffer, int pBufferLen, byte[] pIV, ushort pVersion, bool pToServer)
+        private static int GetHeaderLength(byte[] pBuffer, int pBufferLen, byte[] pIV, ushort pVersion, bool pToServer)
         {
             pVersion = Constants.MAPLE_CRYPTO_VERSION;
             ushort a = (ushort)(pBuffer[0] | (pBuffer[1] << 8));
@@ -1083,7 +753,7 @@ namespace WvsBeta.Common.Sessions
 
             ushort len = (ushort)(a ^ b);
 
-            if (len == IVAN_HEADER_SIZE && UseIvanPacket)
+            if (len == IVAN_HEADER_SIZE)
             {
                 if (pBufferLen == 4) return HEADER_ERROR_MORE_DATA;
                 return pBuffer[4] |
@@ -1102,7 +772,7 @@ namespace WvsBeta.Common.Sessions
         /// <param name="pLength">Packet Length - Header Length</param>
         /// <param name="pVersion">MapleStory Version</param>
         /// <param name="pToServer">Is to server?</param>
-        private byte[] GenerateHeader(byte[] pIV, int pLength, ushort pVersion, bool pToServer)
+        private static byte[] GenerateHeader(byte[] pIV, int pLength, ushort pVersion, bool pToServer)
         {
             pVersion = Constants.MAPLE_CRYPTO_VERSION;
             ushort a = (ushort)((pIV[3] << 8) | pIV[2]);
@@ -1112,7 +782,19 @@ namespace WvsBeta.Common.Sessions
 
             ushort b = a;
 
-            if (UseIvanPacket)
+            if (pLength < IVAN_HEADER_SIZE)
+            {
+                b ^= (ushort)pLength;
+
+                headerCode = new byte[4]
+                {
+                    (byte) (a & 0xFF),
+                    (byte) ((a >> 8) & 0xFF),
+                    (byte) (b & 0xFF),
+                    (byte) ((b >> 8) & 0xFF),
+                };
+            }
+            else
             {
                 b ^= IVAN_HEADER_SIZE;
 
@@ -1129,25 +811,62 @@ namespace WvsBeta.Common.Sessions
                     (byte) ((pLength >> 24) & 0xFF),
                 };
             }
-            else if (pLength < IVAN_HEADER_SIZE)
-            {
-                b ^= (ushort)pLength;
-
-                headerCode = new byte[4]
-                {
-                    (byte) (a & 0xFF),
-                    (byte) ((a >> 8) & 0xFF),
-                    (byte) (b & 0xFF),
-                    (byte) ((b >> 8) & 0xFF),
-                };
-            }
-            else
-            {
-                throw new Exception($"Sending too much data, cannot encode. Size: {pLength}");
-            }
 
             return headerCode;
         }
         #endregion
+    }
+    public class AesCrypt
+    {
+        public static readonly byte[] aesKey = {
+            0x13, 0x00, 0x00, 0x00,
+            0x08, 0x00, 0x00, 0x00,
+            0x06, 0x00, 0x00, 0x00,
+            0xB4, 0x00, 0x00, 0x00,
+            0x1B, 0x00, 0x00, 0x00,
+            0x0F, 0x00, 0x00, 0x00,
+            0x33, 0x00, 0x00, 0x00,
+            0x52, 0x00, 0x00, 0x00
+        };
+
+        private readonly AesEngine _cipher;
+        private static readonly AesCrypt _instance;
+        public static AesCrypt Instance => _instance ?? new AesCrypt();
+
+        private AesCrypt()
+        {
+            _cipher = new AesEngine();
+            _cipher.Init(true, ParameterUtilities.CreateKeyParameter("AES", aesKey));
+        }
+
+        private static byte[] QuadIV(byte[] iv)
+        {
+            return Enumerable.Repeat(iv[0], 16).ToArray();
+        }
+
+        public void Crypt(byte[] buffer, byte[] iv)
+        {
+            int remaining = buffer.Length;
+            int blockSize = Math.Min(0x5B0, remaining);
+            int bufferPos = 0;
+            byte[] qiv = QuadIV(iv);
+
+            while (remaining > 0)
+            {
+                ProcessBlock(buffer, bufferPos, blockSize, qiv, remaining == blockSize);
+                bufferPos += blockSize;
+                remaining -= blockSize;
+                blockSize = Math.Min(0x5B4, remaining);
+            }
+        }
+
+        private void ProcessBlock(byte[] buffer, int bufferPos, int blockSize, byte[] iv, bool isFinal)
+        {
+            var streamCipher = new BufferedBlockCipher(new OfbBlockCipher(_cipher, _cipher.GetBlockSize() * 8));
+            streamCipher.Init(true, new ParametersWithIV(null, iv));
+
+            if (isFinal) streamCipher.DoFinal(buffer, bufferPos, blockSize, buffer, bufferPos);
+            else streamCipher.ProcessBytes(buffer, bufferPos, blockSize, buffer, bufferPos);
+        }
     }
 }

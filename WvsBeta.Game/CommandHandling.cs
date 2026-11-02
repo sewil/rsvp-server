@@ -326,6 +326,50 @@ namespace WvsBeta.Game
             return hours;
         }
 
+        private static bool HandlePlebCommand()
+        {
+            switch (Args.Command.ToLowerInvariant())
+            {
+                case "roll":
+                    {
+                        if (Args.Count < 2 || !Args[0].TryGetInt32(out int nRolls) || !Args[1].TryGetInt32(out int nMaxValue))
+                        {
+                            SendRed("Usage: /roll <nRolls> <rollMax>");
+                            return true;
+                        }
+                        // /roll 1 2000
+                        string msg = _character.Name + " dice rolled | ";
+                        for (int i = 0; i < nRolls; i++)
+                        {
+                            int outcome = Rand32.NextBetween(0, nMaxValue);
+                            msg += outcome + "/" + nMaxValue + " | ";
+                        }
+                        MessagePacket.SendTextMap(MessagePacket.MessageTypes.RedText, msg, _character.Field);
+                        return true;
+                    }
+                case "claim":
+                    {
+                        var f = _character.Field;
+                        if (f.ClaimantID > 0)
+                        {
+                            SendRed("This map is already claimed!");
+                        }
+                        else if (f.Town || f.ParentFieldSet != null || f.Premium || f.EventMap)
+                        {
+                            SendRed("This map can't be claimed!");
+                        }
+                        else
+                        {
+                            _character.Field.ClaimantID = _character.ID;
+                            // Check if character is AFK
+                            SendRed("Map claimed!");
+                        }
+                        return true;
+                    }
+                default: return false;
+            }
+        }
+
         private static bool HandleGMCommandLevel1()
         {
             switch (Args.Command.ToLowerInvariant())
@@ -3760,7 +3804,7 @@ namespace WvsBeta.Game
             return false;
         }
 
-        public static bool HandleGMCommand(Character character, string text)
+        public static bool HandleCommand(Character character, string text)
         {
             var logtext = string.Format("[{0,-9}] {1,-13}: {2}", character.MapID, character.Name, text);
             if (!Directory.Exists("Chatlogs"))
@@ -3778,25 +3822,29 @@ namespace WvsBeta.Game
                 CommandHandling.Args = new CommandArgs(text);
                 CommandHandling._character = character;
 
-                if (character.Field.FilterAdminCommand(character, CommandHandling.Args))
+                if (HandlePlebCommand()) goto Cleanup;
+                else if (character.IsGM)
                 {
-                    // Handled as field command, eg /start
-                    goto Cleanup;
-                }
+                    if (character.Field.FilterAdminCommand(character, CommandHandling.Args))
+                    {
+                        // Handled as field command, eg /start
+                        goto Cleanup;
+                    }
 
-                if (character.GMLevel >= 1) //Intern commands
-                {
-                    if (HandleGMCommandLevel1()) goto Cleanup;
-                }
+                    if (character.GMLevel >= 1) //Intern commands
+                    {
+                        if (HandleGMCommandLevel1()) goto Cleanup;
+                    }
 
-                if (character.GMLevel >= 2) //Full GMs
-                {
-                    if (HandleGMCommandLevel2()) goto Cleanup;
-                }
+                    if (character.GMLevel >= 2) //Full GMs
+                    {
+                        if (HandleGMCommandLevel2()) goto Cleanup;
+                    }
 
-                if (character.GMLevel >= 3) //Admin
-                {
-                    if (HandleGMCommandLevel3()) goto Cleanup;
+                    if (character.GMLevel >= 3) //Admin
+                    {
+                        if (HandleGMCommandLevel3()) goto Cleanup;
+                    }
                 }
 
                 SendNotice($"Unknown command: {text}");
@@ -3819,7 +3867,7 @@ namespace WvsBeta.Game
             CommandHandling._character = null;
             return true;
         }
-
+ 
         public static void HandleAdminCommand(Character chr, Packet packet)
         {
             if (chr.AssertForHack(!chr.IsGM, "Tried to use slash GM command while not GM")) return;

@@ -610,6 +610,7 @@ namespace WvsBeta.Game
 
                 var User = CharactersTmp[Log.CharacterID];
                 if (User == null || User.Field.ID != Field.ID) continue;
+                if (User.Field.ClaimantID > 0 && User.Field.ClaimantID != User.ID && User.Field.ClaimantID != User.Party?.Leader) continue;
 
                 var PartyID = User.PartyID;
                 if (PartyID == 0 || Field.GetInParty(PartyID).Count() == 1)

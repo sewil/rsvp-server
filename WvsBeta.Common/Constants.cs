@@ -12,8 +12,8 @@ namespace WvsBeta.Common
     {
         private static ILog _log = LogManager.GetLogger(typeof(Constants));
 
-        public const ushort MAPLE_VERSION = 12;
-        public const ushort MAPLE_CRYPTO_VERSION = 12; // for IV stuff
+        public const ushort MAPLE_VERSION = 22;
+        public const ushort MAPLE_CRYPTO_VERSION = 22; // for IV stuff
         public const string MAPLE_PATCH_LOCATION = "";
         public const byte MAPLE_LOCALE = 8;
         public static string AUTH_KEY = null;

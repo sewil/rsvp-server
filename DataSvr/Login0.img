@@ -1,9 +1,9 @@
 #Property
-redis = {
-	password = 
-	hostname = 127.0.0.1
-	port = 6379
-}
+#redis = {
+#	password = 
+#	hostname = 127.0.0.1
+#	port = 6379
+#}
 HaProxyIPs = {
 }
 dataChecksum = 0

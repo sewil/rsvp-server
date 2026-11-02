@@ -120,14 +120,13 @@ namespace WvsBeta.Game
         }
 
         /// <returns>true when it was a GM command (not telling if it was a valid one, however)</returns>
-        public static bool TryHandleGMCommand(Character chr, string text)
+        public static bool TryHandleCommand(Character chr, string text)
         {
-            if (!chr.IsGM) return false;
             if (!text.StartsWith('/') && !text.StartsWith('!')) return false;
 
             commandLog.Info(chr.Name + ": " + text);
 
-            if (!CommandHandling.HandleGMCommand(chr, text))
+            if (!CommandHandling.HandleCommand(chr, text))
             {
                 SendNotice(chr, $"Unknown command {text}");
             }
@@ -146,7 +145,7 @@ namespace WvsBeta.Game
                 return;
             }
 
-            if (TryHandleGMCommand(chr, what)) return;
+            if (TryHandleCommand(chr, what)) return;
 
             if (ShowMuteMessage(chr))
             {
@@ -202,7 +201,7 @@ namespace WvsBeta.Game
 
             var Message = packet.ReadLocalizedString(chr.ClientActiveCodePage);
 
-            if (TryHandleGMCommand(chr, Message))
+            if (TryHandleCommand(chr, Message))
             {
                 return;
             }
